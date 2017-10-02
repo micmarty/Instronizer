@@ -3,6 +3,7 @@ import numpy as np
 import soundfile as sf
 import matplotlib
 import matplotlib.image as image
+import matplotlib.pyplot as plt
 import os
 
 # TODO omit the last spectrogram segment because it's always shorter than the others
