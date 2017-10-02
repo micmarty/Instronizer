@@ -12,8 +12,8 @@ import os
 class AudioToImageProcessor():
     # CONSTANTS for fast-switching
     SAMPLING_RATE = 22050
-    SEGMENT_DURATION_IN_S = 3
-    SEGMENT_OVERLAP_IN_S = 1.5
+    SEGMENT_DURATION_IN_S = 5.9 # this gives 128px width on spectrogram (empirically selected)
+    SEGMENT_OVERLAP_IN_S = 2.5
 
     def __init__(self, input_folder, output_folder):
         # Folder locations
@@ -65,6 +65,13 @@ class AudioToImageProcessor():
                 # Downsample
                 y = librosa.resample(y, original_sampling_rate, self.sampling_rate)
 
+                if (y<0.02).all():
+                    print("{}/{} block contains silence only, omitting spectrogram generation process."
+                        .format(block_id, blocks_num))
+                    continue
+
+                # Trim silence from beginning and end
+                y, _ = librosa.effects.trim(y) 
                 ##
                 # From librosa docs: https://librosa.github.io/librosa/generated/librosa.core.stft.html
                 # librosa.stft(y) -> Returns a complex-valued matrix D such that
@@ -86,7 +93,7 @@ class AudioToImageProcessor():
                 
                 image.imsave(output_path, librosa.power_to_db(mel_spectrogram))
 
-                print('\t{}/{}'.format(block_id+1, blocks_num))
+                print('{}/{}'.format(block_id+1, blocks_num))
             print('DONE')
 
 
