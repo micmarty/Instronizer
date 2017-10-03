@@ -5,11 +5,12 @@ import torch.nn.functional as F
 class LeNet(nn.Module):
     def __init__(self):
         super(LeNet, self).__init__()
-        self.conv1 = nn.Conv2d(3, 6, 5)
-        self.conv2 = nn.Conv2d(6, 16, 5)
-        self.fc1 = nn.Linear(16 * 5 * 5, 120)
-        self.fc2 = nn.Linear(120, 84)
-        self.fc3 = nn.Linear(84, 10)
+        # out_channels = (width - kernel_size) / stride + 1
+        self.conv1 =    nn.Conv2d(in_channels=3,            out_channels=60, kernel_size=10, stride=2)
+        self.conv2 =    nn.Conv2d(in_channels=60,           out_channels=26, kernel_size=10, stride=2)
+        self.fc1 =      nn.Linear(in_features=650,          out_features=100)
+        self.fc2 =      nn.Linear(in_features=100,          out_features=60)
+        self.fc3 =      nn.Linear(in_features=60,           out_features=3)
 
     def forward(self, x):
         out = F.relu(self.conv1(x))

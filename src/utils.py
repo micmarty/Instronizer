@@ -1,6 +1,17 @@
 import argparse
 import os
 import default_settings as SETTINGS
+import time
+
+def count_elapsed_time(function):
+
+    def wrapper():
+        start_time = time.clock()
+        function()
+        print('Preprocessing took: {} seconds'.format(time.clock() - start_time))
+
+    return wrapper
+
 
 class FullPaths(argparse.Action):
     '''Expand user and relative-paths'''
