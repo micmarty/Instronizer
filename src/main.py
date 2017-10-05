@@ -6,29 +6,6 @@ if __name__ == '__main__':
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     # TODO maybe use onehot in the future?
 
     # dataset_classes_num = len(data.classes)

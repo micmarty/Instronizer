@@ -2,43 +2,51 @@ import argparse
 import os
 import default_settings as SETTINGS
 import time
+import matplotlib.pyplot as plt
 
-def count_elapsed_time(function):
+def print_execution_time(function):
+    '''Decorator which measures function's execution time
 
-    def wrapper():
+    Just add @print_execution_time above your function definition
+    '''
+    def wrapper(*args, **kw):
         start_time = time.clock()
-        function()
-        print('Preprocessing took: {} seconds'.format(time.clock() - start_time))
+        function(*args, **kw)
+        print('Funtion {} took: {} seconds'.format(function.__name__, time.clock() - start_time))
 
     return wrapper
 
 
 class FullPaths(argparse.Action):
     '''Expand user and relative-paths'''
+
     def __call__(self, parser, namespace, values, option_string=None):
         setattr(namespace, self.dest, os.path.abspath(
             os.path.expanduser(values)))
 
 
+
+def print_parameters(args):
+    '''Prints arguments from command line to the console'''
+
+    print('Parameters:')
+    for attr, value in sorted(args.__dict__.items()):
+        print('\t{}={}'.format(attr.upper(), value))
+
 def is_dir(dirname):
     '''Checks if a path is an actual directory'''
+
     if not os.path.isdir(dirname):
         msg = "{0} is not a directory".format(dirname)
         raise argparse.ArgumentTypeError(msg)
     else:
         return dirname
 
-def print_parameters(args):
-    '''TODO'''
-    print('Parameters:')
-    for attr, value in sorted(args.__dict__.items()):
-        print('\t{}={}'.format(attr.upper(), value))
-
-
 def parse_args():
-    '''Take input from command line'''
+    '''Takes the input from command line and returns argparser object'''
+
     parser = argparse.ArgumentParser(
-        description='Instrument recognition with DNN in PyTorch')
+        description=SETTINGS.STRINGS['ARG_PARSER_DESCRIPTION'])
 
     parser.add_argument('-i', '--input-dataset-dir',
                         action=FullPaths,
@@ -54,3 +62,37 @@ def parse_args():
                         default=SETTINGS.PATHS['OUTPUT_SPECTROGRAM_DIR'],
                         help=SETTINGS.HELP['OUTPUT_SPECTROGRAM_DIR'])
     return parser.parse_args()
+
+
+
+
+label_names = [
+    'cello',
+    'piano'
+]
+
+
+def plot_images(images, cls_true, cls_pred=None):
+
+    assert len(images) == len(cls_true) == 9
+
+    # Create figure with sub-plots.
+    fig, axes = plt.subplots(3, 3)
+
+    for i, ax in enumerate(axes.flat):
+        # plot the image
+        ax.imshow(images[i, :, :, :], interpolation='spline16')
+        # get its equivalent class name
+        cls_true_name = label_names[cls_true[i]]
+
+        if cls_pred is None:
+            xlabel = "{0} ({1})".format(cls_true_name, cls_true[i])
+        else:
+            cls_pred_name = label_names[cls_pred[i]]
+            xlabel = "True: {0}\nPred: {1}".format(
+                cls_true_name, cls_pred_name)
+
+        ax.set_xlabel(xlabel)
+        ax.set_xticks([])
+        ax.set_yticks([])
+    plt.show()

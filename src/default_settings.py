@@ -8,3 +8,7 @@ HELP = dict(
                             (put into label-like folder name, e.g. barking.wav inside dogs/, miau.wav inside cats/)',
     OUTPUT_SPECTROGRAM_DIR='Path to destination folder for generated spectrograms'
 )
+
+STRINGS = dict(
+    ARG_PARSER_DESCRIPTION='Instrument recognition with DNN in PyTorch'
+)

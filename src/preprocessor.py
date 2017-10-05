@@ -7,14 +7,29 @@ import matplotlib.pyplot as plt
 import os
 
 # TODO omit the last spectrogram segment because it's always shorter than the others
-from utils import count_elapsed_time
+from utils import print_execution_time
 
 
 
 class AudioToImageProcessor():
+    '''
+    This class transforms .wav files into .png spectrogram segments
+
+    It assumes that the dataset has structure:
+    
+    ├── train
+    |   ├── cello
+    |   ├── ...
+    |   └── piano1
+    |
+    └── test
+        ├── cello
+        ├── ...
+        └── piano1
+    '''
     # CONSTANTS for fast-switching
     SAMPLING_RATE = 22050
-    SEGMENT_DURATION_IN_S = 5.9 # this gives 128px width on spectrogram (empirically selected)
+    SEGMENT_DURATION_IN_S = 5.9 # this affects image resolution
     SEGMENT_OVERLAP_IN_S = 2.5
 
     def __init__(self, input_folder, output_folder):
@@ -31,7 +46,7 @@ class AudioToImageProcessor():
         self.dtype = 'float32'
         self.max_frequency = self.sampling_rate / 2                     # librosa's default
 
-    @count_elapsed_time
+    @print_execution_time
     def transform_to_spectogram_segments(self):
         wav_files = librosa.util.find_files(self.root, ext=['wav'], recurse=True)
         print('Found {} files in {}\n'.format(len(wav_files), self.root) +
@@ -88,12 +103,21 @@ class AudioToImageProcessor():
                 mel_spectrogram = librosa.feature.melspectrogram(S=magnitute_matrix, sr=self.sampling_rate, fmax=self.max_frequency)
 
                 # 3.6 Prepare path for saving the spectrogram
+                
 
                 # e.g. 'cello', 'piano'
-                label_dirname = os.path.basename(os.path.dirname(file_info.name))
-                output_segment_name = '{}_{}.png'.format(original_filename, block_id + 1)
-                output_folder = os.path.join(self.output_folder, label_dirname)
+                label_path = os.path.dirname(file_info.name)
+                label_basename = os.path.basename(label_path)
 
+                # e.g. 'test', 'train'
+                dataset_variant_path = os.path.dirname(label_path)
+                dataset_variant_basename = os.path.basename(dataset_variant_path)
+
+                output_segment_name = '{}_{}.png'.format(original_filename, block_id + 1)
+                output_folder = os.path.join(
+                    self.output_folder, dataset_variant_basename, label_basename)
+
+                # TODO do it once, not in every loop iteration!!!
                 if not os.path.exists(output_folder):
                     os.makedirs(output_folder)
 
@@ -104,7 +128,6 @@ class AudioToImageProcessor():
 
                 print('{}/{}'.format(block_id+1, blocks_num))
             print('DONE')
-
 
 processor = AudioToImageProcessor(input_folder='/home/miczi/datasets/piano_and_cello', 
                                 output_folder='/home/miczi/Projects/single-instrument-recognizer/output/spectrograms')
