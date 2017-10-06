@@ -15,65 +15,37 @@ from torchvision import transforms
 import matplotlib.pyplot as plt
 from torchvision.utils import make_grid
 import numpy as np
+
+from dataset import Dataset
+
+
 learning_rate = 0.01
 batch_size = 10
 
 num_epochs = 20
 num_workers = 4
 
-data_transforms = {
-    'train': transforms.Compose([
-        #transforms.RandomSizedCrop(224),
-        #transforms.RandomHorizontalFlip(),
-        transforms.ToTensor(),
-        #transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
-    ]),
-    'test': transforms.Compose([
-        #transforms.Scale(256),
-        #transforms.CenterCrop(224),
-        transforms.ToTensor(),
-        #transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
-    ]),
-}
-dataset_types = ['train', 'test']
-
-image_datasets = {
-        x: ImageFolder(os.path.join(SETTINGS.PATHS['OUTPUT_SPECTROGRAM_DIR'], x), data_transforms[x])
-        for x in dataset_types
-    }
-
-dataloders = {
-            x: DataLoader(image_datasets[x], 
-                batch_size=batch_size,
-                shuffle=True, num_workers=num_workers)
-            for x in dataset_types
-        }
-
-dataset_sizes = {
-        x: len(image_datasets[x]) 
-        for x in dataset_types
-}
-class_names = image_datasets['train'].classes
 
 
-def imshow(inp, title=None):
-    """Imshow for Tensor."""
-    inp = inp.numpy().transpose((1, 2, 0))
-    plt.imshow(inp, interpolation='nearest')
-    if title is not None:
-        plt.title(title)
-    plt.show()
+
+# def imshow(inp, title=None):
+#     """Imshow for Tensor."""
+#     inp = inp.numpy().transpose((1, 2, 0))
+#     plt.imshow(inp, interpolation='nearest')
+#     if title is not None:
+#         plt.title(title)
+#     plt.show()
 
 
-# Get a batch of training data
-inputs, classes = next(iter(dataloders['train']))
+# # Get a batch of training data
+# inputs, classes = next(iter(dataloders['train']))
 
-# Make a grid from batch
-out = make_grid(inputs)
+# # Make a grid from batch
+# out = make_grid(inputs)
 
-imshow(out, title=[class_names[x] for x in classes])
+# imshow(out, title=[class_names[x] for x in classes])
 
-exit()
+# exit()
 
 
 
@@ -85,54 +57,66 @@ exit()
 
 
 
-def show(img):
-    npimg = img.numpy()
-    plt.imshow(np.transpose(npimg, axes=(1, 2, 0)), interpolation='nearest')
-    plt.show()
+# def show(img):
+#     npimg = img.numpy()
+#     plt.imshow(np.transpose(npimg, axes=(1, 2, 0)), interpolation='nearest')
+#     plt.show()
     
 
-label_names = [
-    'cello',
-    'piano'
-]
+# label_names = [
+#     'cello',
+#     'piano'
+# ]
 
 
-def plot_images(dataset, subset_range, predictions=None):
-    assert isinstance(subset_range, tuple)
+# def plot_images(dataset, subset_range, predictions=None):
+#     assert isinstance(subset_range, tuple)
 
-    ncols = 4
-    nrows = (subset_range[1] - subset_range[0]) // ncols
+#     ncols = 4
+#     nrows = (subset_range[1] - subset_range[0]) // ncols
     
-    # Create figure with sub-plots.
-    fig, axes = plt.subplots(nrows, ncols, figsize=(7, 8))
+#     # Create figure with sub-plots.
+#     fig, axes = plt.subplots(nrows, ncols, figsize=(7, 8))
 
-    for i, ax in enumerate(axes.flat):
-        # plot the image
-        image = dataset[i][0].numpy()
-        ax.imshow(np.transpose(image, axes=(1, 2, 0)),
-                  interpolation='nearest')
+#     for i, ax in enumerate(axes.flat):
+#         # plot the image
+#         image = dataset[i][0].numpy()
+#         ax.imshow(np.transpose(image, axes=(1, 2, 0)),
+#                   interpolation='nearest')
         
-        # get its equivalent class name
-        label_id = dataset[i][1]
-        cls_true_name = label_names[label_id]
+#         # get its equivalent class name
+#         label_id = dataset[i][1]
+#         cls_true_name = label_names[label_id]
 
-        if predictions is None:
-            xlabel = "{0} ({1})".format(cls_true_name, label_id)
-        else:
-            cls_pred_name = label_names[predictions[i]]
-            xlabel = "True: {0}\nPred: {1}".format(
-                cls_true_name, cls_pred_name)
+#         if predictions is None:
+#             xlabel = "{0} ({1})".format(cls_true_name, label_id)
+#         else:
+#             cls_pred_name = label_names[predictions[i]]
+#             xlabel = "True: {0}\nPred: {1}".format(
+#                 cls_true_name, cls_pred_name)
 
-        ax.set_xlabel(xlabel)
-        ax.set_xticks([])
-        ax.set_yticks([])
-    plt.tight_layout()
-    plt.show()
+#         ax.set_xlabel(xlabel)
+#         ax.set_xticks([])
+#         ax.set_yticks([])
+#     plt.tight_layout()
+#     plt.show()
 
-dataset = ImageFolder(root=SETTINGS.PATHS['OUTPUT_SPECTROGRAM_DIR'], transform=ToTensor())
-dataset = SplitDataset(dataset, partitions={'train': 0.8, 'test': 0.2}, initial_partition='train')
+# dataset = ImageFolder(root=SETTINGS.PATHS['OUTPUT_SPECTROGRAM_DIR'], transform=ToTensor())
+# dataset = SplitDataset(dataset, partitions={'train': 0.8, 'test': 0.2}, initial_partition='train')
 
+##
+dataset = Dataset(root=SETTINGS.PATHS['OUTPUT_SPECTROGRAM_DIR'], batch_size=batch_size, shuffle=True, num_workers=num_workers)
+ds = dataset.data_loaders()
+ds_sizes = dataset.dataset_sizes()
 
+train_ds, test_ds = ds['train'], ds['test']
+train_ds_size, test_ds_size = ds_sizes['train'], ds_sizes['test']
+
+print('Dataset sizes:')
+print(' - training: {} images'.format(train_ds_size))
+print(' - testing:  {} images'.format(test_ds_size))
+exit()
+##
 train_loader = DataLoader(dataset=dataset,
                          batch_size=batch_size,
                          shuffle=True,
