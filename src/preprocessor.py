@@ -1,135 +1,143 @@
 import librosa
-import numpy as np
 import soundfile as sf
-import matplotlib
+import numpy as np
+
 import matplotlib.image as image
 import matplotlib.pyplot as plt
-import os
 
-# TODO omit the last spectrogram segment because it's always shorter than the others
+import time
+from pathlib import PurePath, Path
 from utils import print_execution_time
+import default_settings as SETTINGS
+
+class PreprocessingSettings():
+
+    def __init__(self):    
+        # Target sampling rate
+        self.sr = 22050
+
+        # Given in seconds
+        self.segment_duration = 2.95
+        self.segment_overlap = self.segment_duration // 2
+
+        self.segment_frames_num = int(self.sr * self.segment_duration)
+        self.overlapping_frames_num = int(self.sr * self.segment_overlap)
+
+        self.dtype = 'float32'
+        self.silence_threshold = 0.02
+        self.max_frequency = self.sr / 3
+
+class File():
+    def __init__(self, file_path):
+        self.input_path = PurePath(file_path)
+        self.full_name = self.input_path.name
+
+        # Extract informations
+        info = sf.info(file_path)
+        self.original_sampling_rate = info.samplerate
+        self.frames = info.frames
+    
+    def output_path(self, block_index, output_dir=SETTINGS.PATHS['OUTPUT_SPECTROGRAM_DIR'], ext='.png'):
+        # e.g. 'cello'
+        label_name = self.input_path.parent.name
+        # e.g. 'train'
+        dataset_name = self.input_path.parent.parent.name
+
+        # e.g. 'cello_suite_256'
+        new_name = '{}_{}'.format(self.input_path.stem, block_index)
+
+        # Add the target extension
+        output_name = self.input_path.with_name(new_name).with_suffix(ext).name
+        output_dir = Path(output_dir)
+
+        # Join paths together
+        # e.g. '.../train/cello/'
+        final_dir = output_dir / dataset_name / label_name
+
+        # Create missing folders all the way up
+        final_dir.mkdir(parents=True, exist_ok=True)
+
+        # e.g. '.../train/cello/cello_suite_256.png'
+        return str(final_dir / output_name)
+
+class Preprocessor(PreprocessingSettings):
+    def __init__(self):
+        super().__init__()
+
+    def audio_files_list(self, root=SETTINGS.PATHS['INPUT_DATASET_DIR'], ext=['wav'], recurse=True):
+        files = librosa.util.find_files(root, ext=ext, recurse=recurse)
+
+        print('Found {} files in {}\n'.format(len(files), root) +
+              'Audio to spectogram images process has started...')
+        return files
+    
+    def blocks_num(self, file):
+        return int(file.frames / self.segment_frames_num *
+                         (file.original_sampling_rate / self.sr))
+
+    def to_mono(self, data):
+        # 1D -> Already mono
+        if len(data.shape) == 1:
+            return data
+        # 2D -> Stereo to mono
+        elif len(data.shape) == 2:
+            return np.mean(data, axis=1)
+        raise TypeError('Audio data must be mono or stereo. More channels are not supported!')
+        
+    @print_execution_time
+    def transform_to_spectogram_segments(self):
+        for file_path in self.audio_files_list():
+            file = File(file_path)
+
+            # Divide audio into blocks
+            print('Processing {}...\n'.format(file.full_name))
+            blocks = sf.blocks(file_path, 
+                                blocksize=self.segment_frames_num,
+                                overlap=self.overlapping_frames_num,
+                                dtype=self.dtype)
+
+            # Process each block
+            for block_idx, block_data in enumerate(blocks):
+                start_time = time.clock()
+
+                y = self.to_mono(block_data)
+
+                # Classify very silent blocks as empty -> won't generate a spectrogram
+                if (y < self.silence_threshold).all():
+                    print("[✗] {}/{} block contains silence only, omitting spectrogram generation process."
+                          .format(block_idx, self.blocks_num(file)))
+                    continue
+                
+                # Transform time-series to spectrogram
+                stft_matrix = librosa.stft(y)
+                magnitute_matrix = np.abs(stft_matrix)**2
+                mel_spectrogram = librosa.feature.melspectrogram(
+                    S=magnitute_matrix, sr=self.sr, fmax=self.max_frequency)
+                mel_spectrogram = librosa.power_to_db(mel_spectrogram)
+
+                # Output to file as an image
+                image.imsave(file.output_path(block_idx), mel_spectrogram)
+
+                # Display updates to the console
+                millis = int(round((time.clock() - start_time) * 1000))
+                print('[✓] {}/{} took {}ms'.format(block_idx + 1, self.blocks_num(file), millis))
+            print('DONE ✓')
 
 
-
-class AudioToImageProcessor():
-    '''
-    This class transforms .wav files into .png spectrogram segments
-
-    It assumes that the dataset has structure:
+'''
+   
+    Preprocessor assumes that the dataset has structure like following:
     
     ├── train
     |   ├── cello
     |   ├── ...
-    |   └── piano1
+    |   └── piano
     |
     └── test
         ├── cello
         ├── ...
-        └── piano1
+        └── piano
     '''
-    # CONSTANTS for fast-switching
-    SAMPLING_RATE = 22050
-    SEGMENT_DURATION_IN_S = 5.9 # this affects image resolution
-    SEGMENT_OVERLAP_IN_S = 2.5
-
-    def __init__(self, input_folder, output_folder):
-        # Folder locations
-        self.root = input_folder
-        self.output_folder = output_folder
-
-        # Processing parameters
-        self.sampling_rate = AudioToImageProcessor.SAMPLING_RATE
-        self.segment_frames_num = int(self.sampling_rate * AudioToImageProcessor.SEGMENT_DURATION_IN_S) 
-        self.overlapping_frames_num = int(self.sampling_rate * AudioToImageProcessor.SEGMENT_OVERLAP_IN_S)
-
-        # Other parameters
-        self.dtype = 'float32'
-        self.max_frequency = self.sampling_rate / 2                     # librosa's default
-
-    @print_execution_time
-    def transform_to_spectogram_segments(self):
-        wav_files = librosa.util.find_files(self.root, ext=['wav'], recurse=True)
-        print('Found {} files in {}\n'.format(len(wav_files), self.root) +
-                'Output folder: {}\n'.format(self.output_folder) + 
-                'Audio to spectogram images processing has started...')
-
-        for file in wav_files:
-            # 1. Extract basic info from file
-            file_info = sf.info(file)
-            original_filename = os.path.basename(file_info.name)       # truncate whole path and leave only basename
-            original_filename = os.path.splitext(original_filename)[0] # truncate the extension
-            original_sampling_rate = file_info.samplerate
-
-            # 2. Split audio into blocks
-            blocks_num = int(file_info.frames / self.segment_frames_num * (original_sampling_rate / self.sampling_rate))
-            
-            print('Processing {}...\n'.format(original_filename), end=' ')
-            blocks = sf.blocks(file, blocksize=self.segment_frames_num, 
-                                overlap=self.overlapping_frames_num, 
-                                dtype=self.dtype)
-
-            # 3. Process blocks one by one
-            for block_id, block_data in enumerate(blocks):
-                # 3.1 Downmix stereo to mono
-                if len(block_data.shape) == 1:
-                    # 1D -> Already mono
-                    y = block_data
-                if len(block_data.shape) == 2:
-                    # 2D -> stereo to mono
-                    y = np.mean(block_data, axis=1)
-
-                # 3.2 Downsample
-                y = librosa.resample(y, original_sampling_rate, self.sampling_rate)
-
-                # 3.3 Classify very silent blocks as empty -> won't generate a spectrogram
-                if (y < 0.02).all():
-                    print("{}/{} block contains silence only, omitting spectrogram generation process."
-                        .format(block_id, blocks_num))
-                    continue
-
-                # TODO this seems to be useless -> we need to have fixed image sizes!
-                # 3.4 Trim silence from beginning and end
-                # y, _ = librosa.effects.trim(y) 
-
-                ##
-                # From librosa docs: https://librosa.github.io/librosa/generated/librosa.core.stft.html
-                # librosa.stft(y) -> Returns a complex-valued matrix D such that
-                #   np.abs(D[f, t]) is the magnitude of frequency bin f at frame t
-                #   np.angle(D[f, t]) is the phase of frequency bin f at frame t
-                #
-                # 3.5 STFT and spectrogram
-                stft_matrix = librosa.stft(y)
-                magnitute_matrix = np.abs(stft_matrix)**2
-                mel_spectrogram = librosa.feature.melspectrogram(S=magnitute_matrix, sr=self.sampling_rate, fmax=self.max_frequency)
-
-                # 3.6 Prepare path for saving the spectrogram
-                
-
-                # e.g. 'cello', 'piano'
-                label_path = os.path.dirname(file_info.name)
-                label_basename = os.path.basename(label_path)
-
-                # e.g. 'test', 'train'
-                dataset_variant_path = os.path.dirname(label_path)
-                dataset_variant_basename = os.path.basename(dataset_variant_path)
-
-                output_segment_name = '{}_{}.png'.format(original_filename, block_id + 1)
-                output_folder = os.path.join(
-                    self.output_folder, dataset_variant_basename, label_basename)
-
-                # TODO do it once, not in every loop iteration!!!
-                if not os.path.exists(output_folder):
-                    os.makedirs(output_folder)
-
-                output_path = os.path.join(output_folder, output_segment_name)
-
-                # 3.7 Finally save the spectrogram
-                image.imsave(output_path, librosa.power_to_db(mel_spectrogram))
-
-                print('{}/{}'.format(block_id+1, blocks_num))
-            print('DONE')
-
-processor = AudioToImageProcessor(input_folder='/home/miczi/datasets/piano_and_cello', 
-                                output_folder='/home/miczi/Projects/single-instrument-recognizer/output/spectrograms')
-
+# Change input and output paths in default_settings.py
+processor = Preprocessor()
 processor.transform_to_spectogram_segments()

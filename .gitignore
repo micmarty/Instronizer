@@ -1,3 +1,6 @@
 output
 
 \.directory
+
+src/__pycache__/
+cnn.pkl

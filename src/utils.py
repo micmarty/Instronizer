@@ -66,11 +66,13 @@ def parse_args():
 
 
 
+
+# TODO it used to work, but now it doesn't
+
 label_names = [
     'cello',
     'piano'
 ]
-
 
 def plot_images(images, cls_true, cls_pred=None):
 
