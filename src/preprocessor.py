@@ -19,13 +19,13 @@ class PreprocessingSettings():
         self.sr = 22050
 
         # Given in seconds
-        self.segment_duration = 10
-        self.segment_overlap = 9 #self.segment_duration // 2
+        self.segment_duration = 2.95
+        self.segment_overlap = self.segment_duration // 2
 
         self.segment_frames_num = int(self.sr * self.segment_duration)
         self.overlapping_frames_num = int(self.sr * self.segment_overlap)
 
-        self.dtype = 'float32'
+        self.dtype = 'float64'
         self.silence_threshold = 0.02
         self.max_frequency = self.sr / 3
 
