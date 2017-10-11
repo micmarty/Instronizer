@@ -19,7 +19,7 @@ class PreprocessingSettings():
         self.sr = 22050
 
         # Given in seconds
-        self.segment_duration = 2.95
+        self.segment_duration = 1
         self.segment_overlap = self.segment_duration // 2
 
         self.segment_frames_num = int(self.sr * self.segment_duration)
