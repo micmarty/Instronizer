@@ -5,26 +5,31 @@ import torch.nn.functional as F
 class LeNet(nn.Module):
     def __init__(self):
         super(LeNet, self).__init__()
-        # out_channels = (width - kernel_size) / stride + 1
-        self.conv1 =    nn.Conv2d(in_channels=3,            out_channels=60, kernel_size=3, stride=1)
-        self.conv2 =    nn.Conv2d(in_channels=60,           out_channels=26, kernel_size=3, stride=1)
-        self.fc1 =      nn.Linear(in_features=650,          out_features=100)
-        self.fc2 =      nn.Linear(in_features=100,          out_features=60)
-        self.fc3 =      nn.Linear(in_features=60,           out_features=3)
+        self.conv1 = nn.Conv2d(3, 18, (5, 5), padding=2)
+        self.conv2 = nn.Conv2d(18, 32, (5, 5))
+        self.fc1 = nn.Linear(8640, 4096)
+        self.fc2 = nn.Linear(4096, 512)
+        self.fc3 = nn.Linear(512, 11)
 
     def forward(self, x):
-        out = F.relu(self.conv1(x))
-        out = F.max_pool2d(out, 2)
-        out = F.relu(self.conv2(out))
-        out = F.max_pool2d(out, 2)
-        out = out.view(out.size(0), -1)
-        out = F.relu(self.fc1(out))
-        out = F.relu(self.fc2(out))
-        out = self.fc3(out)
+        x = F.max_pool2d(F.relu(self.conv1(x)), (2, 2))
+        x = F.max_pool2d(F.relu(self.conv2(x)), (2, 2))
+        x = x.view(-1, self.num_flat_features(x))
+        x = F.relu(self.fc1(x))
+        x = F.relu(self.fc2(x))
+        x = self.fc3(x)
+        return x
 
-        return out
+    def num_flat_features(self, x):
+        size = x.size()[1:]
+        num_features = 1
+        for s in size:
+            num_features *= s
+        return num_features
 
 # CNN Model (2 conv layer)
+
+
 class CNN(nn.Module):
     def __init__(self):
         super(CNN, self).__init__()
@@ -46,6 +51,7 @@ class CNN(nn.Module):
         out = out.view(out.size(0), -1)
         out = self.fc(out)
         return out
+
 
 class Net(nn.Module):
     def __init__(self):
@@ -72,6 +78,45 @@ class AlexNet(nn.Module):
         super(AlexNet, self).__init__()
         self.features = nn.Sequential(
             nn.Conv2d(3, 64, kernel_size=11, stride=4, padding=2),
+            nn.ReLU(inplace=True),
+            nn.MaxPool2d(kernel_size=3, stride=2),
+            nn.Conv2d(64, 192, kernel_size=5, padding=2),
+            nn.ReLU(inplace=True),
+            nn.MaxPool2d(kernel_size=3, stride=2),
+            nn.Conv2d(192, 384, kernel_size=3, padding=1),
+            nn.ReLU(inplace=True),
+            nn.Conv2d(384, 256, kernel_size=3, padding=1),
+            nn.ReLU(inplace=True),
+            nn.Conv2d(256, 256, kernel_size=3, padding=1),
+            nn.ReLU(inplace=True),
+            nn.MaxPool2d(kernel_size=3, stride=2),
+        )
+        self.classifier = nn.Sequential(
+            nn.Dropout(),
+            nn.Linear(2304, 4096),
+            nn.ReLU(inplace=True),
+            nn.Dropout(),
+            nn.Linear(4096, 4096),
+            nn.ReLU(inplace=True),
+            nn.Linear(4096, num_classes),
+        )
+
+    def forward(self, x):
+        x = self.features(x)
+        x = x.view(x.size(0), 2304)
+        x = self.classifier(x)
+        return x
+
+
+class Predominant(nn.Module):
+
+    def __init__(self, num_classes=2):
+        super(Predominant, self).__init__()
+        self.features = nn.Sequential(
+            nn.Conv2d(3, 32, kernel_size=3, stride=1),
+            nn.Conv2d(3, 32, kernel_size=3, stride=1),
+            nn.Conv2d(3, 32, kernel_size=3, stride=1),
+
             nn.ReLU(inplace=True),
             nn.MaxPool2d(kernel_size=3, stride=2),
             nn.Conv2d(64, 192, kernel_size=5, padding=2),

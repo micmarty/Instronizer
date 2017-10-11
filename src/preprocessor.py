@@ -22,12 +22,14 @@ class PreprocessingSettings():
         self.segment_duration = 1
         self.segment_overlap = self.segment_duration // 2
 
-        self.segment_frames_num = int(self.sr * self.segment_duration)
-        self.overlapping_frames_num = int(self.sr * self.segment_overlap)
+        # not in use
+        #self.segment_frames_num = int(self.sr * self.segment_duration)
+        #self.overlapping_frames_num = int(self.sr * self.segment_overlap)
 
         self.dtype = 'float64'
-        self.silence_threshold = 0.02
-        self.max_frequency = self.sr / 3
+        self.silence_threshold = 0.01
+        # From Nyquist theorem -> we're able to register frequencies up to 11kHz (when sampling rate is set up at 22kHz)
+        self.max_frequency = self.sr // 2   
 
 class File():
     def __init__(self, file_path):
@@ -38,6 +40,7 @@ class File():
         info = sf.info(file_path)
         self.original_sampling_rate = info.samplerate
         self.frames = info.frames
+        self.duration = info.duration
     
     def output_path(self, block_index, output_dir, ext='.png'):
         # e.g. 'cello'
@@ -74,8 +77,8 @@ class Preprocessor(PreprocessingSettings):
         return files
     
     def blocks_num(self, file):
-        return int(file.frames / self.segment_frames_num *
-                         (file.original_sampling_rate / self.sr))
+        # TODO -> take care of segment length and overlapping frames
+        return '?'
 
     def to_mono(self, data):
         # 1D -> Already mono
@@ -97,18 +100,19 @@ class Preprocessor(PreprocessingSettings):
     def transform_to_spectogram_segments(self, input_dir, output_dir):
         for file_path in self.audio_files_list(input_dir):
             file = File(file_path)
-
+            
             # Divide audio into blocks
             print('Processing {}...\n'.format(file.full_name))
             blocks = sf.blocks(file_path, 
-                                blocksize=self.segment_frames_num,
-                                overlap=self.overlapping_frames_num,
+                            blocksize=file.original_sampling_rate * self.segment_duration,
+                            overlap=file.original_sampling_rate * self.segment_overlap,
                                 dtype=self.dtype)
-
             # Process each block
             for block_idx, block_data in enumerate(blocks):
                 start_time = time.clock()
+
                 y = self.to_mono(block_data)
+                y = librosa.resample(y, file.original_sampling_rate, self.sr)
 
                 # Classify very silent blocks as empty -> won't generate a spectrogram
                 if (y < self.silence_threshold).all():
