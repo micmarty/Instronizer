@@ -2,6 +2,7 @@ import argparse
 import os
 import default_settings as SETTINGS
 import time
+import datetime
 import matplotlib.pyplot as plt
 
 def print_execution_time(function):
@@ -12,7 +13,9 @@ def print_execution_time(function):
     def wrapper(*args, **kw):
         start_time = time.clock()
         function(*args, **kw)
-        print('Funtion {} took: {} seconds'.format(function.__name__, time.clock() - start_time))
+        formatted_time_took = datetime.timedelta(seconds=(time.clock() - start_time))
+        print('Funtion {} took: {}'.format(
+            function.__name__, formatted_time_took))
 
     return wrapper
 
