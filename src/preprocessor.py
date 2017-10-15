@@ -19,7 +19,7 @@ class PreprocessingSettings():
         self.sr = 22050
 
         # Given in seconds
-        self.segment_duration = 1
+        self.segment_duration = 5.2
         self.segment_overlap = self.segment_duration // 2
 
         # not in use
@@ -42,7 +42,7 @@ class File():
         self.frames = info.frames
         self.duration = info.duration
     
-    def output_path(self, block_index, output_dir, ext='.png'):
+    def output_path(self, block_index, output_dir, ext='.png', without_folder_structure=False):
         # e.g. 'cello'
         label_name = self.input_path.parent.name
         # e.g. 'train'
@@ -56,8 +56,14 @@ class File():
         output_dir = Path(output_dir)
 
         # Join paths together
+        # TODO Change comment!
         # e.g. '.../train/cello/'
-        final_dir = output_dir / dataset_name / label_name
+        if without_folder_structure:
+            final_dir = output_dir
+        else:
+            final_dir = output_dir / dataset_name / label_name
+
+
 
         # Create missing folders all the way up
         final_dir.mkdir(parents=True, exist_ok=True)
@@ -91,9 +97,13 @@ class Preprocessor(PreprocessingSettings):
     
     def to_spectrogram(self, y):
         ''' Transform time-series to spectrogram '''
-        stft_matrix = librosa.stft(y)
-        magnitute_matrix = np.abs(stft_matrix)**2
-        mel_spectrogram = librosa.feature.melspectrogram(S=magnitute_matrix, sr=self.sr, fmax=self.max_frequency)
+        #stft_matrix = librosa.stft(y)
+        #magnitute_matrix = np.abs(stft_matrix)**2
+        #mel_spectrogram = librosa.feature.melspectrogram(S=magnitute_matrix, sr=self.sr, fmax=self.max_frequency)
+
+
+        # TODO wrap this nicely: n_mels is adjusted for MobileNet
+        mel_spectrogram = librosa.feature.melspectrogram(y, n_mels=224)
         return librosa.power_to_db(mel_spectrogram)
 
     @utils.print_execution_time
@@ -104,8 +114,8 @@ class Preprocessor(PreprocessingSettings):
             # Divide audio into blocks
             print('Processing {}...\n'.format(file.full_name))
             blocks = sf.blocks(file_path, 
-                            blocksize=file.original_sampling_rate * self.segment_duration,
-                            overlap=file.original_sampling_rate * self.segment_overlap,
+                            blocksize=int(file.original_sampling_rate * self.segment_duration),
+                            overlap=int(file.original_sampling_rate * self.segment_overlap),
                                 dtype=self.dtype)
             # Process each block
             for block_idx, block_data in enumerate(blocks):
@@ -123,10 +133,51 @@ class Preprocessor(PreprocessingSettings):
                 # Output to file as an image
                 image.imsave(file.output_path(block_idx, output_dir), self.to_spectrogram(y))
 
+                # Store in binary format
+                #np.save(file.output_path(block_idx, output_dir), self.to_spectrogram(y)) 
+
                 # Display updates to the console
                 millis = int(round((time.clock() - start_time) * 1000))
                 print('[✓] {}/{} took {}ms'.format(block_idx + 1, self.blocks_num(file), millis))
             print('DONE ✓')
+
+    @utils.print_execution_time
+    def single(self, input_path, output_dir):
+        file = File(input_path)
+
+        # Divide audio into blocks
+        print('Processing {}...\n'.format(file.full_name))
+        blocks = sf.blocks(input_path,
+                            blocksize=int(
+                                file.original_sampling_rate * self.segment_duration),
+                            overlap=int(
+                                file.original_sampling_rate * self.segment_overlap),
+                            dtype=self.dtype)
+        # Process each block
+        for block_idx, block_data in enumerate(blocks):
+            start_time = time.clock()
+
+            y = self.to_mono(block_data)
+            y = librosa.resample(y, file.original_sampling_rate, self.sr)
+
+            # Classify very silent blocks as empty -> won't generate a spectrogram
+            if (y < self.silence_threshold).all():
+                print("[✗] {}/{} block contains silence only, omitting spectrogram generation process."
+                        .format(block_idx, self.blocks_num(file)))
+                continue
+
+            # Output to file as an image
+            image.imsave(file.output_path(
+                block_idx, output_dir, without_folder_structure=True), self.to_spectrogram(y))
+
+            # Store in binary format
+            #np.save(file.output_path(block_idx, output_dir), self.to_spectrogram(y))
+
+            # Display updates to the console
+            millis = int(round((time.clock() - start_time) * 1000))
+            print('[✓] {}/{} took {}ms'.format(block_idx +
+                                                1, self.blocks_num(file), millis))
+        print('DONE ✓')
 
 
 if __name__ == '__main__':
@@ -155,6 +206,8 @@ if __name__ == '__main__':
                         help='Path to folder with dataset structure containing audio files \n \
                                 (put into label-like folder name, e.g. barking.wav inside dogs/, miau.wav inside cats/)')
 
+    parser.add_argument('-s', '--single-file-input')
+
     parser.add_argument('-o', '--output-spectrograms-dir',
                         default='/home/miczi/Projects/single-instrument-recognizer/output/spectrograms',
                         action=utils.FullPaths,
@@ -167,4 +220,8 @@ if __name__ == '__main__':
 
     # Change input and output paths in default_settings.py
     processor = Preprocessor()
-    processor.transform_to_spectogram_segments(input_dir=args.input_dataset_dir, output_dir=args.output_spectrograms_dir)
+
+    if args.single_file_input:
+        processor.single(input_path=args.single_file_input, output_dir=args.output_spectrograms_dir)
+    else:
+        processor.transform_to_spectogram_segments(input_dir=args.input_dataset_dir, output_dir=args.output_spectrograms_dir)
