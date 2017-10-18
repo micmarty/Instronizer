@@ -1,3 +1,5 @@
+# Currentyl not in use (in favour of mobilenet_training.py)
+
 PATHS = dict(
     INPUT_DATASET_DIR = '/home/miczi/datasets/piano_and_cello',
     OUTPUT_SPECTROGRAM_DIR = '/home/miczi/Projects/single-instrument-recognizer/output/spectrograms'

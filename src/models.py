@@ -1,6 +1,7 @@
 import torch.nn as nn
 import torch.nn.functional as F
 
+# Currently not in use (in favour of mobilenet_training.py)
 
 class LeNet(nn.Module):
     def __init__(self):
