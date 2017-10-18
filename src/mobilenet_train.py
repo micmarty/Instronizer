@@ -303,7 +303,7 @@ def train(train_loader, model, criterion, optimizer, epoch):
                 'accuracy_avg': top1.avg,
                 'accuracy': top1.val
             }
-            print(losses.avg, losses.val, top1.val)
+            #print(losses.avg, losses.val, top1.val)
             for tag, value in info.items():
                 logger.scalar_summary(tag, value, i)
 

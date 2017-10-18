@@ -4,9 +4,21 @@ Using IRMAS dataset and manually collected excerpts from YouTube
 
 ## Open mobilenet_train.py for code which is currently used
 ```bash
+# see required folder structure inside preprocessor.py
+# output dir must exists earlier
+python src/preprocessor.py -i <wav_dataset_dir> -o <spectrogram_output_dir>
+
+# before use, set constants inside the file
+python src/list_images_with_wrong_dim.py
+
+# enable tensorboard
+# make sure that 'logs' folder is empty before starting the new training (otherwise it will concatenate old and new data)
 tensorboard --logdir='./logs' --port=6006
+
+# start the training
 python src/mobilenet_train.py -a mobilenet <path_to_spectrograms_224x224>
-open browser at: localhost:6006
+
+# open browser at: localhost:6006
 ```
 
 ## Useful commands on remote training server
