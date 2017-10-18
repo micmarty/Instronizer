@@ -2,6 +2,9 @@ import easygui
 from pathlib import Path, PurePath
 import subprocess
 
+'''GUI for choosing single wav file'''
+# Needs modification (@moonman)
+
 file_path = easygui.fileopenbox(
     default='~/Desktop/*.wav',
     filetypes=['*.wav'],

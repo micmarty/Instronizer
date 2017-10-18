@@ -1,5 +1,7 @@
 import utils
 
+# Currently not in use (in favour of mobilenet_training.py)
+
 if __name__ == '__main__':
     ARGS = utils.parse_args()
     utils.print_parameters(ARGS)

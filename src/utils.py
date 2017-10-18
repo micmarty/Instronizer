@@ -5,6 +5,8 @@ import time
 import datetime
 import matplotlib.pyplot as plt
 
+# Currently not in use (in favour of mobilenet_training.py)
+
 def print_execution_time(function):
     '''Decorator which measures function's execution time
 

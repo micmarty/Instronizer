@@ -2,6 +2,9 @@ from torchvision.transforms import Compose, ToTensor
 from torchvision.datasets import ImageFolder
 from torch.utils.data import DataLoader
 import os
+
+# Currently not in use (in favour of mobilenet_train.py)
+
 class Dataset():
     '''
     Class which takes care of:

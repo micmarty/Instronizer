@@ -24,6 +24,13 @@ import signal
 import time
 
 # TODO remove unneccessary imports
+# Currently not in use (in favour of mobilenet_training.py)
+
+
+
+
+
+
 
 # Parameters ------------------------------------------
 learning_rate = 0.001
