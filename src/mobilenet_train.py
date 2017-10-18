@@ -13,7 +13,7 @@ import torchvision.transforms as transforms
 import torchvision.datasets as datasets
 import torchvision.models as models
 import better_exceptions
-
+import numpy as np
 from logger import Logger
 
 model_names = sorted(name for name in models.__dict__
@@ -198,7 +198,7 @@ def main():
             transforms.ToTensor(),
             normalize,
         ])),
-        batch_size=args.batch_size, shuffle=False,
+        batch_size=args.batch_size, shuffle=True,
         num_workers=args.workers)
 
     if args.evaluate:
@@ -321,6 +321,21 @@ def train(train_loader, model, criterion, optimizer, epoch):
                 logger.image_summary('{}_{}'.format('train_debug_prefix', tag), images, i)
     print('=== END ====================')
     
+# MUST BE ALPHABETICAL ORDER
+# TODO move somewhere else! 
+def print_validation_info(target, output_data):
+    class_names = ['cello', 'piano', 'ukulele']
+    predictions = [np.argmax(output_row.numpy()) for output_row in output_data]
+    pairs = zip(list(target), predictions)
+    
+    print("Weights: {}".format(output_data))
+    print('Target     | Prediction')
+    print("-----------------------")
+    for pair in pairs:
+        print('{:10s} | {:10s}'.format(class_names[pair[0]], class_names[pair[1]]))
+    print()
+
+
 def validate(val_loader, model, criterion):
     print('=== VALIDATING ====================')
     batch_time = AverageMeter()
@@ -335,13 +350,16 @@ def validate(val_loader, model, criterion):
     for i, (input, target) in enumerate(val_loader):
         input_var = torch.autograd.Variable(input, volatile=True)
         target_var = torch.autograd.Variable(target, volatile=True)
-        print("Debug: input_var, target_var = ", input_var, target_var)
 
         # compute output
         output = model(input_var)
         loss = criterion(output, target_var)
-
-        # print("Target: \n{}\nPrediction: \n{}".format(target_var, output))
+        
+        # TODO use label names in tensorboard logging (images tab)
+        print_validation_info(target, output.data)
+        #print("[DEBUG] Target: \n{}".format(list(target))
+        #print("[DEBUG] Predicted output:\n{}".format(output))
+        #print("[DEBUG] Predicted label: {}".format(class_names[]))
 
         # measure accuracy and record loss
         prec1, prec5 = accuracy(output.data, target, topk=(1, args.num_classes))
