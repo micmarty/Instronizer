@@ -1,6 +1,7 @@
 from resampledataset import ResampleDataset
 import torch
 
+# Currently not in use (in favour of mobilenet_training.py)
 
 class ShuffleDataset(ResampleDataset):
     """

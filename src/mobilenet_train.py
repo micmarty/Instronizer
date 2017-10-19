@@ -42,11 +42,11 @@ parser.add_argument('--epochs', default=4, type=int, metavar='N',
 parser.add_argument('--start-epoch', default=0, type=int, metavar='N',
                     help='manual epoch number (useful on restarts)')
 
-parser.add_argument('-b', '--batch-size', default=8, type=int,
-                    metavar='N', help='mini-batch size (default: 256)')
+parser.add_argument('-b', '--batch-size', default=6, type=int,
+                    metavar='N', help='mini-batch size (lowered to: 6, default for mobilenet: 256)')
 
-parser.add_argument('--lr', '--learning-rate', default=0.1, type=float,
-                    metavar='LR', help='initial learning rate')
+parser.add_argument('--lr', '--learning-rate', default=0.0024, type=float,
+                    metavar='LR', help='initial learning rate (lowered beacuse of batch size to: 0.0024, default for mobilenet: 0.1)')
 
 parser.add_argument('--momentum', default=0.9, type=float, metavar='M',
                     help='momentum')
@@ -77,6 +77,9 @@ parser.add_argument('--image-size', default=224, type=int,
 
 parser.add_argument('--num-classes', default=3, type=int,
                     help='Number of classes for input dataset (default: 3')
+
+parser.add_argument('--test-spectrograms', metavar='PATH', type=str,
+                    help='Directory with spectrograms to classify')
 
 # Model
 class MobileNet(nn.Module):
@@ -179,27 +182,47 @@ def main():
     normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                      std=[0.229, 0.224, 0.225])
 
-    train_loader = torch.utils.data.DataLoader(
-        datasets.ImageFolder(traindir, transforms.Compose([
-            # transforms.RandomSizedCrop(224),
-            # transforms.RandomHorizontalFlip(),
-            transforms.Scale(args.image_size),
-            transforms.CenterCrop(args.image_size),
-            transforms.ToTensor(),
-            normalize,
-        ])),
-        batch_size=args.batch_size, shuffle=True,
-        num_workers=args.workers)
+    if not args.test_spectrograms:
+        train_loader = torch.utils.data.DataLoader(
+            datasets.ImageFolder(traindir, transforms.Compose([
+                # transforms.RandomSizedCrop(224),
+                # transforms.RandomHorizontalFlip(),
+                transforms.Scale(args.image_size),
+                transforms.CenterCrop(args.image_size),
+                transforms.ToTensor(),
+                normalize,
+            ])),
+            batch_size=args.batch_size, shuffle=True,
+            num_workers=args.workers)
 
-    val_loader = torch.utils.data.DataLoader(
-        datasets.ImageFolder(valdir, transforms.Compose([
+        val_loader = torch.utils.data.DataLoader(
+            datasets.ImageFolder(valdir, transforms.Compose([
+                transforms.Scale(args.image_size),
+                transforms.CenterCrop(args.image_size),
+                transforms.ToTensor(),
+                normalize,
+            ])),
+            batch_size=args.batch_size, shuffle=True,
+            num_workers=args.workers)
+    else:
+        # TODO fix that -> it's a bad practice (ImageFolder requires to have label folder, so I ommited it...doing so)
+        #testdir = os.path.abspath(os.path.join(args.test_spectrograms, os.pardir))
+        testdir = args.test_spectrograms
+
+        print(testdir)
+        testdataset = datasets.ImageFolder(testdir, transforms.Compose([
             transforms.Scale(args.image_size),
             transforms.CenterCrop(args.image_size),
             transforms.ToTensor(),
             normalize,
-        ])),
-        batch_size=args.batch_size, shuffle=True,
-        num_workers=args.workers)
+        ]))
+        print(len(testdataset))
+        test_loader = torch.utils.data.DataLoader(testdataset,
+            batch_size=args.batch_size, shuffle=False,
+            num_workers=args.workers)
+
+        test(test_loader, model, criterion)
+        return
 
     if args.evaluate:
         validate(val_loader, model, criterion)
@@ -294,6 +317,18 @@ def train(train_loader, model, criterion, optimizer, epoch):
                    top1=top1, 
                    topk=topk))
 
+        # TODO use arg parameter for that
+        if i % 200 == 0:
+            save_checkpoint({
+                'model': model.__class__.__name__,
+                'epoch': epoch,
+                'arch': args.arch,
+                'state_dict': model.state_dict(),
+                'best_prec1': best_prec1,
+                'optimizer': optimizer.state_dict(),
+            }, is_best=False,
+                filename='checkpoint__{}__curr_epoch_{}__iter_{}.pth.tar'.format(model.__class__.__name__, epoch, i))
+
         if i % args.tensorboard_freq == 0:
             #============ TensorBoard logging ============#
             # (1) Log the scalar values
@@ -323,15 +358,17 @@ def train(train_loader, model, criterion, optimizer, epoch):
     
 # MUST BE ALPHABETICAL ORDER
 # TODO move somewhere else! 
-def print_validation_info(target, output_data):
+def print_validation_info(target, output_data, result=None):
     class_names = ['cello', 'piano', 'ukulele']
     predictions = [np.argmax(output_row.numpy()) for output_row in output_data]
     pairs = zip(list(target), predictions)
-    
-    print("Weights: {}".format(output_data))
+
+    print("Model output: {}".format(output_data))
     print('Target     | Prediction')
     print("-----------------------")
     for pair in pairs:
+        if result:
+            result[pair[1]] += 1
         print('{:10s} | {:10s}'.format(class_names[pair[0]], class_names[pair[1]]))
     print()
 
@@ -372,7 +409,7 @@ def validate(val_loader, model, criterion):
         end = time.time()
 
         if i % args.print_freq == 0:
-            print('Test: [{0}/{1}]\t'
+            print('Validation: [{0}/{1}]\t'
                   'Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t'
                   'Loss {loss.val:.4f} ({loss.avg:.4f})\t'
                   'Prec@1 {top1.val:.3f} ({top1.avg:.3f})\t'
@@ -404,6 +441,23 @@ def validate(val_loader, model, criterion):
           .format(top1=top1, topk=topk))
     print('=== END ====================')
     return top1.avg
+
+
+def test(test_loader, model, criterion):
+    print('=== TESTING ====================')
+
+    # switch to evaluate mode
+    model.eval()
+    result = [0,0,0]
+    for i, (input, target) in enumerate(test_loader):
+        input_var = torch.autograd.Variable(input, volatile=True)
+        target_var = torch.autograd.Variable(target, volatile=True)
+
+        # compute output
+        output = model(input_var)
+        print_validation_info(target, output.data, result=result)
+    print('Cello: {} | Piano: {} | Ukulele: {}'.format(result[0], result[1], result[2]))
+    print('=== END ====================')
 
 
 def save_checkpoint(state, is_best, filename='checkpoint.pth.tar'):

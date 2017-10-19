@@ -4,3 +4,5 @@ output
 
 src/__pycache__/
 cnn.pkl
+
+logs/

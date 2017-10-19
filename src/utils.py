@@ -47,6 +47,16 @@ def is_dir(dirname):
     else:
         return dirname
 
+
+def is_file(file_path):
+    '''Checks if a path is an actual file'''
+
+    if not os.path.isfile(file_path):
+        msg = "{0} is not a file".format(file_path)
+        raise argparse.ArgumentTypeError(msg)
+    else:
+        return file_path
+
 def parse_args():
     '''Takes the input from command line and returns argparser object'''
 

@@ -142,7 +142,7 @@ class Preprocessor(PreprocessingSettings):
             print('DONE ✓')
 
     @utils.print_execution_time
-    def single(self, input_path, output_dir):
+    def transform_single_to_spectrogram_segments(self, input_path, output_dir):
         file = File(input_path)
 
         # Divide audio into blocks
@@ -199,20 +199,22 @@ if __name__ == '__main__':
         description='Dataset preprocessor for instrument recognition task with DNN')
 
     parser.add_argument('-i', '--input-dataset-dir',
-                        default='/home/miczi/datasets/piano_and_cello',
                         action=utils.FullPaths,
                         type=utils.is_dir,
                         required=False,
                         help='Path to folder with dataset structure containing audio files \n \
                                 (put into label-like folder name, e.g. barking.wav inside dogs/, miau.wav inside cats/)')
 
-    parser.add_argument('-s', '--single-file-input')
+    parser.add_argument('-s', '--single-file-input', 
+                        action=utils.FullPaths,
+                        type=utils.is_file,
+                        required=False)
+                        # TODO add help text
 
     parser.add_argument('-o', '--output-spectrograms-dir',
-                        default='/home/miczi/Projects/single-instrument-recognizer/output/spectrograms',
                         action=utils.FullPaths,
                         type=utils.is_dir,
-                        required=False,
+                        required=True,
                         help='Path to destination folder for generated spectrograms')
 
     args = parser.parse_args()
@@ -222,6 +224,6 @@ if __name__ == '__main__':
     processor = Preprocessor()
 
     if args.single_file_input:
-        processor.single(input_path=args.single_file_input, output_dir=args.output_spectrograms_dir)
+        processor.transform_single_to_spectrogram_segments(input_path=args.single_file_input, output_dir=args.output_spectrograms_dir)
     else:
         processor.transform_to_spectogram_segments(input_dir=args.input_dataset_dir, output_dir=args.output_spectrograms_dir)

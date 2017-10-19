@@ -1,5 +1,6 @@
 from torch.utils.data import Dataset
 
+# Currently not in use (in favour of mobilenet_training.py)
 
 class ResampleDataset(Dataset):
     """

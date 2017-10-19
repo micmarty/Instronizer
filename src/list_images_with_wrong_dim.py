@@ -7,8 +7,21 @@ in the middle of training process.
 """
 from pathlib import Path
 from PIL import Image
+import argparse
+import utils
 
-SEARCHING_ROOT_DIR = '/media/miczi/miczi_storage/SEM_VII/datasets/YT/image_dataset/spectrograms_224x224_5.2s'
+parser = argparse.ArgumentParser(description='Lists all the files with dimensions other than specified, \
+                                 so you can remove them before the training starts. \
+                                 Useful with image datasets, it saves you from crashing \
+                                 in the middle of training process.')
+
+parser.add_argument('dir',
+                    action=utils.FullPaths,
+                    type=utils.is_dir,
+                    help='Directory with images to check')
+args = parser.parse_args()
+
+SEARCHING_ROOT_DIR = args.dir
 GOOD_WIDTH, GOOD_HEIGHT = 224, 224
 IMAGE_EXTENSION = '.png'
 
