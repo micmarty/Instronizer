@@ -1,9 +1,9 @@
 import argparse
 import os
-import default_settings as SETTINGS
 import time
 import datetime
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
+#import default_settings as SETTINGS
 
 # Currently not in use (in favour of mobilenet_training.py)
 
@@ -57,26 +57,26 @@ def is_file(file_path):
     else:
         return file_path
 
-def parse_args():
-    '''Takes the input from command line and returns argparser object'''
+# def parse_args():
+#     '''Takes the input from command line and returns argparser object'''
 
-    parser = argparse.ArgumentParser(
-        description=SETTINGS.STRINGS['ARG_PARSER_DESCRIPTION'])
+#     parser = argparse.ArgumentParser(
+#         description=SETTINGS.STRINGS['ARG_PARSER_DESCRIPTION'])
 
-    parser.add_argument('-i', '--input-dataset-dir',
-                        action=FullPaths,
-                        type=is_dir,
-                        required=False,
-                        default=SETTINGS.PATHS['INPUT_DATASET_DIR'],
-                        help=SETTINGS.HELP['INPUT_DATASET_DIR'])
+#     parser.add_argument('-i', '--input-dataset-dir',
+#                         action=FullPaths,
+#                         type=is_dir,
+#                         required=False,
+#                         default=SETTINGS.PATHS['INPUT_DATASET_DIR'],
+#                         help=SETTINGS.HELP['INPUT_DATASET_DIR'])
 
-    parser.add_argument('-o', '--output-spectrograms-dir',
-                        action=FullPaths,
-                        type=is_dir,
-                        required=False,
-                        default=SETTINGS.PATHS['OUTPUT_SPECTROGRAM_DIR'],
-                        help=SETTINGS.HELP['OUTPUT_SPECTROGRAM_DIR'])
-    return parser.parse_args()
+#     parser.add_argument('-o', '--output-spectrograms-dir',
+#                         action=FullPaths,
+#                         type=is_dir,
+#                         required=False,
+#                         default=SETTINGS.PATHS['OUTPUT_SPECTROGRAM_DIR'],
+#                         help=SETTINGS.HELP['OUTPUT_SPECTROGRAM_DIR'])
+#     return parser.parse_args()
 
 
 
@@ -84,32 +84,32 @@ def parse_args():
 
 # TODO it used to work, but now it doesn't
 
-label_names = [
-    'cello',
-    'piano'
-]
+# label_names = [
+#     'cello',
+#     'piano'
+# ]
 
-def plot_images(images, cls_true, cls_pred=None):
+# def plot_images(images, cls_true, cls_pred=None):
 
-    assert len(images) == len(cls_true) == 9
+#     assert len(images) == len(cls_true) == 9
 
-    # Create figure with sub-plots.
-    fig, axes = plt.subplots(3, 3)
+#     # Create figure with sub-plots.
+#     fig, axes = plt.subplots(3, 3)
 
-    for i, ax in enumerate(axes.flat):
-        # plot the image
-        ax.imshow(images[i, :, :, :], interpolation='spline16')
-        # get its equivalent class name
-        cls_true_name = label_names[cls_true[i]]
+#     for i, ax in enumerate(axes.flat):
+#         # plot the image
+#         ax.imshow(images[i, :, :, :], interpolation='spline16')
+#         # get its equivalent class name
+#         cls_true_name = label_names[cls_true[i]]
 
-        if cls_pred is None:
-            xlabel = "{0} ({1})".format(cls_true_name, cls_true[i])
-        else:
-            cls_pred_name = label_names[cls_pred[i]]
-            xlabel = "True: {0}\nPred: {1}".format(
-                cls_true_name, cls_pred_name)
+#         if cls_pred is None:
+#             xlabel = "{0} ({1})".format(cls_true_name, cls_true[i])
+#         else:
+#             cls_pred_name = label_names[cls_pred[i]]
+#             xlabel = "True: {0}\nPred: {1}".format(
+#                 cls_true_name, cls_pred_name)
 
-        ax.set_xlabel(xlabel)
-        ax.set_xticks([])
-        ax.set_yticks([])
-    plt.show()
+#         ax.set_xlabel(xlabel)
+#         ax.set_xticks([])
+#         ax.set_yticks([])
+#     plt.show()
