@@ -1,4 +1,5 @@
 import os
+import sys
 import signal
 import argparse, textwrap
 import youtube_dl
@@ -15,17 +16,20 @@ class YdlLogger(object):
 
 
 def ydl_hook(d):
-    if d['status'] == 'finished':
-        print('Done downloading, now converting ...')
+	if d['status'] == 'finished':
+		print('Done downloading, now converting ...')
+	if d['status'] == 'downloading':
+		sys.stdout.write("\033[F") # Cursor up one line
+		print(d['filename'][:50] + '...', d['_percent_str'])
 
 def exit_gracefully_handler(signum, frame):
     print('Caught SIGINT: Exiting gracefully...')
     exit()
 
-
 class YT_downloader():
 
 	if __name__ == '__main__':
+		MODULE_DIRECTORY = os.getcwd() 	#remember directory we're in to restore it later
 		signal.signal(signal.SIGINT, exit_gracefully_handler)
 		parser = argparse.ArgumentParser(
 		    description='Downloader and extractor of Wave audio from Youtube videos.',
@@ -72,12 +76,11 @@ class YT_downloader():
 				}],
 			'logger': YdlLogger(),
 			'progress_hooks': [ydl_hook],
-			'verbose' : 'True',
-			'outtmpl' : current_directory,
 		}
 
 		with open(args.input_file) as f:
 			for line in f:
+				#comment line
 				if line[:1] == '#':
 					continue
 				#directory line
@@ -86,20 +89,23 @@ class YT_downloader():
 					if not relative_directory[1:2] == '/': #add a slash if it's not the first character in path
 						relative_directory = '/' + relative_directory
 					current_directory = args.output_dir + relative_directory
-					ydl_opts['outtmpl'] = current_directory
 					if not os.path.exists(current_directory):
    						os.makedirs(current_directory)
+					try:
+						os.chdir(current_directory)
+					except OSError:
+						print ('Could not enter directory ' + current_directory + ' ,ensure that all paths \
+								in the input file are correct')
+						exit()
 				#link line
 				else:
 					split_line = line.split()
 					link = split_line[0]
 					song_filename = split_line[1]
 					with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-						ydl_opts['outtmpl'] = current_directory + '/' + song_filename
-						print(ydl_opts['outtmpl'])
 						print("Downloading " + song_filename)
 						ydl.download([link])
 
-			
+		os.chdir(MODULE_DIRECTORY)
 
 
