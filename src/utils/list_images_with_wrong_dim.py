@@ -1,13 +1,13 @@
-"""
+'''
 Lists all the files with dimensions other than specified,
 so you can remove them before the training starts.
 
 Useful with image datasets, it saves you from crashing
 in the middle of training process.
-"""
+'''
 from pathlib import Path
 import argparse
-import utils
+import paths
 from PIL import Image
 
 # Parse input
@@ -17,8 +17,8 @@ parser = argparse.ArgumentParser(description='Lists all the files with dimension
                                  in the middle of training process.')
 # required=True by default
 parser.add_argument('dir',
-                    action=utils.FullPaths,
-                    type=utils.is_dir,
+                    action=paths.FullPaths,
+                    type=paths.is_dir,
                     help='Directory with images to check')
 args = parser.parse_args()
 

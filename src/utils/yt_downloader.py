@@ -5,7 +5,6 @@ import argparse
 import textwrap
 import youtube_dl
 
-
 class YdlLogger(object):
     def debug(self, msg):
         pass

@@ -11,19 +11,22 @@ import torch.optim
 import torch.utils.data
 import torchvision.transforms as transforms
 import torchvision.datasets as datasets
-import torchvision.models as models
+import torchvision.models
 import better_exceptions
 import numpy as np
 from logger import Logger
 
-model_names = sorted(name for name in models.__dict__
-    if name.islower() and not name.startswith("__")
-    and callable(models.__dict__[name]))
+from models.mobilenet import MobileNet
+from utils import printing_functions as pf
 
+# Prepare set of available model names (callable from the command-line)
+model_names = sorted(name for name in torchvision.models.__dict__
+    if name.islower() and not name.startswith("__")
+    and callable(torchvision.models.__dict__[name]))
 model_names.append('mobilenet')
 
 
-''' 1. Parser '''
+# Parser - all default settings are stored here
 parser = argparse.ArgumentParser(description='PyTorch ImageNet Training')
 parser.add_argument('data', metavar='DIR',
                     help='path to dataset')
@@ -37,7 +40,7 @@ parser.add_argument('-j', '--workers', default=4, type=int, metavar='N',
                     help='number of data loading workers (default: 4)')
 
 parser.add_argument('--epochs', default=4, type=int, metavar='N',
-                    help='number of epochs to run (default: 4)')
+                    help='number of epochs to run (default: 4), counting from the start-epoch (default: 0)')
 
 parser.add_argument('--start-epoch', default=0, type=int, metavar='N',
                     help='manual epoch number (useful on restarts)')
@@ -81,100 +84,64 @@ parser.add_argument('--num-classes', default=3, type=int,
 parser.add_argument('--test-spectrograms', metavar='PATH', type=str,
                     help='Directory with spectrograms to classify')
 
-# Model
-class MobileNet(nn.Module):
-    def __init__(self):
-        super(MobileNet, self).__init__()
-
-        def conv_bn(inp, oup, stride):
-            return nn.Sequential(
-                nn.Conv2d(inp, oup, 3, stride, 1, bias=False),
-                nn.BatchNorm2d(oup),
-                nn.ReLU(inplace=True)
-            )
-
-        def conv_dw(inp, oup, stride):
-            return nn.Sequential(
-                nn.Conv2d(inp, inp, 3, stride, 1, groups=inp, bias=False),
-                nn.BatchNorm2d(inp),
-                nn.ReLU(inplace=True),
-
-                nn.Conv2d(inp, oup, 1, 1, 0, bias=False),
-                nn.BatchNorm2d(oup),
-                nn.ReLU(inplace=True),
-            )
-
-        self.model = nn.Sequential(
-            conv_bn(3,  32, 2),
-            conv_dw(32,  64, 1),
-            conv_dw(64, 128, 2),
-            conv_dw(128, 128, 1),
-            conv_dw(128, 256, 2),
-            conv_dw(256, 256, 1),
-            conv_dw(256, 512, 2),
-            conv_dw(512, 512, 1),
-            conv_dw(512, 512, 1),
-            conv_dw(512, 512, 1),
-            conv_dw(512, 512, 1),
-            conv_dw(512, 512, 1),
-            conv_dw(512, 1024, 2),
-            conv_dw(1024, 1024, 1),
-            nn.AvgPool2d(7),
-        )
-        self.fc = nn.Linear(1024, args.num_classes)
-
-    def forward(self, x):
-        x = self.model(x)
-        x = x.view(-1, 1024)
-        x = self.fc(x)
-        return x
-
-
 def main():
-    global args, best_prec1, logger
-    args = parser.parse_args()
-    best_prec1 = 0
-    logger = Logger('./logs')
-    
-    print_args()
+    # Make them available for all functions
+    global args, best_prec1, logger, classes
 
-    # create model
+    args = parser.parse_args()
+    pf.print_args(args)
+
+    # Best Precision Measure
+    best_prec1 = 0
+
+    # Tensorboard logger
+    logger = Logger('./logs')
+
+    # Default classes
+    classes = ['cello', 'piano', 'ukulele']
+
+    # Create model (torchvision or custom/project-defined)
     if args.pretrained:
         print("=> using pre-trained model '{}'".format(args.arch))
-        model = models.__dict__[args.arch](pretrained=True)
+        model = torchvision.models.__dict__[args.arch](
+            pretrained=args.pretrained, num_classes=args.num_classes)
     else:
         print("=> creating model '{}'".format(args.arch))
         if args.arch.startswith('mobilenet'):
-            model = MobileNet()
-            print('=== MODEL ARCHITECTURE ======================')
-            print(model)
-            print('=== END =====================================\n')
+            model = MobileNet(num_classes=args.num_classes)
         else:
-            model = models.__dict__[args.arch]()
+            model = torchvision.models.__dict__[
+                args.arch](num_classes=args.num_classes)
+    print('=== MODEL ARCHITECTURE ======================')
+    print(model)
+    print('=== END =====================================\n')
 
-
-    # define loss function (criterion) and optimizer
+    # Define loss function (criterion) and optimizer
     criterion = nn.CrossEntropyLoss()
 
-    optimizer = torch.optim.SGD(model.parameters(), args.lr,
+    optimizer = torch.optim.SGD(model.parameters(), 
+                                lr=args.lr,
                                 momentum=args.momentum,
                                 weight_decay=args.weight_decay)
 
-    # optionally resume from a checkpoint
+    # Optionally resume from a checkpoint
     if args.resume:
         if os.path.isfile(args.resume):
             print("=> loading checkpoint '{}'".format(args.resume))
+
+            # Retrieve stored data
             checkpoint = torch.load(args.resume)
             args.start_epoch = checkpoint['epoch']
             best_prec1 = checkpoint['best_prec1']
             model.load_state_dict(checkpoint['state_dict'])
             optimizer.load_state_dict(checkpoint['optimizer'])
+
             print("=> loaded checkpoint '{}' (epoch {})"
                   .format(args.resume, checkpoint['epoch']))
         else:
             print("=> no checkpoint found at '{}'".format(args.resume))
 
-    # Data loading code
+    # Dataset paths
     traindir = os.path.join(args.data, 'train')
     valdir = os.path.join(args.data, 'val')
 
@@ -182,16 +149,18 @@ def main():
     normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                      std=[0.229, 0.224, 0.225])
 
+    # Train + Validation sets
     if not args.test_spectrograms:
-        train_loader = torch.utils.data.DataLoader(
-            datasets.ImageFolder(traindir, transforms.Compose([
-                # transforms.RandomSizedCrop(224),
-                # transforms.RandomHorizontalFlip(),
-                transforms.Scale(args.image_size),
-                transforms.CenterCrop(args.image_size),
-                transforms.ToTensor(),
-                normalize,
-            ])),
+        train_dataset = datasets.ImageFolder(traindir, transforms.Compose([
+            # transforms.RandomSizedCrop(224),
+            # transforms.RandomHorizontalFlip(),
+            transforms.Scale(args.image_size),
+            transforms.CenterCrop(args.image_size),
+            transforms.ToTensor(),
+            normalize,
+        ]))
+        classes = train_dataset.classes
+        train_loader = torch.utils.data.DataLoader(train_dataset,
             batch_size=args.batch_size, shuffle=True,
             num_workers=args.workers)
 
@@ -205,22 +174,20 @@ def main():
             batch_size=args.batch_size, shuffle=True,
             num_workers=args.workers)
     else:
-        # TODO fix that -> it's a bad practice (ImageFolder requires to have label folder, so I ommited it...doing so)
-        #testdir = os.path.abspath(os.path.join(args.test_spectrograms, os.pardir))
+        # TODO ImageFolder requires to have label folder, like: train/cello, train/piano
+        # But when we want to run script in test-only mode then we HAVE TO create fake folder <spectrograms_to_classify_path>/fake/<actual_files> 
         testdir = args.test_spectrograms
-
-        print(testdir)
         testdataset = datasets.ImageFolder(testdir, transforms.Compose([
             transforms.Scale(args.image_size),
             transforms.CenterCrop(args.image_size),
             transforms.ToTensor(),
             normalize,
         ]))
-        print(len(testdataset))
+        print('{} testing files found.'.format(len(testdataset)))
+
         test_loader = torch.utils.data.DataLoader(testdataset,
             batch_size=args.batch_size, shuffle=False,
             num_workers=args.workers)
-
         test(test_loader, model, criterion)
         return
 
@@ -249,13 +216,9 @@ def main():
             'best_prec1': best_prec1,
             'optimizer': optimizer.state_dict(),
         }, is_best, 
-        filename='checkpoint__{}__start_epoch_{}__best_prec_{}.pth.tar'.format(model.__class__.__name__, epoch+1, best_prec1))
+            filename='checkpoint__{}__start_epoch_{}__best_prec_{0:.4f}.pth.tar'.format(model.__class__.__name__, epoch + 1, best_prec1))
 
-def print_args():
-    print('=== PARAMETERS ==============================')
-    for arg in vars(args):
-        print(arg.upper(), '=', getattr(args, arg))
-    print('=== END =====================================\n\n')
+
 
 def to_np(x):
     return x.data.cpu().numpy()
@@ -356,23 +319,6 @@ def train(train_loader, model, criterion, optimizer, epoch):
                 logger.image_summary('{}_{}'.format('train_debug_prefix', tag), images, i)
     print('=== END ====================')
     
-# MUST BE ALPHABETICAL ORDER
-# TODO move somewhere else! 
-def print_validation_info(target, output_data, result=None):
-    class_names = ['cello', 'piano', 'ukulele']
-    predictions = [np.argmax(output_row.numpy()) for output_row in output_data]
-    pairs = zip(list(target), predictions)
-
-    print("Model output: {}".format(output_data))
-    print('Target     | Prediction')
-    print("-----------------------")
-    for pair in pairs:
-        if result:
-            result[pair[1]] += 1
-        print('{:10s} | {:10s}'.format(class_names[pair[0]], class_names[pair[1]]))
-    print()
-
-
 def validate(val_loader, model, criterion):
     print('=== VALIDATING ====================')
     batch_time = AverageMeter()
@@ -384,6 +330,8 @@ def validate(val_loader, model, criterion):
     model.eval()
 
     end = time.time()
+    predictions_timeline = []
+    predictions_counter = [0] * len(classes)
     for i, (input, target) in enumerate(val_loader):
         input_var = torch.autograd.Variable(input, volatile=True)
         target_var = torch.autograd.Variable(target, volatile=True)
@@ -393,7 +341,10 @@ def validate(val_loader, model, criterion):
         loss = criterion(output, target_var)
         
         # TODO use label names in tensorboard logging (images tab)
-        print_validation_info(target, output.data)
+        pf.print_validation_info(target, output.data, 
+                                class_names=classes, 
+                                classes_on_timeline=predictions_timeline, 
+                                classes_counter=predictions_counter)
         #print("[DEBUG] Target: \n{}".format(list(target))
         #print("[DEBUG] Predicted output:\n{}".format(output))
         #print("[DEBUG] Predicted label: {}".format(class_names[]))
@@ -448,16 +399,22 @@ def test(test_loader, model, criterion):
 
     # switch to evaluate mode
     model.eval()
-    result = [0,0,0]
+    predictions_timeline = []
+    predictions_counter = [0] * len(classes)
     for i, (input, target) in enumerate(test_loader):
         input_var = torch.autograd.Variable(input, volatile=True)
         target_var = torch.autograd.Variable(target, volatile=True)
-
-        # compute output
         output = model(input_var)
-        print_validation_info(target, output.data, result=result)
-    print('Cello: {} | Piano: {} | Ukulele: {}'.format(result[0], result[1], result[2]))
-    print('=== END ====================')
+        pf.print_test_info(output.data, class_names=classes,
+                           classes_on_timeline=predictions_timeline,
+                           classes_counter=predictions_counter, current_index=i, max_index=len(test_loader))
+
+    pf.print_class_counters(classes, predictions_counter)
+    # Print prediction timeline
+    print('\nPredictions timeline:')
+    for instrument_index in predictions_timeline:
+        print(instrument_index, end='') 
+    print('\n=== END ====================')
 
 
 def save_checkpoint(state, is_best, filename='checkpoint.pth.tar'):
