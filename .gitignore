@@ -6,3 +6,7 @@ src/__pycache__/
 cnn.pkl
 
 logs/
+
+src/models/__pycache__/
+
+src/utils/__pycache__/
