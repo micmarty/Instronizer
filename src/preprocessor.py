@@ -7,19 +7,19 @@ import matplotlib.pyplot as plt
 
 import time
 from pathlib import PurePath, Path
-import utils
+from utils import paths
+from utils import printing_functions as pf
 import argparse
-
-import default_settings as SETTINGS
 
 class PreprocessingSettings():
 
     def __init__(self):    
         # Target sampling rate
         self.sr = 22050
+        self.spec_stretch_coeff = 1.73 
 
         # Given in seconds
-        self.segment_duration = 5.2
+        self.segment_duration = 3
         self.segment_overlap = self.segment_duration // 2
 
         # not in use
@@ -106,13 +106,13 @@ class Preprocessor(PreprocessingSettings):
         mel_spectrogram = librosa.feature.melspectrogram(y, n_mels=224)
         return librosa.power_to_db(mel_spectrogram)
 
-    @utils.print_execution_time
+    @pf.print_execution_time
     def transform_to_spectogram_segments(self, input_dir, output_dir):
         for file_path in self.audio_files_list(input_dir):
             file = File(file_path)
             
             # Divide audio into blocks
-            print('Processing {}...\n'.format(file.full_name))
+            print('Processing {}...'.format(file.full_name))
             blocks = sf.blocks(file_path, 
                             blocksize=int(file.original_sampling_rate * self.segment_duration),
                             overlap=int(file.original_sampling_rate * self.segment_overlap),
@@ -122,8 +122,8 @@ class Preprocessor(PreprocessingSettings):
                 start_time = time.clock()
 
                 y = self.to_mono(block_data)
-                y = librosa.resample(y, file.original_sampling_rate, self.sr)
-
+                y = librosa.resample(
+                    y, file.original_sampling_rate, self.sr * self.spec_stretch_coeff)
                 # Classify very silent blocks as empty -> won't generate a spectrogram
                 if (y < self.silence_threshold).all():
                     print("[✗] {}/{} block contains silence only, omitting spectrogram generation process."
@@ -141,7 +141,7 @@ class Preprocessor(PreprocessingSettings):
                 print('[✓] {}/{} took {}ms'.format(block_idx + 1, self.blocks_num(file), millis))
             print('DONE ✓')
 
-    @utils.print_execution_time
+    @pf.print_execution_time
     def transform_single_to_spectrogram_segments(self, input_path, output_dir):
         file = File(input_path)
 
@@ -199,26 +199,26 @@ if __name__ == '__main__':
         description='Dataset preprocessor for instrument recognition task with DNN')
 
     parser.add_argument('-i', '--input-dataset-dir',
-                        action=utils.FullPaths,
-                        type=utils.is_dir,
+                        action=paths.FullPaths,
+                        type=paths.is_dir,
                         required=False,
                         help='Path to folder with dataset structure containing audio files \n \
                                 (put into label-like folder name, e.g. barking.wav inside dogs/, miau.wav inside cats/)')
 
     parser.add_argument('-s', '--single-file-input', 
-                        action=utils.FullPaths,
-                        type=utils.is_file,
+                        action=paths.FullPaths,
+                        type=paths.is_file,
                         required=False)
                         # TODO add help text
 
     parser.add_argument('-o', '--output-spectrograms-dir',
-                        action=utils.FullPaths,
-                        type=utils.is_dir,
+                        action=paths.FullPaths,
+                        type=paths.is_dir,
                         required=True,
                         help='Path to destination folder for generated spectrograms')
 
     args = parser.parse_args()
-    utils.print_parameters(args)
+    pf.print_args(args)
 
     # Change input and output paths in default_settings.py
     processor = Preprocessor()
