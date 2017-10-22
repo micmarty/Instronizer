@@ -7,6 +7,7 @@ import time
 import torch
 import torch.nn as nn
 import torch.nn.parallel
+import torch.backends.cudnn as cudnn
 import torch.optim
 import torch.utils.data
 import torchvision.transforms as transforms
@@ -39,16 +40,16 @@ parser.add_argument('--arch', '-a', metavar='ARCH', default='resnet18',
 parser.add_argument('-j', '--workers', default=4, type=int, metavar='N',
                     help='number of data loading workers (default: 4)')
 
-parser.add_argument('--epochs', default=4, type=int, metavar='N',
+parser.add_argument('--epochs', default=90, type=int, metavar='N',
                     help='number of epochs to run (default: 4), counting from the start-epoch (default: 0)')
 
 parser.add_argument('--start-epoch', default=0, type=int, metavar='N',
                     help='manual epoch number (useful on restarts)')
 
-parser.add_argument('-b', '--batch-size', default=6, type=int,
+parser.add_argument('-b', '--batch-size', default=256, type=int,
                     metavar='N', help='mini-batch size (lowered to: 6, default for mobilenet: 256)')
 
-parser.add_argument('--lr', '--learning-rate', default=0.0024, type=float,
+parser.add_argument('--lr', '--learning-rate', default=0.1, type=float,
                     metavar='LR', help='initial learning rate (lowered beacuse of batch size to: 0.0024, default for mobilenet: 0.1)')
 
 parser.add_argument('--momentum', default=0.9, type=float, metavar='M',
@@ -57,7 +58,7 @@ parser.add_argument('--momentum', default=0.9, type=float, metavar='M',
 parser.add_argument('--weight-decay', '--wd', default=1e-4, type=float,
                     metavar='W', help='weight decay (default: 1e-4)')
 
-parser.add_argument('--print-freq', '-p', default=1, type=int,
+parser.add_argument('--print-freq', '-p', default=10, type=int,
                     metavar='N', help='print frequency (default: 1)')
 
 parser.add_argument('--tensorboard-freq', default=10, type=int,
@@ -78,7 +79,7 @@ parser.add_argument('--pretrained', dest='pretrained', action='store_true',
 parser.add_argument('--image-size', default=224, type=int,
                     help='Input images size (must be square, default: 224')
 
-parser.add_argument('--num-classes', default=3, type=int,
+parser.add_argument('--num-classes', default=11, type=int,
                     help='Number of classes for input dataset (default: 3')
 
 parser.add_argument('--test-spectrograms', metavar='PATH', type=str,
@@ -116,8 +117,14 @@ def main():
     print(model)
     print('=== END =====================================\n')
 
+    if args.arch.startswith('alexnet') or args.arch.startswith('vgg'):
+        model.features = torch.nn.DataParallel(model.features)
+        model.cuda()
+    else:
+        model = torch.nn.DataParallel(model).cuda()
+
     # Define loss function (criterion) and optimizer
-    criterion = nn.CrossEntropyLoss()
+    criterion = nn.CrossEntropyLoss().cuda()
 
     optimizer = torch.optim.SGD(model.parameters(), 
                                 lr=args.lr,
@@ -140,7 +147,7 @@ def main():
                   .format(args.resume, checkpoint['epoch']))
         else:
             print("=> no checkpoint found at '{}'".format(args.resume))
-
+    cudnn.benchmark = True
     # Dataset paths
     traindir = os.path.join(args.data, 'train')
     valdir = os.path.join(args.data, 'val')
@@ -244,6 +251,7 @@ def train(train_loader, model, criterion, optimizer, epoch):
         # measure data loading time
         data_time.update(time.time() - end)
 
+        target = target.cuda(async=True)
         input_var = torch.autograd.Variable(input)
         target_var = torch.autograd.Variable(target)
 
@@ -333,6 +341,7 @@ def validate(val_loader, model, criterion):
     predictions_timeline = []
     predictions_counter = [0] * len(classes)
     for i, (input, target) in enumerate(val_loader):
+        target = target.cuda(async=True)
         input_var = torch.autograd.Variable(input, volatile=True)
         target_var = torch.autograd.Variable(target, volatile=True)
 
