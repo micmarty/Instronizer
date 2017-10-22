@@ -21,7 +21,7 @@ def ydl_hook(d):
         print('Done downloading, now converting ...')
     if d['status'] == 'downloading':
         sys.stdout.write("\033[F")  # Cursor up one line
-        print(d['filename'][:50] + '...', d['_percent_str'])
+        print(d['filename'][:70] + '...', d['_percent_str'])
 
 
 def exit_gracefully_handler(signum, frame):
@@ -56,7 +56,8 @@ class YT_downloader():
 									.
 									.
 									.
-									etc.\n
+									etc. Desired filename may be empty, in which case youtube video title is used
+                                    as filename\n
 									'''))
 
         parser.add_argument('-o', '--output-dir',
@@ -103,11 +104,26 @@ class YT_downloader():
                         exit()
                 # link line
                 else:
+                    ext = '.wav'
                     split_line = line.split()
                     link = split_line[0]
-                    song_filename = split_line[1]
+                    if len(split_line) < 2: #desired file name was not specified (the list has only one element)
+                        song_filename = 'video without a specified title'
+                        ydl_opts.pop('outtmpl') #removing this value from ydl_opts makes youtube-dl download into current
+                                                #working directory, with video title as filename
+                    else:
+                        song_filename = split_line[1]
+                        ydl_opts.update({'outtmpl': current_directory + '/' + song_filename + ext})
                     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-                        print("Downloading " + song_filename)
-                        ydl.download([link])
+                        video_info = ydl.extract_info(link, download=False)
+                        video_title = video_info.get('title', None)
+                        video_id = video_info.get('id', None)
+                        if not os.path.isfile(current_directory + '/' + video_title + '-' + video_id + ext) \
+                            and not os.path.isfile(current_directory + '/' + song_filename + ext):
+                            print('Downloading ' + song_filename)
+                            ydl.download([link])
+                        else: 
+                            print('Audio from ' + video_title[:30] + '[...] already exists in directory:\n' +
+                                current_directory + ' ,skipping')
 
         os.chdir(MODULE_DIRECTORY)
