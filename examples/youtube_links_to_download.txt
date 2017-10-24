@@ -1,0 +1,45 @@
+# You can specify downloaded file name after the link
+
+
+
+############
+# Training
+
+[train/cello]
+https://www.youtube.com/watch?v=mGQLXRTl3Z0 mischa_maisky_plays_bach
+
+[train/piano]
+https://www.youtube.com/watch?v=M56RtC_cXxE
+
+[train/ukulele]
+#https://www.youtube.com/watch?v=CI7okSixS1c 5h_compilation_ukulele
+
+
+
+##############
+# Validation
+
+[val/cello]
+https://www.youtube.com/watch?v=9NMEqi7LG6w aurore_suite
+
+[val/piano]
+https://www.youtube.com/watch?v=CvFH_6DNRCY lune_debussy
+
+[val/ukulele]
+https://www.youtube.com/watch?v=O4u8n_CjUDY
+https://www.youtube.com/watch?v=inGHGRs7fDs bach_suite_in_g_prelude
+
+
+
+###########
+# Testing
+
+[test/cello]
+https://www.youtube.com/watch?v=mmJim2h-byQ toccata_in_d_minor
+
+[test/piano]
+https://www.youtube.com/watch?v=s8De5eg1kic white_keys
+
+[test/ukulele]
+https://www.youtube.com/watch?v=O4u8n_CjUDY
+https://www.youtube.com/watch?v=XZ_I48CeOSU backing_track_a_major
