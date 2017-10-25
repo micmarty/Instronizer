@@ -6,6 +6,9 @@
 #
 # It takes two arguments (both should be full paths): 
 # <path to formatted file containing YT links> and <output folder for wav and spectrograms>
+#
+# Example 
+# ./scripts/download_from_yt_and_preprocess.sh <dir>/examples/youtube_links_to_download.txt <dir>datasets/from_yt
 
 INPUT_FILE_PATH=$1
 OUTPUT_DIR=$2
