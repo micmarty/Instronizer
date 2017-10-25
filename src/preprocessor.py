@@ -138,7 +138,8 @@ class Preprocessor(PreprocessingSettings):
 
                 # Display updates to the console
                 millis = int(round((time.clock() - start_time) * 1000))
-                print('[✓] {}/{} took {}ms'.format(block_idx + 1, self.blocks_num(file), millis))
+                print('[✓] {}/{} took {}ms'.format(block_idx + 1,
+                                                   self.blocks_num(file), millis), end='\r')
             print('DONE ✓')
 
     @pf.print_execution_time
@@ -158,12 +159,13 @@ class Preprocessor(PreprocessingSettings):
             start_time = time.clock()
 
             y = self.to_mono(block_data)
-            y = librosa.resample(y, file.original_sampling_rate, self.sr)
+            y = librosa.resample(y, file.original_sampling_rate,
+                                 self.sr * self.spec_stretch_coeff)
 
             # Classify very silent blocks as empty -> won't generate a spectrogram
             if (y < self.silence_threshold).all():
                 print("[✗] {}/{} block contains silence only, omitting spectrogram generation process."
-                        .format(block_idx, self.blocks_num(file)))
+                      .format(block_idx, self.blocks_num(file)))
                 continue
 
             # Output to file as an image
@@ -176,7 +178,7 @@ class Preprocessor(PreprocessingSettings):
             # Display updates to the console
             millis = int(round((time.clock() - start_time) * 1000))
             print('[✓] {}/{} took {}ms'.format(block_idx +
-                                                1, self.blocks_num(file), millis))
+                                                1, self.blocks_num(file), millis), end='\r')
         print('DONE ✓')
 
 

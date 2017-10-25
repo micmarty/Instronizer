@@ -3,26 +3,28 @@ import signal
 import argparse
 import textwrap
 import youtube_dl
+import better_exceptions
+import subprocess
 
-class YdlLogger(object):
-    def debug(self, msg):
-        pass
+# class YdlLogger(object):
+#     def debug(self, msg):
+#         pass
 
-    def warning(self, msg):
-        pass
+#     def warning(self, msg):
+#         pass
 
-    def error(self, msg):
-        print(msg)
+#     def error(self, msg):
+#         print(msg)
 
 
-def ydl_hook(d):
-    '''Actions triggered by yotube_dl on specific events'''
-    if d['status'] is 'finished':
-        print('Done downloading, now converting...\n')
-    elif d['status'] is 'downloading':
-        # Print progress in-place
-        print('{filename}... => {progress}'.format(
-            filename=d['filename'][:70], progress=d['_percent_str']), end='\r')
+# def ydl_hook(d):
+#     '''Actions triggered by yotube_dl on specific events'''
+#     if d['status'] is 'finished':
+#         print('Done downloading, now converting...\n')
+#     elif d['status'] is 'downloading':
+#         # Print progress in-place
+#         print('{filename}... => {progress}'.format(
+#             filename=d['filename'][:70], progress=d['_percent_str']), end='\r')
 
 
 def exit_gracefully_handler(signum, frame):
@@ -75,14 +77,16 @@ class YT_downloader():
 
         self.target_format = 'wav'
         self.ydl_opts = {
-            'format': 'bestaudio/best',
-            'postprocessors': [{
-                'key': 'FFmpegExtractAudio',
-                'preferredcodec': self.target_format,
-            }],
-            'logger': YdlLogger(),
-            'progress_hooks': [ydl_hook],
+            # Code is not working with wav as an output format
+            # 'format': 'bestaudio/best',
+            # 'postprocessors': [{
+            #     'key': 'FFmpegExtractAudio',
+            #     'preferredcodec': self.target_format,
+            # }],
+            # 'logger': YdlLogger(),
+            # 'progress_hooks': [ydl_hook],
         }
+        
 
     def parse_file_and_download(self):
         '''Parse 3 types of lines in given formatted file'''
@@ -91,11 +95,13 @@ class YT_downloader():
                 # 1. Ignore comment or empty line
                 if line.startswith('#') or not line.strip():
                     continue
+
                 # 2. Target directory line
                 elif line.startswith('['):
                     # Get the text between '[' and ']' and create missing directories
                     self.target_path = self.output_dir / Path(line[1:-2].strip())
                     self.target_path.mkdir(parents=True, exist_ok=True)
+
                 # 3. Line containing link or link with target file name
                 elif line.startswith('http'):
                     line_parts = line.split()
@@ -103,26 +109,35 @@ class YT_downloader():
                     
 
     def _parse_link_line(self, line_parts):
+        '''Parse 2 types of link lines: link-only and link-with-target'''
+        
         song_filename = None
 
         # Desired file name was not specified (the list has link only)
         if len(line_parts) < 2:
             link = line_parts[0]
             with youtube_dl.YoutubeDL(self.ydl_opts) as ydl:
-                song_filename = ydl.extract_info(
-                    link, download=False).get('title')
+                song_filename = ydl.extract_info(link, download=False).get('title')
+
         # Both, link and file name were specified
         elif len(line_parts) is 2:
             link, song_filename = line_parts
         
-        target_path = (self.target_path / song_filename).with_suffix('.' + self.target_format)
-        self.ydl_opts.update({'outtmpl': str(target_path)})
+        # Path without extension
+        target_path = (self.target_path / song_filename)
+
+        # self.ydl_opts.update({'outtmpl': str(target_path)})
         self._download(link, target_path)
         
     def _download(self, link, target_path):
-        with youtube_dl.YoutubeDL(self.ydl_opts) as ydl:
-            print('Downloading {}'.format(target_path.name))
-            ydl.download([link])
+        # Execute bash command which downloads and transforms into wav
+        subprocess.run(['youtube-dl', '--extract-audio', '--audio-format',
+                        self.target_format, '--output', '{}.%(ext)s'.format(target_path), link])
+
+        # Code not working
+        # with youtube_dl.YoutubeDL(self.ydl_opts) as ydl:
+        #     print('Downloading {}'.format(target_path.name))
+        #     ydl.download([link])
 
 
 if __name__ == '__main__':

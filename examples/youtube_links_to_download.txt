@@ -4,42 +4,50 @@
 
 ############
 # Training
-
-[train/cello]
-https://www.youtube.com/watch?v=mGQLXRTl3Z0 mischa_maisky_plays_bach
-
-[train/piano]
-https://www.youtube.com/watch?v=M56RtC_cXxE
-
-[train/ukulele]
-#https://www.youtube.com/watch?v=CI7okSixS1c 5h_compilation_ukulele
+# [train/cello]
+# https://www.youtube.com/watch?v=mGQLXRTl3Z0 mischa_maisky_plays_bach
+# 
+# [train/piano]
+# https://www.youtube.com/watch?v=M56RtC_cXxE
+# 
+# [train/ukulele]
+# https://www.youtube.com/watch?v=CI7okSixS1c 5h_compilation_ukulele
 
 
 
 ##############
 # Validation
-
-[val/cello]
-https://www.youtube.com/watch?v=9NMEqi7LG6w aurore_suite
-
-[val/piano]
-https://www.youtube.com/watch?v=CvFH_6DNRCY lune_debussy
-
-[val/ukulele]
-https://www.youtube.com/watch?v=O4u8n_CjUDY
-https://www.youtube.com/watch?v=inGHGRs7fDs bach_suite_in_g_prelude
+# [val/cello]
+# https://www.youtube.com/watch?v=9NMEqi7LG6w aurore_suite
+# 
+# [val/piano]
+# https://www.youtube.com/watch?v=CvFH_6DNRCY lune_debussy
+# 
+# [val/ukulele]
+# https://www.youtube.com/watch?v=O4u8n_CjUDY
+# https://www.youtube.com/watch?v=inGHGRs7fDs bach_suite_in_g_prelude
 
 
 
 ###########
 # Testing
 
-[test/cello]
-https://www.youtube.com/watch?v=mmJim2h-byQ toccata_in_d_minor
+# Put all in the same folder
+[wav]
+# voice
+https://www.youtube.com/watch?v=u_31_RKFxbY aurora_puppet
+https://www.youtube.com/watch?v=I3dvC4tDI3s aurora_warrior
 
-[test/piano]
-https://www.youtube.com/watch?v=s8De5eg1kic white_keys
+# piano and cello
+# https://www.youtube.com/watch?v=QgaTQ5-XfMM the_piano_guys
+# https://www.youtube.com/watch?v=FZNqs0YgWkM the_piano_guys_hobbit
+# https://www.youtube.com/watch?v=6Dakd7EIgBE the_piano_guys_let_it
+# https://www.youtube.com/watch?v=e9GtPX6c_kg the_piano_guys_carol 
+# https://www.youtube.com/watch?v=Ry4BzonlVlw the_piano_guys_bach_suite
 
-[test/ukulele]
-https://www.youtube.com/watch?v=O4u8n_CjUDY
-https://www.youtube.com/watch?v=XZ_I48CeOSU backing_track_a_major
+# clarinet
+# https://www.youtube.com/watch?v=s5RnxMyjhfA gershwin_rhapsody
+
+# trumpet
+# https://www.youtube.com/watch?v=aGk1zIDQQjQ trumpet_solo
+# https://www.youtube.com/watch?v=IauwYV9CEP8 canadian_brass
