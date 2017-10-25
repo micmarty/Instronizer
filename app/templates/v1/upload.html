@@ -1,0 +1,49 @@
+{% extends "layout.html" %}
+{% block title1 %}Instrumentalists DNN{% endblock %}
+{% block title2 %}Instrumentalists DNN{% endblock %}
+{% block head %}
+  {{ super() }}
+{% endblock %}
+{% block content %}
+<div align="center">
+	<form action = "/uploader" method = "POST" 
+			enctype = "multipart/form-data">
+		<p>Select network model</p>
+		<p><label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="option-1">
+			<input type="radio" id="option-1" class="mdl-radio__button" name="options" value="1" checked>
+			<span class="mdl-radio__label">mobilenet</span>
+		</label>
+		<label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="option-2">
+			<input type="radio" id="option-2" class="mdl-radio__button" name="options" value="2">
+			<span class="mdl-radio__label">alexnet</span>
+		</label>
+		<label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="option-3">
+			<input type="radio" id="option-3" class="mdl-radio__button" name="options" value="3" checked>
+			<span class="mdl-radio__label">resnet</span>
+		</label>
+		<label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="option-4">
+			<input type="radio" id="option-4" class="mdl-radio__button" name="options" value="4">
+			<span class="mdl-radio__label">squeezenet</span>
+		</label></p>
+		<p>Select .wav file</p>
+		<p><input class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" type = "file" name = "file" /></p>
+		<p>Or YouTube link</p>
+		<p><input type = "text" name = "ytlink" /></p>
+		<p>Choose exact part of track where you want to recognize the instrument</p>
+		<p>
+			<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+				<input class="mdl-textfield__input" type="text" pattern="-?[0-9]*(\.[0-9]+)?" id="sample4">
+				<label class="mdl-textfield__label" for="sample4">Start [in seconds]</label>
+				<span class="mdl-textfield__error">Input is not a number!</span>
+			</div>
+			<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+				<input class="mdl-textfield__input" type="text" pattern="-?[0-9]*(\.[0-9]+)?" id="sample4">
+				<label class="mdl-textfield__label" for="sample4">Finish [in seconds]</label>
+				<span class="mdl-textfield__error">Input is not a number!</span>
+			</div>
+		</p>
+		<p>{{ recaptcha }}</p>
+		<p><input class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" type = "submit"/></p>
+	</form>
+</div>
+{% endblock %}
