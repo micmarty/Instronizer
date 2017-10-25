@@ -35,11 +35,11 @@
 # Put all in the same folder
 [wav]
 # voice
-https://www.youtube.com/watch?v=u_31_RKFxbY aurora_puppet
-https://www.youtube.com/watch?v=I3dvC4tDI3s aurora_warrior
+https://www.youtube.com/watch?v=u_31_RKFxbY
+https://www.youtube.com/watch?v=I3dvC4tDI3s
 
 # piano and cello
-# https://www.youtube.com/watch?v=QgaTQ5-XfMM the_piano_guys
+https://www.youtube.com/watch?v=QgaTQ5-XfMM the_piano_guys
 # https://www.youtube.com/watch?v=FZNqs0YgWkM the_piano_guys_hobbit
 # https://www.youtube.com/watch?v=6Dakd7EIgBE the_piano_guys_let_it
 # https://www.youtube.com/watch?v=e9GtPX6c_kg the_piano_guys_carol 
