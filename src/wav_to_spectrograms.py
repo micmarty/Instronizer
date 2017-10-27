@@ -1,9 +1,22 @@
+''' Created by Michał Martyniak 
+
+Example:
+
+<filepath> is an existing path to a single wav file
+<dirpath> is an existing directory path with many wav files
+This script adapts to provided input paths, just give it a try
+
+<out_dirpath> is the destination and doesn't have to exist (it will be automatically created)
+
+python src/wav_to_spectrograms.py -i <filepath_or_dirpath> -o <out_dirpath>
+'''
+
 import librosa
 import soundfile as sf
 import argparse
 import matplotlib.image as image
 from utils import printing_functions as pf
-from pathlib import Path
+from pathlib import Path, PurePath
 import numpy as np
 import time
 import better_exceptions
@@ -11,12 +24,12 @@ import better_exceptions
 parser = argparse.ArgumentParser(description='WAV to spectrograms processor')
 
 # Paths and dirs
-parser.add_argument('-i', '--input-wav-file', required=True, default='', type=str, metavar='<PATH>')
+parser.add_argument('-i', '--input', required=True, default='', type=str, metavar='<PATH>')
 parser.add_argument('-o', '--output-dir', required=True, default='spectrograms', type=str, metavar='<PATH>')
 
 # General
 parser.add_argument('--sr', default=22050, type=int, metavar='<int>',help='momentum')
-parser.add_argument('-s', '--silence-threshold', default=0.2, type=float, metavar='<float from range <0, 1> >')
+parser.add_argument('-s', '--silence-threshold', default=-0.9, type=float, metavar='<float from range <-1, 1> >')
 parser.add_argument('-t', '--dtype', default='float32', type=str, metavar='<variable type to store numbers>')
 
 # Spectrogram
@@ -32,8 +45,14 @@ parser.add_argument('-O', '--segment-overlap-length', default=1.5, type=float, m
 class Preprocessor:
     def __init__(self, args):
         # Paths and dirs
-        self.input_path = args.input_wav_file
-        self.input_file = File(self.input_path)
+
+        # Check if we need to process a single or multiple files
+        if Path(args.input).is_dir():
+            # Input was a directory path, so multiple files
+            self.input = self._audio_files_list(args.input, ext = ['wav'])
+        else:
+            # Single file
+            self.input = args.input
 
         self.output_dir = Path(args.output_dir)
 
@@ -74,64 +93,105 @@ class Preprocessor:
 
     def _to_spectrogram(self, y):
         ''' Transform time-series to spectrogram operations'''
-        #stft_matrix = librosa.stft(y)
-        #magnitute_matrix = np.abs(stft_matrix)**2
-        #mel_spectrogram = librosa.feature.melspectrogram(S=magnitute_matrix, sr=self.sr, fmax=self.max_frequency)
+        S = librosa.feature.melspectrogram(y,  
+                sr=self.sr * self.spec_strech,  
+                fmax=self.max_freq * self.spec_strech, 
+                n_mels=self.spec_height)
+        S = librosa.logamplitude(S) 
+        return librosa.util.normalize(S) 
 
-        # TODO wrap this nicely: n_mels is adjusted for MobileNet
-        mel_spectrogram = librosa.feature.melspectrogram(y, n_mels=self.spec_height)
-        return librosa.power_to_db(mel_spectrogram)
+    # def _blocks(self):
+    #     '''Returns a generator for iterating over the input file (buffered read)'''
+    #     options = {
+    #         'b_size': int(self.input_file.original_sampling_rate * self.segment_length),
+    #         'overlap': int(self.input_file.original_sampling_rate * self.overlap),
+    #         'dtype': self.dtype
+    #     }
+    #     return sf.blocks(self.input_path,
+    #                        blocksize=options['b_size'],
+    #                        overlap=options['overlap'],
+    #                        dtype=options['dtype'])
 
-    def _blocks(self):
-        '''Returns a generator for iterating over the input file (buffered read)'''
-        options = {
-            'b_size': int(self.input_file.original_sampling_rate * self.segment_length),
-            'overlap': int(self.input_file.original_sampling_rate * self.overlap),
-            'dtype': self.dtype
-        }
-        return sf.blocks(self.input_path,
-                           blocksize=options['b_size'],
-                           overlap=options['overlap'],
-                           dtype=options['dtype'])
-
-    def _contains_silence(self, y):
-        return (y < self.silence_threshold).all()
+    def _contains_silence(self, data):
+        return np.mean(data) < self.silence_threshold
     
-    def _dump_block_to_spectrogram(self, block, block_idx):
-        escaped_name = self.input_file.path.stem
-        new_name = '{}_{}.png'.format(escaped_name, block_idx)
-        output_dir = self.output_dir / escaped_name
-        output_dir.mkdir(parents=True, exist_ok=True)
+    def _dump_spectrogram(self, y, input_file_basename, counter):
+        spectrogram = self._to_spectrogram(y)
+        if self._contains_silence(spectrogram):
+            print('[✗] Segment {} contains mostly silence, skipping...'.format(counter))
+            return
+
+        new_name = '{}_{}.npy'.format(input_file_basename, counter)
+
+        if self.create_dir_for_specs:
+            output_dir = self.output_dir / input_file_basename
+            output_dir.mkdir(parents=True, exist_ok=True)
+        else:
+            output_dir = self.output_dir
+            output_dir.mkdir(parents=False, exist_ok=True)
 
         output_path = str(output_dir / new_name)
-        image.imsave(output_path, self._to_spectrogram(block))
+        np.save(output_path, spectrogram)
 
-        # Alternatively store in a binary format
-        # np.save(file.output_path(block_idx, output_dir), self.to_spectrogram(y))
+        # Alternatively:
+        #image.imsave(output_path, self._to_spectrogram(block))
+
 
     @pf.print_execution_time
-    def convert(self):
-        print('Processing {}...\n'.format(self.input_file.full_name))
+    def process(self):
+        if isinstance(self.input, str):
+            # Single file
+            self.create_dir_for_specs = True
+            self._convert(self.input)
+        elif isinstance(self.input, list):
+            self.create_dir_for_specs = False
+            for filepath in self.input:
+                self._convert(filepath)
+        else:
+            print('Skipping')
 
-        # Divide audio into blocks and read one by one (buffered read)
-        blocks = self._blocks()
-        for block_idx, block_data in enumerate(blocks):
+    @pf.print_execution_time
+    def _resample(self, y, from_sr):
+        return librosa.resample(y, from_sr, self.sr * self.spec_strech, res_type='kaiser_fast')
+
+    def _convert(self, wav_file_path):
+        info = File(wav_file_path)
+        y, original_sr = sf.read(wav_file_path)
+        y = self._to_mono(y)
+
+        # IMPORTANT!
+        # Resampling is very expensive (takes about 200ms additional time for computations on 3s audio).
+        # Disabling it will impact IRMAS dataset, because spectrograms won't be stretched to 224x224 (as mobilenet requires).
+        # The only disadvantage is that we take "only" 114,438 from 132,299 (87%) existing frames in a 3s audio clip
+        #
+        # y =  self._resample(y, from_sr=original_sr)
+
+        generated_specs_counter = 0
+        offset = 0
+        while offset + self.segment_length <= round(info.duration):
             timer = time.clock()
 
-            y = self._to_mono(block_data)
-            y = librosa.resample(y, self.input_file.original_sampling_rate, self.sr * self.spec_strech)
+            # Calculations
+            # Watch out! Original audio samplerate is different than self.sr
+            # Example 48kHz -> 1s, 22kHz * stretch -> 0.7s
+            # The reason is to get 224x224 spectrogram without stretching!
+            frames = int(self.sr * self.spec_strech)
+            start = int(offset * frames)
+            end = int(start + self.segment_length * frames)
 
-            # Classify very silent blocks as empty -> won't generate a spectrogram
-            if self._contains_silence(y):
-                print("[✗] {} block contains silence only -> no spectrogram".format(block_idx))
-                continue
-
-            self._dump_block_to_spectrogram(y, block_idx)
+            # Save spectrogram
             
-            # Display updates to the console
+
+            ###
+            self._dump_spectrogram(y[start:end], PurePath(wav_file_path).stem, generated_specs_counter)
+
+            # Prepare for the next iteration
             millis = int(round((time.clock() - timer) * 1000))
-            print('[✓] {} took {}ms'.format(block_idx + 1, millis), end='\r')
-        print('DONE ✓')
+            print('[✓] Segment {} (range => {} - {} / {}) took {}ms'.format(generated_specs_counter, offset*frames, offset * frames + self.segment_length * frames, info.frames, millis), end='\r')
+
+            generated_specs_counter += 1
+            offset += self.segment_length
+        print('\nDONE ✓')
 
 class File():
     '''Helper class'''
@@ -148,4 +208,4 @@ class File():
 if __name__ == '__main__':
     args = parser.parse_args()
     p = Preprocessor(args)
-    p.convert()
+    p.process()

@@ -8,10 +8,11 @@ def print_execution_time(function):
     '''
     def wrapper(*args, **kw):
         start_time = time.clock()
-        function(*args, **kw)
+        result = function(*args, **kw)
         formatted_time_took = datetime.timedelta(seconds=(time.clock() - start_time))
         print('Funtion {} took: {}'.format(
             function.__name__, formatted_time_took))
+        return result
 
     return wrapper
 
