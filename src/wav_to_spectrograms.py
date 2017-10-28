@@ -21,11 +21,12 @@ python src/wav_to_spectrograms.py -i <...>/train/cel -o <...>/cello_spectrograms
 import librosa
 import soundfile as sf
 import argparse
-import matplotlib.image as image
+#import matplotlib.image as image
 from utils import printing_functions as pf
 from pathlib import Path, PurePath
 import numpy as np
 import time
+import scipy
 import better_exceptions
 
 parser = argparse.ArgumentParser(description='WAV to spectrograms processor')
@@ -41,7 +42,7 @@ parser.add_argument('-s', '--silence-threshold', default=-0.9, type=float, metav
 parser.add_argument('-t', '--dtype', default='float32', type=str, metavar='<variable type to store numbers>')
 
 # Spectrogram
-parser.add_argument('-S', '--spec-stretch-factor', default=1.73, type=float, metavar='<coefficient>')
+parser.add_argument('-S', '--spec-stretch-factor', default=1, type=float, metavar='<coefficient>')
 parser.add_argument('-H', '--spec-height', default=224, type=int, metavar='<in pixels>' )
 parser.add_argument('-W', '--spec-width', default=224, type=int, metavar='<in pixels>')
 parser.add_argument('-F', '--spec-max-freq', default=11025, type=int, metavar='<frequency in Hz>')
@@ -74,7 +75,7 @@ class Preprocessor:
         self.dtype = args.dtype
 
         # Spectrogram
-        self.spec_strech = args.spec_stretch_factor
+        self.spec_stretch = args.spec_stretch_factor # Unused
         self.spec_height = args.spec_height
         self.spec_width = args.spec_width
         self.max_freq = args.spec_max_freq
@@ -105,10 +106,11 @@ class Preprocessor:
     def _to_spectrogram(self, y):
         ''' Transform time-series to spectrogram operations'''
         S = librosa.feature.melspectrogram(y,  
-                sr=self.sr * self.spec_strech,  
-                fmax=self.max_freq * self.spec_strech, 
+                sr=self.sr,  
+                fmax=self.max_freq, 
                 n_mels=self.spec_height)
-        S = librosa.logamplitude(S) 
+        S = librosa.logamplitude(S)
+        S = scipy.misc.imresize(S, (self.spec_height, self.spec_width), interp='bilinear')
         return librosa.util.normalize(S) 
 
     def _contains_silence(self, data):
@@ -149,6 +151,7 @@ class Preprocessor:
         songname = PurePath(songpath).stem
         new_name = '{}_{}.npy'.format(songname, counter)
         output_path = str(self._output_dir(songpath) / new_name)
+
         np.save(output_path, spectrogram)
         return True
         # Alternatively:
@@ -171,7 +174,7 @@ class Preprocessor:
 
     #@pf.print_execution_time
     def _resample(self, y, from_sr):
-        return librosa.resample(y, from_sr, self.sr * self.spec_strech, res_type='kaiser_fast')
+        return librosa.resample(y, from_sr, self.sr, res_type='kaiser_fast')
 
     def _convert(self, wav_file_path):
         info = File(wav_file_path)
@@ -179,7 +182,8 @@ class Preprocessor:
         y = self._to_mono(y)
 
         # IMPORTANT!
-        # Resampling can be very expensive (takes about 200ms additional time for computations on 3s audio).
+        # Resampling can be very expensive (takes about 200ms additional time for computations on 3s audio),
+        # but it increases spectrogram
         y =  self._resample(y, from_sr=original_sr)
 
         generated_specs_counter = 0
@@ -187,9 +191,8 @@ class Preprocessor:
         while offset + self.segment_length <= round(info.duration):
             timer = time.clock()
 
-            frames = int(self.sr * self.spec_strech)
-            start = int(offset * frames)
-            end = int(start + self.segment_length * frames)
+            start = int(offset * self.sr)
+            end = int(start + self.segment_length * self.sr)
 
             # Save spectrogram
             success = self._dump_spectrogram(y[start:end], songpath=wav_file_path, counter=generated_specs_counter)
@@ -198,7 +201,7 @@ class Preprocessor:
             millis = int(round((time.clock() - timer) * 1000))
             if success:
                 print('[✓] Segment {} (range => {} - {} / {}) took {}ms'.format(generated_specs_counter, 
-                offset*frames, offset * frames + self.segment_length * frames, info.frames, millis), end='\n')
+                                                                                start, end, info.frames, millis))
 
             generated_specs_counter += 1
             offset += self.overlap
