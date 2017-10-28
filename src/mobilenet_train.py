@@ -49,10 +49,10 @@ parser.add_argument('--epochs', default=4, type=int, metavar='N',
 parser.add_argument('--start-epoch', default=0, type=int, metavar='N',
                     help='manual epoch number (useful on restarts)')
 
-parser.add_argument('-b', '--batch-size', default=6, type=int,
+parser.add_argument('-b', '--batch-size', default=70, type=int,
                     metavar='N', help='mini-batch size (lowered to: 6, default for mobilenet: 256)')
 
-parser.add_argument('--lr', '--learning-rate', default=0.0024, type=float,
+parser.add_argument('--lr', '--learning-rate', default=0.03, type=float,
                     metavar='LR', help='initial learning rate (lowered beacuse of batch size to: 0.0024, default for mobilenet: 0.1)')
 
 parser.add_argument('--momentum', default=0.9, type=float, metavar='M',
@@ -120,8 +120,10 @@ def main():
     print(model)
     print('=== END =====================================\n')
 
+    model = torch.nn.DataParallel(model).cuda()
+
     # Define loss function (criterion) and optimizer
-    criterion = nn.CrossEntropyLoss()
+    criterion = nn.CrossEntropyLoss().cuda()
 
     optimizer = torch.optim.SGD(model.parameters(), 
                                 lr=args.lr,
@@ -144,7 +146,6 @@ def main():
                   .format(args.resume, checkpoint['epoch']))
         else:
             print("=> no checkpoint found at '{}'".format(args.resume))
-
     # Dataset paths
     traindir = os.path.join(args.data, 'train')
     valdir = os.path.join(args.data, 'val')
@@ -236,7 +237,8 @@ def train(train_loader, model, criterion, optimizer, epoch):
     for i, (input, target) in enumerate(train_loader):
         # measure data loading time
         data_time.update(time.time() - end)
-        
+        target = target.cuda()
+
         input_var = torch.autograd.Variable(input)
         target_var = torch.autograd.Variable(target)
 
@@ -274,16 +276,16 @@ def train(train_loader, model, criterion, optimizer, epoch):
                    topk=topk))
 
         # TODO use arg parameter for that
-        if i % 200 == 0:
-            save_checkpoint({
-                'model': model.__class__.__name__,
-                'epoch': epoch,
-                'arch': args.arch,
-                'state_dict': model.state_dict(),
-                'best_prec1': best_prec1,
-                'optimizer': optimizer.state_dict(),
-            }, is_best=False,
-                filename='checkpoint__{}__curr_epoch_{}__iter_{}.pth.tar'.format(model.__class__.__name__, epoch, i))
+        # if i % 200 == 0:
+        #     save_checkpoint({
+        #         'model': model.__class__.__name__,
+        #         'epoch': epoch,
+        #         'arch': args.arch,
+        #         'state_dict': model.state_dict(),
+        #         'best_prec1': best_prec1,
+        #         'optimizer': optimizer.state_dict(),
+        #     }, is_best=False,
+        #         filename='checkpoint__{}__curr_epoch_{}__iter_{}.pth.tar'.format(model.__class__.__name__, epoch, i))
 
         if i % args.tensorboard_freq == 0:
             #============ TensorBoard logging ============#
