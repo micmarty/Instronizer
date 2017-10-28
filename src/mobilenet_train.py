@@ -1,3 +1,6 @@
+# TODO optimize imports
+# TODO clean up this mess, too much in one file!
+
 import argparse
 import os
 import os.path
@@ -18,6 +21,7 @@ from logger import Logger
 
 from models.mobilenet import MobileNet
 from utils import printing_functions as pf
+import dataset_finder as df
 
 # Prepare set of available model names (callable from the command-line)
 model_names = sorted(name for name in torchvision.models.__dict__
@@ -78,8 +82,8 @@ parser.add_argument('--pretrained', dest='pretrained', action='store_true',
 parser.add_argument('--image-size', default=224, type=int,
                     help='Input images size (must be square, default: 224')
 
-parser.add_argument('--num-classes', default=3, type=int,
-                    help='Number of classes for input dataset (default: 3')
+parser.add_argument('--num-classes', default=11, type=int,
+                    help='Number of classes for input dataset (default: 11')
 
 parser.add_argument('--test-spectrograms', metavar='PATH', type=str,
                     help='Directory with spectrograms to classify')
@@ -98,7 +102,7 @@ def main():
     logger = Logger('./logs')
 
     # Default classes
-    classes = ['cello', 'piano', 'ukulele']
+    classes = ['x'] * args.num_classes
 
     # Create model (torchvision or custom/project-defined)
     if args.pretrained:
@@ -146,31 +150,20 @@ def main():
     valdir = os.path.join(args.data, 'val')
 
     # TODO calculate np.mean and std on whole dataset before training manually (@moonman)
-    normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
-                                     std=[0.229, 0.224, 0.225])
+    # normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
+    #                                 std=[0.229, 0.224, 0.225])
 
     # Train + Validation sets
     if not args.test_spectrograms:
-        train_dataset = datasets.ImageFolder(traindir, transforms.Compose([
-            # transforms.RandomSizedCrop(224),
-            # transforms.RandomHorizontalFlip(),
-            transforms.Scale(args.image_size),
-            transforms.CenterCrop(args.image_size),
-            transforms.ToTensor(),
-            normalize,
-        ]))
+        train_dataset = df.SpecFolder(traindir)
+
         classes = train_dataset.classes
         train_loader = torch.utils.data.DataLoader(train_dataset,
             batch_size=args.batch_size, shuffle=True,
             num_workers=args.workers)
 
         val_loader = torch.utils.data.DataLoader(
-            datasets.ImageFolder(valdir, transforms.Compose([
-                transforms.Scale(args.image_size),
-                transforms.CenterCrop(args.image_size),
-                transforms.ToTensor(),
-                normalize,
-            ])),
+            df.SpecFolder(traindir),
             batch_size=args.batch_size, shuffle=True,
             num_workers=args.workers)
     else:
@@ -243,7 +236,7 @@ def train(train_loader, model, criterion, optimizer, epoch):
     for i, (input, target) in enumerate(train_loader):
         # measure data loading time
         data_time.update(time.time() - end)
-
+        
         input_var = torch.autograd.Variable(input)
         target_var = torch.autograd.Variable(target)
 
@@ -252,7 +245,7 @@ def train(train_loader, model, criterion, optimizer, epoch):
         loss = criterion(output, target_var)
 
         # measure accuracy and record loss
-        prec1, prec5 = accuracy(output.data, target, topk=(1, args.num_classes))
+        prec1, prec5 = accuracy(output.data, target, topk=(1, 3))
         losses.update(loss.data[0], input.size(0))
         top1.update(prec1[0], input.size(0))
         topk.update(prec5[0], input.size(0))
@@ -331,7 +324,7 @@ def validate(val_loader, model, criterion):
 
     end = time.time()
     predictions_timeline = []
-    predictions_counter = [0] * len(classes)
+    predictions_counter = [0] * args.num_classes
     for i, (input, target) in enumerate(val_loader):
         input_var = torch.autograd.Variable(input, volatile=True)
         target_var = torch.autograd.Variable(target, volatile=True)
@@ -350,7 +343,7 @@ def validate(val_loader, model, criterion):
         #print("[DEBUG] Predicted label: {}".format(class_names[]))
 
         # measure accuracy and record loss
-        prec1, prec5 = accuracy(output.data, target, topk=(1, args.num_classes))
+        prec1, prec5 = accuracy(output.data, target, topk=(1, 3))
         losses.update(loss.data[0], input.size(0))
         top1.update(prec1[0], input.size(0))
         topk.update(prec5[0], input.size(0))
