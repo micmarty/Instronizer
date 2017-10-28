@@ -201,7 +201,7 @@ class Preprocessor:
             millis = int(round((time.clock() - timer) * 1000))
             if success:
                 print('[✓] Segment {} (range => {} - {} / {}) took {}ms'.format(generated_specs_counter, 
-                                                                                start, end, info.frames, millis))
+                                                                                start, end, len(y), millis))
 
             generated_specs_counter += 1
             offset += self.overlap
