@@ -10,3 +10,5 @@ logs/
 src/models/__pycache__/
 
 src/utils/__pycache__/
+
+\.vscode/
