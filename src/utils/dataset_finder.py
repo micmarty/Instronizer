@@ -4,6 +4,7 @@ It's responsible for finding spectrograms in given path and extracting their lab
 '''
 import torch
 import numpy as np
+from pathlib import Path
 import os
 import os.path
 
@@ -15,6 +16,8 @@ def find_classes(dir):
     classes.sort()
     class_to_idx = {classes[i]: i for i in range(len(classes))}
     return classes, class_to_idx
+
+
 
 def make_dataset(dir, class_to_idx):
     images = []
@@ -30,7 +33,6 @@ def make_dataset(dir, class_to_idx):
                     path = os.path.join(root, fname)
                     item = (path, class_to_idx[target])
                     images.append(item)
-
     return images
 
 def default_loader(path):
@@ -45,6 +47,40 @@ def default_loader(path):
     spectrogram = np.load(path)
     spec_3d = np.stack((spectrogram,) * 3)
     return torch.from_numpy(spec_3d).float()
+
+
+def val_targets(path):
+    '''
+    Takes path to txt file containing labels (one per line)
+    This txt file has a name identical with folder containing spetrograms
+    Returns: list of strings (labels)
+    '''
+    with open(path, 'r') as f:
+        lines = f.read().splitlines()
+        # Remove whitespaces
+        return [line.strip() for line in lines]
+
+
+def make_val_dataset(dir):
+    dir = Path(dir)
+    spec_target_pairs = []
+
+    # For every file or directory inside dir
+    for content in dir.iterdir():
+        
+        # If it's a txt file, extract all labels
+        if content.is_file() and content.suffix == '.txt':
+            classes = val_targets(str(content))
+
+            # Create a path that should point to a folder with same name as txt file
+            spectrogram_dir = content.parent / content.stem
+
+            for spectrogram in spectrogram_dir.iterdir():
+                # If it's a .npy file, then pair its path with matching labels
+                if spectrogram.is_file() and spectrogram.suffix == '.npy':
+                    pair = (str(spectrogram), classes)
+                    spec_target_pairs.append(pair)
+    return spec_target_pairs
 
 class SpecFolder(torch.utils.data.Dataset):
     """A generic data loader where the data is like:
@@ -96,6 +132,54 @@ class SpecFolder(torch.utils.data.Dataset):
 
         Returns:
             tuple: (image, target) where target is class_index of the target class.
+        """
+        path, target = self.specs[index]
+        spec = self.loader(path)
+        if self.transform is not None:
+            spec = self.transform(spec)
+        if self.target_transform is not None:
+            target = self.target_transform(target)
+        return spec, target
+
+    def __len__(self):
+        return len(self.specs)
+
+
+class ValSpecFolder(torch.utils.data.Dataset):
+    '''
+    It expects that:
+    - root contains folders with unique names
+    - root contains .txt files (each containg any number of labels, one per line)
+    - these .txt files should have names matching existing folders, 
+    e.g. aurora.txt, containing: 
+    ```
+    voi
+    pia
+    gac
+    ```
+    +
+    <root>/aurora/ containing .npy spectrograms
+
+    '''
+    def __init__(self, root, transform=None, target_transform=None, loader=default_loader):
+        specs = make_val_dataset(root)
+        if len(specs) == 0:
+            raise(RuntimeError("Found 0 spectrograms in subfolders of: " + root + "\n" +
+                               "Supported spectrogram extensions are: .npy"))
+
+        self.root = root
+        self.specs = specs
+        self.transform = transform
+        self.target_transform = target_transform
+        self.loader = loader
+
+    def __getitem__(self, index):
+        """
+        Args:
+            index (int): Index
+
+        Returns:
+            tuple: (image, target) where target is a list of strings (labels)
         """
         path, target = self.specs[index]
         spec = self.loader(path)

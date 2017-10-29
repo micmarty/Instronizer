@@ -1,10 +1,11 @@
 
 # Installed modules
+from pathlib import Path
 import argparse
 import shutil
 import time
 import torch
-from pathlib import Path
+import torch.utils.data
 
 # Custom utils
 from models.mobilenet import MobileNet
@@ -19,7 +20,7 @@ def input_args():
     # Important
     parser.add_argument('data', metavar='DIR', help='path to dataset')
     parser.add_argument('-b', '--batch-size', default=256, type=int, metavar='N', help='mini-batch size (default for mobilenet: 256)')
-    parser.add_argument('-l', '--learning-rate', default=0.1, type=float, etavar='LR', help='initial learning rate (should be adjusted to batch size, default for mobilenet: 0.1)')
+    parser.add_argument('-l', '--learning-rate', default=0.1, type=float, metavar='LR', help='initial learning rate (should be adjusted to batch size, default for mobilenet: 0.1)')
     parser.add_argument('-n', '--num-classes', default=11, type=int, help='Number of classes for input dataset (default: 11 -> IRMAS dataset')
     parser.add_argument('-I', '--image-size', default=224, type=int, help='Input images size (must be square, default: 224')
 
@@ -55,6 +56,7 @@ def load_checkpoint(model, optimizer):
     Loads a single file with path specified inside args.
     It restores both: model and optimizer state.
     '''
+    global args
     if Path(args.resume).is_file():
         print("[load_checkpoint]: Loading checkpoint from '{}'".format(args.resume))
 
@@ -75,20 +77,21 @@ def load_data_from_folder(folder):
     - groups the data into batches
     - shuffles the data, etc.
     '''
-    folder = Path(args.data, folder)
-    dataset = df.SpecFolder(folder)
+    path = Path(args.data, folder)
+    if folder == 'train':
+        dataset = df.SpecFolder(path)
+    elif folder == 'val':
+        dataset = df.ValSpecFolder(path)
     return torch.utils.data.DataLoader(dataset,
                                        batch_size=args.batch_size,
                                        shuffle=True,
                                        num_workers=args.workers)
-
 
 def adjust_learning_rate(optimizer, epoch):
     '''Sets the learning rate to the initial LR decayed by 10 every 30 epochs'''
     lr = args.learning_rate * (0.1 ** (epoch // 30))
     for param_group in optimizer.param_groups:
         param_group['lr'] = lr
-
 
 def print_training_step(epoch, step, data_size, batch_time, data_time, losses, top1, topk):
     if step % args.print_freq == 0:
@@ -104,7 +107,6 @@ def print_training_step(epoch, step, data_size, batch_time, data_time, losses, t
                   loss=losses,
                   top1=top1,
                   topk=topk))
-
 
 def print_validation_step(step, data_size, batch_time, losses, top1, topk):
     if step % args.print_freq == 0:
@@ -154,8 +156,7 @@ def log_to_tensorboard(model, step, input_var, losses, top1, topk, mode):
         for tag, images in info.items():
             logger.image_summary('{}_{}'.format(mode, tag), images, step)
 
-
-def accuracy(output, target, topk=(1, args.top_k)):
+def accuracy(output, target, topk=(1, 3)):
     '''Computes the precision@k for the specified values of k'''
     maxk = max(topk)
     batch_size = target.size(0)
@@ -285,7 +286,8 @@ def main():
     else:
         training_data = load_data_from_folder('train')
         validation_data = load_data_from_folder('val')
-        run_training(training_data)
+        run_training(training_data, validation_data,
+                     model, criterion, optimizer)
 
 if __name__ == '__main__':
     main()
