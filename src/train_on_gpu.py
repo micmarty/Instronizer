@@ -267,7 +267,7 @@ def main():
     pf.print_args(args) 
 
     model = MobileNet(num_classes=args.num_classes)
-    model = torch.nn.DataParallel(model.features).cuda()
+    model = torch.nn.DataParallel(model).cuda()
     print(model)
 
     # TODO consider Adam as an optimizer function
