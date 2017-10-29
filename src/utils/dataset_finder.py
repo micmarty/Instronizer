@@ -61,7 +61,14 @@ def val_targets(path):
         return [line.strip() for line in lines]
 
 
-def make_val_dataset(dir):
+def irmas_classes():
+    classes = ['cel', 'cla', 'flu', 'gac', 'gel',
+               'org', 'pia', 'sax', 'tru', 'vio', 'voi']
+    classes.sort()
+    class_to_idx = {classes[i]: i for i in range(len(classes))}
+    return classes, class_to_idx
+
+def make_val_dataset(dir, class_to_idx):
     dir = Path(dir)
     spec_target_pairs = []
 
@@ -78,8 +85,13 @@ def make_val_dataset(dir):
             for spectrogram in spectrogram_dir.iterdir():
                 # If it's a .npy file, then pair its path with matching labels
                 if spectrogram.is_file() and spectrogram.suffix == '.npy':
-                    pair = (str(spectrogram), classes)
-                    spec_target_pairs.append(pair)
+                    # Construct string containing class indexes
+                    # It's a trick that fools PyTorch dataloader, so we won't loose data
+                    # Classes are separated by a colon
+                    classes_string = ''
+                    for class_name in classes:
+                        classes_string += '{};'.format(class_to_idx[class_name])
+                    pair = (str(spectrogram), classes_string)
     return spec_target_pairs
 
 class SpecFolder(torch.utils.data.Dataset):
@@ -162,13 +174,16 @@ class ValSpecFolder(torch.utils.data.Dataset):
 
     '''
     def __init__(self, root, transform=None, target_transform=None, loader=default_loader):
-        specs = make_val_dataset(root)
+        classes, class_to_idx = irmas_classes()
+        specs = make_val_dataset(root, class_to_idx)
         if len(specs) == 0:
             raise(RuntimeError("Found 0 spectrograms in subfolders of: " + root + "\n" +
                                "Supported spectrogram extensions are: .npy"))
 
         self.root = root
         self.specs = specs
+        self.classes = classes
+        self.class_to_idx = class_to_idx
         self.transform = transform
         self.target_transform = target_transform
         self.loader = loader

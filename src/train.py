@@ -230,6 +230,35 @@ def train(training_data, model, criterion, optimizer, epoch):
         print_training_step(epoch, step, len(training_data), batch_time, data_time, losses, top1, topk)
         log_to_tensorboard(model, step, input_var, losses, top1, topk, mode='train')
 
+def string_to_class_idx(strings):
+    '''Transforms a list of strings into 2d list
+    Array element: '1;2;3;5;9;'
+    Returned element: [1,2,3,5,9]
+
+    Array: ['1;2;3;5;9;', '1;2;', '1;2;9;']
+    Returns: [[1,2,3,5,9], [1,2], [1,2,9]]
+    '''
+    result = []
+    for label_string in strings:
+        # Remove trailing semicolon and split by this separator
+        labels = label_string[:-1].split(';')
+        # Convert all elements from string to int
+        result.append(list(map(int, labels)))
+    return result
+
+def onehot(y):
+    y_onehot = torch.LongTensor(args.batch_size, args.num_classes)
+    y_onehot.zero_()
+    y_onehot.scatter_(1, y, 1)
+    return y_onehot
+
+def onehot_2d(classes_list):
+    result = torch.LongTensor(args.batch_size, args.num_classes)
+    for row, classes in enumerate(classes_list):
+        classes = torch.LongTensor(classes)
+        result[row, :] = onehot(classes)
+    return result
+        
 def validate(validation_data, model, criterion):
     batch_time, losses, top1, topk = [AverageMeter()] * 4
     model.eval()
@@ -237,6 +266,10 @@ def validate(validation_data, model, criterion):
     timer_start = time.time()
     for step, (input, target) in enumerate(validation_data):
         
+        target = onehot_2d(string_to_class_idx(target))
+        print(target)
+        exit()
+
         if args.use_cuda:
             target = target.cuda(async=True)
         input_var = torch.autograd.Variable(input)
@@ -263,11 +296,12 @@ def validate(validation_data, model, criterion):
     print(' * Prec@1 {top1.avg:.3f} Prec@{} {topk.avg:.3f}'.format(args.top_k, top1=top1, topk=topk))
     return top1.avg
 
-def run_training(training_data, validation_data, model, criterion, optimizer):
+
+def run_training(training_data, validation_data, model, criterion, val_criterion, optimizer):
     for epoch in range(args.start_epoch, args.start_epoch + args.epochs):
         adjust_learning_rate(optimizer, epoch)
         train(training_data, model, criterion, optimizer, epoch)
-        precision_1 = validate(validation_data, model, criterion)
+        precision_1 = validate(validation_data, model, val_criterion)
 
         best_precision_1 = max(precision_1, best_precision_1)
         is_best = precision_1 > best_precision_1
@@ -298,8 +332,10 @@ def main():
 
     # TODO consider Adam as an optimizer function
     criterion = torch.nn.CrossEntropyLoss()
+    val_criterion = torch.nn.MultiLabelSoftMarginLoss()
     if args.use_cuda:
         criterion = criterion.cuda()
+        val_criterion = val_criterion.cuda()
     optimizer = torch.optim.SGD(model.parameters(), 
                                 lr=args.learning_rate, 
                                 momentum=args.momentum, 
@@ -310,11 +346,11 @@ def main():
     
     if args.evaluate:
         validation_data = load_data_from_folder('val')
-        validate(validation_data, model, criterion)
+        validate(validation_data, model, val_criterion)
     else:
         training_data = load_data_from_folder('train')
         validation_data = load_data_from_folder('val')
-        run_training(training_data, validation_data, model, criterion, optimizer)
+        run_training(training_data, validation_data, model, criterion, val_criterion, optimizer)
 
 if __name__ == '__main__':
     main()
