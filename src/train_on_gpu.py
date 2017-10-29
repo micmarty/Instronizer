@@ -6,6 +6,7 @@ import shutil
 import time
 import torch
 import torch.utils.data
+import better_exceptions
 
 # Custom utils
 from models.mobilenet import MobileNet
@@ -77,11 +78,12 @@ def load_data_from_folder(folder):
     - groups the data into batches
     - shuffles the data, etc.
     '''
+    
     path = Path(args.data, folder)
     if folder == 'train':
-        dataset = df.SpecFolder(path)
+        dataset = df.SpecFolder(str(path))
     elif folder == 'val':
-        dataset = df.ValSpecFolder(path)
+        dataset = df.ValSpecFolder(str(path))
     return torch.utils.data.DataLoader(dataset,
                                        batch_size=args.batch_size,
                                        shuffle=True,
