@@ -20,6 +20,8 @@ def input_args():
 
     # Important
     parser.add_argument('data', metavar='DIR', help='path to dataset')
+    parser.add_argument('--gpu', dest='use_cuda', action='store_true', help='Use CUDA')
+
     parser.add_argument('-b', '--batch-size', default=256, type=int, metavar='N', help='mini-batch size (default for mobilenet: 256)')
     parser.add_argument('-l', '--learning-rate', default=0.1, type=float, metavar='LR', help='initial learning rate (should be adjusted to batch size, default for mobilenet: 0.1)')
     parser.add_argument('-n', '--num-classes', default=11, type=int, help='Number of classes for input dataset (default: 11 -> IRMAS dataset')
@@ -123,12 +125,12 @@ def print_validation_step(step, data_size, batch_time, losses, top1, topk):
                   top1=top1,
                   topk=topk))
 
-def to_np(x):
+def to_np(value):
     # TODO make sure it will work on GPU
-    return x.data.cpu().numpy()
+    return value.data.cpu().numpy()
 
 def log_to_tensorboard(model, step, input_var, losses, top1, topk, mode):
-    images_to_display_num = 10
+    im = {'amount': 10, 'every': 3}
     
     if step % args.tensorboard_freq == 0:
         # (1) Log the scalar values
@@ -136,11 +138,11 @@ def log_to_tensorboard(model, step, input_var, losses, top1, topk, mode):
             '{}_loss_avg'.format(mode): losses.avg,
             '{}_loss'.format(mode): losses.val,
 
-            '{}_accuracy_avg'.format(mode): top1.avg,
-            '{}_accuracy': top1.val,
+            '{}_accr_avg'.format(mode): top1.avg,
+            '{}_accr'.format(mode): top1.val,
 
-            '{}_accuracy_top{}_avg'.format(mode, args.top_k): topk.avg,
-            '{}_accuracy_top{}'.format(mode, args.top_k): topk.val
+            '{}_accr_top{}_avg'.format(mode, args.top_k): topk.avg,
+            '{}_accr_top{}'.format(mode, args.top_k): topk.val
         }
         for tag, value in info.items():
             logger.scalar_summary(tag, value, step)
@@ -149,11 +151,19 @@ def log_to_tensorboard(model, step, input_var, losses, top1, topk, mode):
         for tag, value in model.named_parameters():
             tag = tag.replace('.', '/')
             logger.histo_summary(tag, to_np(value), step)
-            logger.histo_summary(tag + '/grad', to_np(value.grad), step)
+
+            # At the beginning it may happen
+            # source: https://discuss.pytorch.org/t/zero-grad-optimizer-or-net/1887/6
+            if value.grad is not None:
+                logger.histo_summary(tag + '/grad', to_np(value.grad), step)
+
 
         # (3) Log the images
+        # Take non-repeating images (every=3) in specified amount
+        images = input_var.view(-1, args.image_size, args.image_size)[:(im['amount'] * im['every'])]
+        images = images[::im['every']]
         info = {
-            '{}_images'.format(mode): to_np(input_var.view(-1, args.image_size, args.image_size)[:images_to_display_num])
+            '{}_images'.format(mode): to_np(images)
         }
         for tag, images in info.items():
             logger.image_summary('{}_{}'.format(mode, tag), images, step)
@@ -183,13 +193,22 @@ def train(training_data, model, criterion, optimizer, epoch):
         # Measure data loading performance
         data_time.update(time.time() - timer_start)
 
-        target = target.cuda(async=True)
+        if args.use_cuda:
+            target = target.cuda(async=True) 
         input_var = torch.autograd.Variable(input)
         target_var = torch.autograd.Variable(target)
+
+        # We need to reset the gradient
+        # source: https: // discuss.pytorch.org /t/zero-grad-optimizer-or-net/1887/3
+        optimizer.zero_grad()
 
         # Compute output
         output = model(input_var)
         loss = criterion(output, target_var)
+
+        # Propagate changes
+        loss.backward()
+        optimizer.step()
 
         # Measure accuracy and record loss
         # prec_1 defines how close the output was to the target
@@ -217,10 +236,12 @@ def validate(validation_data, model, criterion):
 
     timer_start = time.time()
     for step, (input, target) in enumerate(validation_data):
-        target = target.cuda(async=True)
+        
+        if args.use_cuda:
+            target = target.cuda(async=True)
         input_var = torch.autograd.Variable(input)
         target_var = torch.autograd.Variable(target)
-
+        
         # Compute output
         output = model(input_var)
         loss = criterion(output, target_var)
@@ -268,12 +289,17 @@ def main():
 
     pf.print_args(args) 
 
+    # IMPORTANT model .cuda() needs to be called before optimizer definition!
+    # source: http://pytorch.org/docs/master/optim.html
     model = MobileNet(num_classes=args.num_classes)
-    model = torch.nn.DataParallel(model).cuda()
+    if args.use_cuda:
+        model = torch.nn.DataParallel(model).cuda()
     print(model)
 
     # TODO consider Adam as an optimizer function
-    criterion = torch.nn.CrossEntropyLoss().cuda()
+    criterion = torch.nn.CrossEntropyLoss()
+    if args.use_cuda:
+        criterion = criterion.cuda()
     optimizer = torch.optim.SGD(model.parameters(), 
                                 lr=args.learning_rate, 
                                 momentum=args.momentum, 
@@ -288,8 +314,7 @@ def main():
     else:
         training_data = load_data_from_folder('train')
         validation_data = load_data_from_folder('val')
-        run_training(training_data, validation_data,
-                     model, criterion, optimizer)
+        run_training(training_data, validation_data, model, criterion, optimizer)
 
 if __name__ == '__main__':
     main()
