@@ -78,7 +78,7 @@ def make_val_dataset(dir, class_to_idx):
         # If it's a txt file, extract all labels
         if content.is_file() and content.suffix == '.txt':
             classes = val_targets(str(content))
-
+            
             # Create a path that should point to a folder with same name as txt file
             spectrogram_dir = content.parent / content.stem
 
@@ -92,6 +92,7 @@ def make_val_dataset(dir, class_to_idx):
                     for class_name in classes:
                         classes_string += '{};'.format(class_to_idx[class_name])
                     pair = (str(spectrogram), classes_string)
+                    spec_target_pairs.append(pair)
     return spec_target_pairs
 
 class SpecFolder(torch.utils.data.Dataset):

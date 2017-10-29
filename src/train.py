@@ -194,6 +194,7 @@ def train(training_data, model, criterion, optimizer, epoch):
         data_time.update(time.time() - timer_start)
 
         if args.use_cuda:
+            input = target.cuda(async=True)
             target = target.cuda(async=True) 
         input_var = torch.autograd.Variable(input)
         target_var = torch.autograd.Variable(target)
@@ -247,13 +248,13 @@ def string_to_class_idx(strings):
     return result
 
 def onehot(y):
-    y_onehot = torch.LongTensor(args.batch_size, args.num_classes)
-    y_onehot.zero_()
-    y_onehot.scatter_(1, y, 1)
+    y_onehot = torch.FloatTensor(args.num_classes).zero_()
+    for i in y:
+        y_onehot[i] = 1
     return y_onehot
 
 def onehot_2d(classes_list):
-    result = torch.LongTensor(args.batch_size, args.num_classes)
+    result = torch.FloatTensor(args.batch_size, args.num_classes)
     for row, classes in enumerate(classes_list):
         classes = torch.LongTensor(classes)
         result[row, :] = onehot(classes)
@@ -267,10 +268,8 @@ def validate(validation_data, model, criterion):
     for step, (input, target) in enumerate(validation_data):
         
         target = onehot_2d(string_to_class_idx(target))
-        print(target)
-        exit()
-
         if args.use_cuda:
+            input = target.cuda(async=True)
             target = target.cuda(async=True)
         input_var = torch.autograd.Variable(input)
         target_var = torch.autograd.Variable(target)
@@ -279,12 +278,11 @@ def validate(validation_data, model, criterion):
         output = model(input_var)
         loss = criterion(output, target_var)
 
-        # TODO add some kind of checking if output was close to target
-        # TODO change accuracy function for validation
-        prec_1, prec_k = accuracy(output.data, target, topk=(1, args.top_k))
+        '''TODO fix and uncomment code below'''
+        # prec_1, prec_k = accuracy(output.data, target, topk=(1, args.top_k))
         losses.update(loss.data[0], input.size(0))
-        top1.update(prec_1[0], input.size(0))
-        topk.update(prec_k[0], input.size(0))
+        # top1.update(prec_1[0], input.size(0))
+        # topk.update(prec_k[0], input.size(0))
 
         # Measure batch performance and update timer
         batch_time.update(time.time() - timer_start)
