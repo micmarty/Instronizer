@@ -23,6 +23,7 @@ def input_args():
     parser.add_argument('--gpu', dest='use_cuda', action='store_true', help='Use CUDA')
 
     parser.add_argument('-b', '--batch-size', default=256, type=int, metavar='N', help='mini-batch size (default for mobilenet: 256)')
+    parser.add_argument('--val-batch-size', default=150, type=int, metavar='N', help='mini-batch size for validation dataset')
     parser.add_argument('-l', '--learning-rate', default=0.1, type=float, metavar='LR', help='initial learning rate (should be adjusted to batch size, default for mobilenet: 0.1)')
     parser.add_argument('-n', '--num-classes', default=11, type=int, help='Number of classes for input dataset (default: 11 -> IRMAS dataset')
     parser.add_argument('-I', '--image-size', default=224, type=int, help='Input images size (must be square, default: 224')
@@ -84,10 +85,12 @@ def load_data_from_folder(folder):
     path = Path(args.data, folder)
     if folder == 'train':
         dataset = df.SpecFolder(str(path))
+        batch_size = args.batch_size
     elif folder == 'val':
         dataset = df.ValSpecFolder(str(path))
+        batch_size = args.val_batch_size
     return torch.utils.data.DataLoader(dataset,
-                                       batch_size=args.batch_size,
+                                       batch_size=batch_size,
                                        shuffle=True,
                                        num_workers=args.workers)
 
@@ -248,7 +251,7 @@ def onehot(y):
     return y_onehot
 
 def onehot_2d(classes_list):
-    result = torch.FloatTensor(args.batch_size, args.num_classes)
+    result = torch.FloatTensor(args.val_batch_size, args.num_classes)
     for row, classes in enumerate(classes_list):
         classes = torch.LongTensor(classes)
         result[row, :] = onehot(classes)
