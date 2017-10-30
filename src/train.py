@@ -116,14 +116,12 @@ def print_validation_step(step, data_size, batch_time, losses, top1, topk):
     if step % args.print_freq == 0:
         print('Validation: [{0}/{1}]\t'
               'Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t'
-              'Loss {loss.val:.4f} ({loss.avg:.4f})\t'
-              'Prec@1 {top1.val:.3f} ({top1.avg:.3f})\t'
-              'Prec@{2} {topk.val:.3f} ({topk.avg:.3f})'.format(
-                  step, data_size, args.top_k,
+              'Loss {loss.val:.4f} ({loss.avg:.4f})\t'.format(
+                  step, data_size,
                   batch_time=batch_time,
-                  loss=losses,
-                  top1='?',
-                  topk='?'))
+                  loss=losses))
+    #'Prec@1 {top1.val:.3f} ({top1.avg:.3f})\t'
+    #'Prec@{2} {topk.val:.3f} ({topk.avg:.3f})'
 
 def to_np(value):
     # TODO make sure it will work on GPU
