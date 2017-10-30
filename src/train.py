@@ -186,7 +186,12 @@ def accuracy(output, target, topk=(1, 3)):
 
 def train(training_data, model, criterion, optimizer, epoch):
     '''Executes 1 epoch training'''
-    batch_time, data_time, losses, top1, topk = [AverageMeter()] * 5
+    batch_time = AverageMeter()
+    data_time = AverageMeter()
+    losses = AverageMeter()
+    top1 = AverageMeter()
+    topk = AverageMeter()
+    
     model.train()
 
     timer_start = time.time()
@@ -327,6 +332,7 @@ def main():
     # TODO consider Adam as an optimizer function
     criterion = torch.nn.CrossEntropyLoss()
     val_criterion = torch.nn.MultiLabelSoftMarginLoss()
+
     if args.use_cuda:
         criterion = criterion.cuda()
         val_criterion = val_criterion.cuda()
