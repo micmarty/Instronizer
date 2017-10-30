@@ -40,9 +40,11 @@ class MobileNet(nn.Module):
             nn.AvgPool2d(7),
         )
         self.fc = nn.Linear(1024, num_classes)
+        self.softmax = nn.Softmax()
 
     def forward(self, x):
         x = self.model(x)
         x = x.view(-1, 1024)
         x = self.fc(x)
+        x = self.softmax(x)
         return x

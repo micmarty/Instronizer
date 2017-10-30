@@ -122,8 +122,8 @@ def print_validation_step(step, data_size, batch_time, losses, top1, topk):
                   step, data_size, args.top_k,
                   batch_time=batch_time,
                   loss=losses,
-                  top1=top1,
-                  topk=topk))
+                  top1='?',
+                  topk='?'))
 
 def to_np(value):
     # TODO make sure it will work on GPU
@@ -194,22 +194,14 @@ def train(training_data, model, criterion, optimizer, epoch):
         data_time.update(time.time() - timer_start)
 
         if args.use_cuda:
-            input = target.cuda(async=True)
             target = target.cuda(async=True) 
         input_var = torch.autograd.Variable(input)
         target_var = torch.autograd.Variable(target)
 
-        # We need to reset the gradient
-        # source: https: // discuss.pytorch.org /t/zero-grad-optimizer-or-net/1887/3
-        optimizer.zero_grad()
 
         # Compute output
         output = model(input_var)
         loss = criterion(output, target_var)
-
-        # Propagate changes
-        loss.backward()
-        optimizer.step()
 
         # Measure accuracy and record loss
         # prec_1 defines how close the output was to the target
@@ -222,6 +214,10 @@ def train(training_data, model, criterion, optimizer, epoch):
         losses.update(loss.data[0], input.size(0))
         top1.update(prec_1[0], input.size(0))
         topk.update(prec_k[0], input.size(0))
+
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
 
         # Measure batch performance and update timer
         batch_time.update(time.time() - timer_start)
@@ -269,7 +265,6 @@ def validate(validation_data, model, criterion):
         
         target = onehot_2d(string_to_class_idx(target))
         if args.use_cuda:
-            input = target.cuda(async=True)
             target = target.cuda(async=True)
         input_var = torch.autograd.Variable(input)
         target_var = torch.autograd.Variable(target)
