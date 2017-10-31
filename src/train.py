@@ -323,12 +323,13 @@ def validate(validation_data, model, criterion):
     return top1.avg
 
 
-def run_training(training_data, validation_data, model, criterion, val_criterion, optimizer):
+def run_training(training_data, model, criterion, val_criterion, optimizer):
     global best_precision_1
     for epoch in range(args.start_epoch, args.start_epoch + args.epochs):
         adjust_learning_rate(optimizer, epoch)
         train(training_data, model, criterion, optimizer, epoch)
         precision_1 = 0 #validate(validation_data, model, val_criterion)
+        run_validation(model, val_criterion)
 
         best_precision_1 = max(precision_1, best_precision_1)
         is_best = precision_1 > best_precision_1
@@ -388,7 +389,7 @@ def main():
         run_validation(model, val_criterion)
     else:
         training_data = load_data_from_folder('train')
-        validation_data = load_data_from_folder('val')
+        # validation_data = load_data_from_folder('val')
         run_training(training_data, model, criterion, val_criterion, optimizer)
 
 if __name__ == '__main__':
