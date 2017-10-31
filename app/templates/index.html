@@ -1,26 +1,13 @@
 
 <!doctype html>
-<!--
-  Material Design Lite
-  Copyright 2015 Google Inc. All rights reserved.
 
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
-
-      https://www.apache.org/licenses/LICENSE-2.0
-
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License
--->
 <html lang="en">
   <head>
     <link rel="stylesheet" href="{{ url_for('static', filename='material.min.css') }}">
     <script src="{{ url_for('static', filename='material.min.js') }}"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
   </head>
   <body class="mdl-demo mdl-color--grey-100 mdl-color-text--grey-700 mdl-base">
     <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
@@ -55,30 +42,7 @@
           <section class="section--center mdl-grid mdl-grid--no-spacing">
             <div class="mdl-cell mdl-cell--12-col">
               <div align="center">
-                <button class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored mdl-shadow--4dp mdl-color--accent" id="add">
-                  <i class="material-icons" role="presentation">add</i>
-                  <span class="visuallyhidden">Add</span>
-                </button>
-                <form action = "/upload" method = "POST" enctype = "multipart/form-data">
-                  <p>Select network model</p>
-                  <p>
-                    <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="option-1">
-                      <input type="radio" id="option-1" class="mdl-radio__button" name="options" value="1" checked>
-                      <span class="mdl-radio__label">mobilenet</span>
-                    </label>
-                    <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="option-2">
-                      <input type="radio" id="option-2" class="mdl-radio__button" name="options" value="2">
-                      <span class="mdl-radio__label">alexnet</span>
-                    </label>
-                    <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="option-3">
-                      <input type="radio" id="option-3" class="mdl-radio__button" name="options" value="3" checked>
-                      <span class="mdl-radio__label">resnet</span>
-                    </label>
-                    <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="option-4">
-                      <input type="radio" id="option-4" class="mdl-radio__button" name="options" value="4">
-                      <span class="mdl-radio__label">squeezenet</span>
-                    </label>
-                  </p>
+                <form id="upload-form" method = "POST" enctype = "multipart/form-data">
                   <p>Select .wav file</p>
                   <p><input class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" type = "file" name = "file" /></p>
                   <p>Or YouTube link</p>
@@ -97,23 +61,57 @@
                     </div>
                   </p>
                   <p>{{ recaptcha }}</p>
-                  <p><input class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" type = "submit"/></p>
+                  <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" id="upload-file-btn" type="button">Upload</button>
                 </form>
-              </div>
+                <div id="p1" class="mdl-progress mdl-js-progress"></div>
+                
+                <div id="place_for_upload_dialog">
+
+                </div>
+                
+                
+                <script>
+                  $(function() {
+                    $('#upload-file-btn').click(function() {
+                        var form_data = new FormData($('#upload-form')[0]);
+                        $.ajax({
+                          type: 'POST',
+                          url: '/upload',
+                          data: form_data,
+                          contentType: false,
+                          cache: false,
+                          processData: false,
+                          async: true,
+                          xhr: function() {
+                              var xhr = new window.XMLHttpRequest();
+
+                              // Upload progress
+                              xhr.upload.addEventListener("progress", function(evt){
+                                  if (evt.lengthComputable) {
+                                      var percentComplete = evt.loaded / evt.total;
+                                      percentComplete = parseInt(percentComplete * 100);
+                                      //Do something with upload progress
+                                      document.querySelector('#p1').MaterialProgress.setProgress(percentComplete);
+                                    
+                                  }
+                                  else{document.querySelector('#p1').MaterialProgress.setProgress(10)};
+                            }, false);
+
+                            return xhr;
+                          },
+                          success: function (response) {
+                            console.log("success")
+                            $("#place_for_upload_dialog").html(response);
+                            componentHandler.upgradeDom();
+                          }
+                        });
+                    });
+                  });
+                  
+              </script>
             </div>
           </section>
         </div>
-        <footer class="mdl-mega-footer">
-          <div class="mdl-mega-footer--middle-section">
-            <div class="mdl-mega-footer--drop-down-section">
-              <input class="mdl-mega-footer--heading-checkbox" type="checkbox" checked>
-              <h1 class="mdl-mega-footer--heading">Contact</h1>
-              <ul class="mdl-mega-footer--link-list">
-                <li><a href="#">Email</a></li>
-                <li><a href="#">Info</a></li>
-              </ul>
-            </div>
-        </footer>
       </main>
     </div>
   </body>
