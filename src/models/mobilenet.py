@@ -23,7 +23,7 @@ class MobileNet(nn.Module):
             )
 
         self.model = nn.Sequential(
-            conv_bn(3,  32, 2),
+            conv_bn(1,  32, 2),
             conv_dw(32,  64, 1),
             conv_dw(64, 128, 2),
             conv_dw(128, 128, 1),

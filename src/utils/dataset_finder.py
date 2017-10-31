@@ -44,8 +44,14 @@ def default_loader(path):
     When .float() it works just fine, WTF!
     '''
     spectrogram = np.load(path)
-    spec_3d = np.stack((spectrogram,) * 3)
-    return torch.from_numpy(spec_3d).float()
+
+    # NOT NEEDED ANYMORE - Concatenate to get 3 channels
+    # Need to fool PyTorch a little bit by adding a fake 2nd and 3d channel
+    # spectrogram = np.stack((spectrogram,) * 3)
+
+    # Use 1 channel
+    spectrogram = torch.from_numpy(spectrogram).float()
+    return spectrogram.unsqueeze(0)
 
 
 def val_targets(path):
