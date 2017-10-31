@@ -2,11 +2,13 @@ output
 
 \.directory
 
-src/__pycache__/
+__pycache__/
 cnn.pkl
 
 logs/
 
-src/models/__pycache__/
+.vscode/
 
-src/utils/__pycache__/
+old_logs/
+
+src/webapp/upload/
