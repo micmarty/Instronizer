@@ -257,8 +257,8 @@ def onehot(y):
         y_onehot[i] = 1
     return y_onehot
 
-def onehot_2d(classes_list):
-    result = torch.FloatTensor(args.val_batch_size, args.num_classes)
+def onehot_2d(classes_list, rows):
+    result = torch.FloatTensor(rows, args.num_classes)
     for row, classes in enumerate(classes_list):
         classes = torch.LongTensor(classes)
         result[row, :] = onehot(classes)
@@ -271,10 +271,15 @@ def validate(validation_data, model, criterion):
     topk = AverageMeter()
     model.eval()
 
-    summed_output_classwise = torch.FloatTensor(args.val_batch_size, args.num_classes).zero_()
+    # Tensor for storing all aggregated outputs for one song (many spectrograms)
+    summed_output_classwise = torch.FloatTensor(1, args.num_classes).zero_()
+
     timer_start = time.time()
-    for step, (input, target) in enumerate(validation_data):
-        target = onehot_2d(string_to_class_idx(target))
+    for step, (input, target, song_path) in enumerate(validation_data):
+        
+        # Adjust 2d onehot matrix height to mini-batch size
+        target = onehot_2d(string_to_class_idx(target), rows=input.shape[0])
+
         if args.use_cuda:
             target = target.cuda(async=True)
         input_var = torch.autograd.Variable(input)
@@ -283,13 +288,19 @@ def validate(validation_data, model, criterion):
         # Compute output
         output = model(input_var)
         loss = criterion(output, target_var)
-        #print('Before: ', summed_output_classwise[:, :4])
-        #summed_output_classwise.add_(output.data)
-        print('Output: ', output[0, :])
+
+        # Sum activations class-wise
+        [summed_output_classwise.add_(row) for row in output.data]
+
+        # DEBUG one row for simplicity
+        print('Song path: {}\n'.format(Path(song_path[0]).stem))
+        print('Output - ', output[0])
         print('Target: ', target[0])
-        #print('After:  ', summed_output_classwise[:,:4])
-        '''TODO fix and uncomment code below'''
         
+
+        # TODO fix and uncomment code below
+        # TODO figure out how to measure accuracy
+
         # prec_1, prec_k = accuracy(output.data, target, topk=(1, args.top_k))
         losses.update(loss.data[0], input.size(0))
         # top1.update(prec_1[0], input.size(0))
@@ -302,7 +313,12 @@ def validate(validation_data, model, criterion):
         # Print to the console and log to Tenorboard
         print_validation_step(step, len(validation_data), batch_time, losses, top1, topk)
         log_to_tensorboard(model, step, input_var, losses, top1, topk, mode='val')
-    print(summed_output_classwise)
+    
+    # Print normalized vector of answers for one song
+    print('==============================================')
+    print('Aggregated output for: {}'.format(Path(song_path[0]).stem), summed_output_classwise / torch.max(summed_output_classwise))
+    print('Target: ', target[0].view(1, -1))
+    print('==============================================')
     print(' * Prec@1 {top1.avg:.3f} Prec@{} {topk.avg:.3f}'.format(args.top_k, top1=top1, topk=topk))
     return top1.avg
 
@@ -330,13 +346,13 @@ def run_validation(model, criterion):
     root = Path(args.data, 'val')
     spec_folder = df.ValSpecFolder(str(root))
 
-    validation_data = torch.utils.data.DataLoader(spec_folder,
+    for val_song_idx in range(20):
+        validation_data = torch.utils.data.DataLoader(spec_folder,
                                                   batch_size=args.val_batch_size,
                                                   shuffle=False,
                                                   num_workers=args.workers)
-    
-    validate(validation_data, model, criterion)
-    #validation_data.dataset.next_song()
+        validate(validation_data, model, criterion)
+        validation_data.dataset.next_song()
 
 def main():
     global args, logger, best_precision_1
@@ -373,7 +389,7 @@ def main():
     else:
         training_data = load_data_from_folder('train')
         validation_data = load_data_from_folder('val')
-        run_training(training_data, validation_data, model, criterion, val_criterion, optimizer)
+        run_training(training_data, model, criterion, val_criterion, optimizer)
 
 if __name__ == '__main__':
     main()

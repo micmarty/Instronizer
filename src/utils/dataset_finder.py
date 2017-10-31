@@ -206,7 +206,7 @@ class ValSpecFolder(torch.utils.data.Dataset):
         (FloatTensor, multiple labels encoded in string)
 
         Example:
-        (3x224x224, '1;5;6;8')
+        (3x224x224, '1;5;6;8', song_path)
          ^           ^ 
         FloatTensor  labels
         '''
@@ -227,6 +227,7 @@ class ValSpecFolder(torch.utils.data.Dataset):
 
             pair = (spec_npy_path, encoded_labels)
             spec_target_pairs.append(pair)
+        self.specs = spec_target_pairs
         return spec_target_pairs
 
     def __getitem__(self, index):
@@ -243,7 +244,7 @@ class ValSpecFolder(torch.utils.data.Dataset):
             spec = self.transform(spec)
         if self.target_transform is not None:
             target = self.target_transform(target)
-        return spec, target
+        return spec, target, path
 
     def __len__(self):
         return len(self.specs)
