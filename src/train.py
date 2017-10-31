@@ -290,7 +290,7 @@ def validate(validation_data, model, criterion):
         loss = criterion(output, target_var)
 
         # Sum activations class-wise
-        [summed_output_classwise.add_(row) for row in output.data]
+        [summed_output_classwise.add_(row) for row in output.cpu().data]
 
         # DEBUG one row for simplicity
         print('Song path: {}\n'.format(Path(song_path[0]).stem))
