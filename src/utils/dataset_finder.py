@@ -43,7 +43,6 @@ def default_loader(path):
     When .double() it says "expected DoubleTensor, got FloatTensor".
     When .float() it works just fine, WTF!
     '''
-
     spectrogram = np.load(path)
     spec_3d = np.stack((spectrogram,) * 3)
     return torch.from_numpy(spec_3d).float()
@@ -176,18 +175,59 @@ class ValSpecFolder(torch.utils.data.Dataset):
     '''
     def __init__(self, root, transform=None, target_transform=None, loader=default_loader):
         classes, class_to_idx = irmas_classes()
-        specs = make_val_dataset(root, class_to_idx)
+        self.class_to_idx = class_to_idx
+        self.classes = classes
+        self.root = Path(root)
+        self.txt_files = self.root.glob('*.txt')
+        self.loader = loader
+        specs = self.next_song()
+
         if len(specs) == 0:
             raise(RuntimeError("Found 0 spectrograms in subfolders of: " + root + "\n" +
                                "Supported spectrogram extensions are: .npy"))
 
-        self.root = root
         self.specs = specs
-        self.classes = classes
-        self.class_to_idx = class_to_idx
         self.transform = transform
         self.target_transform = target_transform
-        self.loader = loader
+
+    def _encode_labels_into_string(self, labels):
+        '''
+        Convert ['cel', 'gel', 'voi'] to '1;4;6;'
+        PyTorch is loosing elements when array is the target
+        '''
+        classes_string = ''
+        for label in labels:
+            classes_string += '{};'.format(self.class_to_idx[label])
+        return classes_string
+
+    def next_song(self):
+        '''
+        Returns an array of tuples, where one tuple element is 
+        (FloatTensor, multiple labels encoded in string)
+
+        Example:
+        (3x224x224, '1;5;6;8')
+         ^           ^ 
+        FloatTensor  labels
+        '''
+        song_labels_file = next(self.txt_files, None)
+
+        if song_labels_file is None:
+            return None
+
+        labels = val_targets(str(song_labels_file))
+        spec_dir = song_labels_file.parent / song_labels_file.stem
+        spec_files = spec_dir.glob('*.npy')
+
+        spec_target_pairs = []
+        for spec_path in spec_files:
+            
+            encoded_labels = self._encode_labels_into_string(labels)
+            spec_npy_path = str(spec_path)
+
+            pair = (spec_npy_path, encoded_labels)
+            spec_target_pairs.append(pair)
+        return spec_target_pairs
 
     def __getitem__(self, index):
         """

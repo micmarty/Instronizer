@@ -7,7 +7,6 @@ import time
 import torch
 import torch.utils.data
 import better_exceptions
-
 # Custom utils
 from models.mobilenet import MobileNet
 from logger import Logger # Tensorboard
@@ -50,10 +49,13 @@ def input_args():
     return parser.parse_args()
 
 
-def save_checkpoint(state, is_best, filename='checkpoint.pth.tar'):
-    torch.save(state, filename)
+def save_checkpoint(state, is_best, start_epoch, filename='checkpoint.pth.tar'):
+    if start_epoch < 15:
+        torch.save(state, filename)
+    else:
+        torch.save(state, 'checkpoint_{}.pth.tar'.format(start_epoch))
     if is_best:
-        shutil.copyfile(filename, 'model_best.pth.tar')
+        shutil.copyfile(filename, 'model_best_{}.pth.tar'.format(start_epoch))
 
 def load_checkpoint(model, optimizer):
     '''
@@ -191,7 +193,7 @@ def train(training_data, model, criterion, optimizer, epoch):
     losses = AverageMeter()
     top1 = AverageMeter()
     topk = AverageMeter()
-    
+
     model.train()
 
     timer_start = time.time()
@@ -263,12 +265,15 @@ def onehot_2d(classes_list):
     return result
         
 def validate(validation_data, model, criterion):
-    batch_time, losses, top1, topk = [AverageMeter()] * 4
+    batch_time = AverageMeter()
+    losses = AverageMeter()
+    top1 = AverageMeter()
+    topk = AverageMeter()
     model.eval()
 
+    summed_output_classwise = torch.FloatTensor(args.val_batch_size, args.num_classes).zero_()
     timer_start = time.time()
     for step, (input, target) in enumerate(validation_data):
-        
         target = onehot_2d(string_to_class_idx(target))
         if args.use_cuda:
             target = target.cuda(async=True)
@@ -278,8 +283,13 @@ def validate(validation_data, model, criterion):
         # Compute output
         output = model(input_var)
         loss = criterion(output, target_var)
-
+        #print('Before: ', summed_output_classwise[:, :4])
+        #summed_output_classwise.add_(output.data)
+        print('Output: ', output[0, :])
+        print('Target: ', target[0])
+        #print('After:  ', summed_output_classwise[:,:4])
         '''TODO fix and uncomment code below'''
+        
         # prec_1, prec_k = accuracy(output.data, target, topk=(1, args.top_k))
         losses.update(loss.data[0], input.size(0))
         # top1.update(prec_1[0], input.size(0))
@@ -292,15 +302,17 @@ def validate(validation_data, model, criterion):
         # Print to the console and log to Tenorboard
         print_validation_step(step, len(validation_data), batch_time, losses, top1, topk)
         log_to_tensorboard(model, step, input_var, losses, top1, topk, mode='val')
+    print(summed_output_classwise)
     print(' * Prec@1 {top1.avg:.3f} Prec@{} {topk.avg:.3f}'.format(args.top_k, top1=top1, topk=topk))
     return top1.avg
 
 
 def run_training(training_data, validation_data, model, criterion, val_criterion, optimizer):
+    global best_precision_1
     for epoch in range(args.start_epoch, args.start_epoch + args.epochs):
         adjust_learning_rate(optimizer, epoch)
         train(training_data, model, criterion, optimizer, epoch)
-        precision_1 = validate(validation_data, model, val_criterion)
+        precision_1 = 0 #validate(validation_data, model, val_criterion)
 
         best_precision_1 = max(precision_1, best_precision_1)
         is_best = precision_1 > best_precision_1
@@ -312,7 +324,19 @@ def run_training(training_data, validation_data, model, criterion, val_criterion
             'state_dict': model.state_dict(),
             'best_precision_1': best_precision_1,
             'optimizer': optimizer.state_dict(),
-        }, is_best)
+        }, is_best, start_epoch=epoch + 1)
+
+def run_validation(model, criterion):
+    root = Path(args.data, 'val')
+    spec_folder = df.ValSpecFolder(str(root))
+
+    validation_data = torch.utils.data.DataLoader(spec_folder,
+                                                  batch_size=args.val_batch_size,
+                                                  shuffle=False,
+                                                  num_workers=args.workers)
+    
+    validate(validation_data, model, criterion)
+    #validation_data.dataset.next_song()
 
 def main():
     global args, logger, best_precision_1
@@ -345,8 +369,7 @@ def main():
         load_checkpoint(model, optimizer)
     
     if args.evaluate:
-        validation_data = load_data_from_folder('val')
-        validate(validation_data, model, val_criterion)
+        run_validation(model, val_criterion)
     else:
         training_data = load_data_from_folder('train')
         validation_data = load_data_from_folder('val')
