@@ -12,3 +12,7 @@ logs/
 old_logs/
 
 src/webapp/upload/
+
+*.wav
+*.flac
+*.mp3

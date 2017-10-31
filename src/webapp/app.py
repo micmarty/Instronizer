@@ -1,10 +1,12 @@
 import os
+import subprocess
 from flask import Flask, render_template, request, session, redirect, url_for, escape
 from werkzeug import secure_filename
 from flask_recaptcha import ReCaptcha
 
 
-UPLOAD_FOLDER = './tracks/'
+UPLOAD_FOLDER = './output/upload/'
+SPECTROGRAMS_FOLDER = './output/spectrograms/'
 ALLOWED_EXTENSIONS = set(['mp3', 'wav'])
 
 app = Flask(__name__)
@@ -12,6 +14,10 @@ app = Flask(__name__)
 #################
 # Configuration
 #################
+if not os.path.isdir(UPLOAD_FOLDER):
+    os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+if not os.path.isdir(SPECTROGRAMS_FOLDER):
+    os.makedirs(SPECTROGRAMS_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 20 * 1024 * 1024 # max 20 mb
 # reCAPTCHA tokens
@@ -27,6 +33,11 @@ app.secret_key = 'InstrumentyDNN'
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
+
+def create_spectrogram(filename):
+    SCRIPT_PATH = os.getcwd() + '/src/classifier/wav_to_spectrograms.py'
+    FILE_PATH = UPLOAD_FOLDER + '/' + filename
+    subprocess.check_call(['python', SCRIPT_PATH, '-i', FILE_PATH, '-o', SPECTROGRAMS_FOLDER])
 #################
 # Routes
 #################
@@ -44,6 +55,7 @@ def upload():
             if file and allowed_file(file.filename):
                 filename = secure_filename(file.filename)
                 file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                create_spectrogram(filename)
     return render_template('uploading.html')
 
 if __name__ == '__main__':
