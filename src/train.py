@@ -9,6 +9,7 @@ import torch.utils.data
 import better_exceptions
 # Custom utils
 from models.mobilenet import MobileNet
+from models.densenet import densenet161
 from logger import Logger # Tensorboard
 from utils.average_meter import AverageMeter
 from utils import printing_functions as pf
@@ -99,6 +100,7 @@ def load_data_from_folder(folder):
 def adjust_learning_rate(optimizer, epoch):
     '''Sets the learning rate to the initial LR decayed by 10 every 30 epochs'''
     lr = args.learning_rate * (0.1 ** (epoch // 30))
+    print("Current learning rate: {}".format(lr))
     for param_group in optimizer.param_groups:
         param_group['lr'] = lr
 
@@ -263,7 +265,7 @@ def onehot_2d(classes_list, rows):
         classes = torch.LongTensor(classes)
         result[row, :] = onehot(classes)
     return result
-        
+
 def validate(validation_data, model, criterion):
     batch_time = AverageMeter()
     losses = AverageMeter()
@@ -287,7 +289,7 @@ def validate(validation_data, model, criterion):
         
         # Compute output
         output = model(input_var)
-        loss = criterion(output, target_var)
+        
 
         # Sum activations class-wise
         [summed_output_classwise.add_(row) for row in output.cpu().data]
@@ -297,12 +299,10 @@ def validate(validation_data, model, criterion):
         print('Output - ', output[0])
         print('Target: ', target[0])
         
-
         # TODO fix and uncomment code below
         # TODO figure out how to measure accuracy
 
         # prec_1, prec_k = accuracy(output.data, target, topk=(1, args.top_k))
-        losses.update(loss.data[0], input.size(0))
         # top1.update(prec_1[0], input.size(0))
         # topk.update(prec_k[0], input.size(0))
 
@@ -311,9 +311,11 @@ def validate(validation_data, model, criterion):
         timer_start = time.time()
 
         # Print to the console and log to Tenorboard
-        print_validation_step(step, len(validation_data), batch_time, losses, top1, topk)
-        log_to_tensorboard(model, step, input_var, losses, top1, topk, mode='val')
     
+    loss = criterion(output, target_var)
+    losses.update(loss.data[0], input.size(0))
+    print_validation_step(step, len(validation_data), batch_time, losses, top1, topk)
+    log_to_tensorboard(model, step, input_var, losses, top1, topk, mode='val')
     # Print normalized vector of answers for one song
     print('==============================================')
     print('Aggregated output for: {}'.format(Path(song_path[0]).stem), summed_output_classwise / torch.max(summed_output_classwise))
@@ -323,13 +325,51 @@ def validate(validation_data, model, criterion):
     return top1.avg
 
 
-def run_training(training_data, model, criterion, val_criterion, optimizer):
+def validate_single_labeled(validation_data, model, criterion):
+    batch_time = AverageMeter()
+    losses = AverageMeter()
+    top1 = AverageMeter()
+    topk = AverageMeter()
+    model.eval()
+
+    timer_start = time.time()
+    for step, (input, target) in enumerate(validation_data):
+        target = target.cuda(async=True)
+        input_var = torch.autograd.Variable(input)
+        target_var = torch.autograd.Variable(target)
+
+        # Compute output
+        output = model(input_var)
+        loss = criterion(output, target_var)
+
+        # TODO add some kind of checking if output was close to target
+        # TODO change accuracy function for validation
+        prec_1, prec_k = accuracy(output.data, target, topk=(1, args.top_k))
+        losses.update(loss.data[0], input.size(0))
+        top1.update(prec_1[0], input.size(0))
+        topk.update(prec_k[0], input.size(0))
+
+        # Measure batch performance and update timer
+        batch_time.update(time.time() - timer_start)
+        timer_start = time.time()
+
+        # Print to the console and log to Tenorboard
+        print_validation_step(step, len(validation_data),
+                              batch_time, losses, top1, topk)
+        log_to_tensorboard(model, step, input_var,
+                           losses, top1, topk, mode='val')
+    print(
+        ' * Prec@1 {top1.avg:.3f} Prec@{} {topk.avg:.3f}'.format(args.top_k, top1=top1, topk=topk))
+    return top1.avg
+
+
+def run_training(training_data, validation_data, model, criterion, optimizer):
     global best_precision_1
     for epoch in range(args.start_epoch, args.start_epoch + args.epochs):
         adjust_learning_rate(optimizer, epoch)
         train(training_data, model, criterion, optimizer, epoch)
-        precision_1 = 0 #validate(validation_data, model, val_criterion)
-        run_validation(model, val_criterion)
+        precision_1 = validate(validation_data, model, criterion)
+        #run_validation(model, val_criterion)
 
         best_precision_1 = max(precision_1, best_precision_1)
         is_best = precision_1 > best_precision_1
@@ -365,14 +405,15 @@ def main():
 
     # IMPORTANT model .cuda() needs to be called before optimizer definition!
     # source: http://pytorch.org/docs/master/optim.html
-    model = MobileNet(num_classes=args.num_classes)
+    #model = MobileNet(num_classes=args.num_classes)
+    model = densenet161(drop_rate=0.2, num_classes=11)
     if args.use_cuda:
         model = torch.nn.DataParallel(model).cuda()
     print(model)
 
     # TODO consider Adam as an optimizer function
     criterion = torch.nn.CrossEntropyLoss()
-    val_criterion = torch.nn.MultiLabelSoftMarginLoss()
+    #val_criterion = torch.nn.MultiLabelSoftMarginLoss()
 
     if args.use_cuda:
         criterion = criterion.cuda()
@@ -386,11 +427,14 @@ def main():
         load_checkpoint(model, optimizer)
     
     if args.evaluate:
-        run_validation(model, val_criterion)
+        validation_data = load_data_from_folder('val')
+        validate_single_labeled(training_data, model, criterion)
+        #run_validation(model, val_criterion)
     else:
+        validation_data = load_data_from_folder('val')
         training_data = load_data_from_folder('train')
         # validation_data = load_data_from_folder('val')
-        run_training(training_data, model, criterion, val_criterion, optimizer)
+        run_training(training_data, validation_data, model, criterion, optimizer)
 
 if __name__ == '__main__':
     main()
