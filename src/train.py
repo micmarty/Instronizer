@@ -417,7 +417,7 @@ def main():
 
     if args.use_cuda:
         criterion = criterion.cuda()
-        val_criterion = val_criterion.cuda()
+        #val_criterion = val_criterion.cuda()
     optimizer = torch.optim.SGD(model.parameters(), 
                                 lr=args.learning_rate, 
                                 momentum=args.momentum, 
