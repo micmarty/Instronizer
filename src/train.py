@@ -90,7 +90,7 @@ def load_data_from_folder(folder):
         dataset = df.SpecFolder(str(path))
         batch_size = args.batch_size
     elif folder == 'val':
-        dataset = df.ValSpecFolder(str(path))
+        dataset = df.SpecFolder(str(path))
         batch_size = args.val_batch_size
     return torch.utils.data.DataLoader(dataset,
                                        batch_size=batch_size,
@@ -123,12 +123,14 @@ def print_validation_step(step, data_size, batch_time, losses, top1, topk):
     if step % args.print_freq == 0:
         print('Validation: [{0}/{1}]\t'
               'Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t'
-              'Loss {loss.val:.4f} ({loss.avg:.4f})\t'.format(
+              'Loss {loss.val:.4f} ({loss.avg:.4f})\t'
+              'Prec@1 {top1.val:.3f} ({top1.avg:.3f})\t'
+              'Prec@{2} {topk.val:.3f} ({topk.avg:.3f})'.format(
                   step, data_size,
                   batch_time=batch_time,
+                  top1=top1,
+                  topk=topk,
                   loss=losses))
-    #'Prec@1 {top1.val:.3f} ({top1.avg:.3f})\t'
-    #'Prec@{2} {topk.val:.3f} ({topk.avg:.3f})'
 
 def to_np(value):
     # TODO make sure it will work on GPU
@@ -137,7 +139,7 @@ def to_np(value):
 def log_to_tensorboard(model, step, input_var, losses, top1, topk, mode):
     im = {'amount': 10, 'every': 3}
     
-    if step % args.tensorboard_freq == 0:
+    if step % args.tensorboard_freq == 0 or mode == 'val':
         # (1) Log the scalar values
         info = {
             '{}_loss_avg'.format(mode): losses.avg,
@@ -368,7 +370,7 @@ def run_training(training_data, validation_data, model, criterion, optimizer):
     for epoch in range(args.start_epoch, args.start_epoch + args.epochs):
         adjust_learning_rate(optimizer, epoch)
         train(training_data, model, criterion, optimizer, epoch)
-        precision_1 = validate(validation_data, model, criterion)
+        precision_1 = validate_single_labeled(validation_data, model, criterion)
         #run_validation(model, val_criterion)
 
         best_precision_1 = max(precision_1, best_precision_1)
@@ -428,7 +430,7 @@ def main():
     
     if args.evaluate:
         validation_data = load_data_from_folder('val')
-        validate_single_labeled(training_data, model, criterion)
+        validate_single_labeled(validation_data, model, criterion)
         #run_validation(model, val_criterion)
     else:
         validation_data = load_data_from_folder('val')
