@@ -126,11 +126,11 @@ def print_validation_step(step, data_size, batch_time, losses, top1, topk):
               'Loss {loss.val:.4f} ({loss.avg:.4f})\t'
               'Prec@1 {top1.val:.3f} ({top1.avg:.3f})\t'
               'Prec@{2} {topk.val:.3f} ({topk.avg:.3f})'.format(
-                  step, data_size,
+                  step, data_size, args.top_k,
                   batch_time=batch_time,
+                  loss=losses,
                   top1=top1,
-                  topk=topk,
-                  loss=losses))
+                  topk=topk))
 
 def to_np(value):
     # TODO make sure it will work on GPU
