@@ -48,8 +48,10 @@ parser.add_argument('-W', '--spec-width', default=224, type=int, metavar='<in pi
 parser.add_argument('-F', '--spec-max-freq', default=11025, type=int, metavar='<frequency in Hz>')
 
 # Window
-parser.add_argument('-L', '--segment-length', default=1, type=float, metavar='<seconds>')
-parser.add_argument('-O', '--segment-overlap-length', default=0.5, type=float, metavar='<seconds>')
+parser.add_argument('-L', '--segment-length', default=3, type=float, metavar='<seconds>')
+parser.add_argument('-O', '--segment-overlap-length', default=1.5, type=float, metavar='<seconds>')
+parser.add_argument('--start', default=None, type=float, metavar='<seconds>')
+parser.add_argument('--end', default=None, type=float, metavar='<seconds>')
 
 class Preprocessor:
     def __init__(self, args):
@@ -159,16 +161,16 @@ class Preprocessor:
 
 
     @pf.print_execution_time
-    def process(self):
+    def process(self, time_range):
         if isinstance(self.input, str):
             # Single file
             self.create_dir_for_specs = True
-            self._convert(self.input)
+            self._convert(self.input, time_range)
         elif isinstance(self.input, list):
             # Many files
             self.create_dir_for_specs = True
             for filepath in self.input:
-                self._convert(filepath)
+                self._convert(filepath, time_range=(None, None))
         else:
             print('Skipping')
 
@@ -176,19 +178,27 @@ class Preprocessor:
     def _resample(self, y, from_sr):
         return librosa.resample(y, from_sr, self.sr, res_type='kaiser_fast')
 
-    def _convert(self, wav_file_path):
+    def _convert(self, wav_file_path, time_range):
         info = File(wav_file_path)
         y, original_sr = sf.read(wav_file_path)
         y = self._to_mono(y)
 
         # IMPORTANT!
-        # Resampling can be very expensive (takes about 200ms additional time for computations on 3s audio),
-        # but it increases spectrogram
+        # Resampling can be very expensive (takes about 200ms additional time for computations on 3s audio)
         y =  self._resample(y, from_sr=original_sr)
 
         generated_specs_counter = 0
-        offset = 0
-        while offset + self.segment_length <= round(info.duration):
+        # TODO we can make double-check if time range is valid (e.g. not exceeding duration or starts before 0)
+        if isinstance(time_range, tuple):
+            offset, end_boundary = time_range
+            if offset is None:
+                offset = 0
+            if end_boundary is None:
+                end_boundary = info.duration
+        else:
+            raise Exception('time_range type error', 'must be tuple of 2 values')
+            
+        while offset + self.segment_length <= round(end_boundary):
             timer = time.clock()
 
             start = int(offset * self.sr)
@@ -222,4 +232,4 @@ class File():
 if __name__ == '__main__':
     args = parser.parse_args()
     p = Preprocessor(args)
-    p.process()
+    p.process(time_range=(args.start, args.end))

@@ -1,8 +1,8 @@
-
 <!doctype html>
 
 <html lang="en">
-  <head>
+
+<head>
     <link rel="stylesheet" href="{{ url_for('static', filename='material.min.css') }}">
     <script src="{{ url_for('static', filename='material.min.js') }}"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='stylesheet.css') }}">
@@ -10,174 +10,178 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/wavesurfer.js/1.2.3/wavesurfer.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/wavesurfer.js/1.2.3/plugin/wavesurfer.regions.min.js"></script>
-    </head>
-  <body class="mdl-demo mdl-color--grey-100 mdl-color-text--grey-700 mdl-base">
+</head>
+
+<body class="mdl-demo mdl-color--grey-100 mdl-color-text--grey-700 mdl-base">
     <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
-      <header class="mdl-layout__header mdl-layout__header--scroll mdl-color--primary">
-        <div class="mdl-layout--large-screen-only mdl-layout__header-row">
-        </div>
-        <div class="mdl-layout--large-screen-only mdl-layout__header-row">
-          <h3>Instrumentalists DNN</h3>
-        </div>
-        <div class="mdl-layout--large-screen-only mdl-layout__header-row">
-        </div>
-        <div class="mdl-layout__tab-bar mdl-js-ripple-effect mdl-color--primary-dark">
-          <a href="#login" class="mdl-layout__tab">Login</a>
-          <a href="#upload" class="mdl-layout__tab">Upload</a>
-        </div>
-      </header>
-      <main class="mdl-layout__content">
-        <div class="mdl-layout__tab-panel" id="login">
-          <section class="section--center mdl-grid mdl-grid--no-spacing">
-            <div class="mdl-cell mdl-cell--12-col">
-              <div align="center">
-                <form action = "/login" method = "post">
-                  <p>Enter username:</p>
-                  <p><input type = "text" name = "username" /></p>
-                  <p><input type = "submit" value = "Login" /></p>
-                </form>
-              </div>
+        <header class="mdl-layout__header mdl-layout__header--scroll mdl-color--primary">
+            <div class="mdl-layout--large-screen-only mdl-layout__header-row">
             </div>
-          </section>
-        </div>
-        <div class="mdl-layout__tab-panel" id="upload">
-          <section class="section--center mdl-grid mdl-grid--no-spacing">
-            <div class="mdl-cell mdl-cell--12-col">
-              <div align="center">
-                <form id="upload-form" method = "POST" enctype = "multipart/form-data">
-                  <p>Select .wav file</p>
-                  <p><input class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" id="input" type = "file" name = "file" /></p>
-                  <p><div width="1000" id="waveform"></div></p>
-                  
-                  <script>
-                      var fileSound;
-                      // Stworzenie instancji 
-                      var wavesurfer = WaveSurfer.create({
-                          container: '#waveform',
-                          waveColor: 'violet',
-                          fillParent: true,
-                      });
-                      // Play uploaded audio
-                      input.onchange = function (e) {
-                          var sound = document.getElementById('waveform');
-                          fileSound=this.files[0];
-                          sound.src = URL.createObjectURL(fileSound);
-              
-                          wavesurfer.load(URL.createObjectURL(fileSound));
-                          // not really needed in this exact case, but since it is really important in other cases,
-                          // don't forget to revoke the blobURI when you don't need it
-                          sound.onend = function (e) {
-                              URL.revokeObjectURL(this.src);
-                          }
-                      }
-                      wavesurfer.on('ready', function () {
-                        // Enable creating regions by dragging
-                        wavesurfer.addRegion({
-                          id: "startend",
-                          start: 0, // time in seconds
-                          end: 6, // time in seconds
-                          drag:true,
-                          resize:false,
-                          color: 'hsla(100, 100%, 30%, 0.1)'
-                        });
-                      });
-                      </script>
-                        <div class="controls">
-                          <button type="button" class="btn btn-primary" onclick="wavesurfer.skipBackward()">
+            <div class="mdl-layout--large-screen-only mdl-layout__header-row">
+                <h3>Instrumentalists DNN</h3>
+            </div>
+            <div class="mdl-layout--large-screen-only mdl-layout__header-row">
+            </div>
+            <div class="mdl-layout__tab-bar mdl-js-ripple-effect mdl-color--primary-dark">
+                <a href="#login" class="mdl-layout__tab">Login</a>
+                <a href="#upload" class="mdl-layout__tab">Upload</a>
+            </div>
+        </header>
+        <main class="mdl-layout__content">
+            <div class="mdl-layout__tab-panel" id="login">
+                <section class="section--center mdl-grid mdl-grid--no-spacing">
+                    <div class="mdl-cell mdl-cell--12-col">
+                        <div align="center">
+                            <form action="/login" method="post">
+                                <p>Enter username:</p>
+                                <p><input type="text" name="username" /></p>
+                                <p><input type="submit" value="Login" /></p>
+                            </form>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            <div class="mdl-layout__tab-panel is-active" id="upload">
+                <section class="section--center mdl-grid mdl-grid--no-spacing">
+                    <div class="mdl-cell mdl-cell--12-col">
+                        <div align="center">
+                            <form id="upload-form" method="POST" enctype="multipart/form-data">
+                                <p>Select .wav file</p>
+                                <p><input class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" id="input" type="file" name="file" /></p>
+                                <p>
+                                    <div width="1000" id="waveform"></div>
+                                </p>
+
+                                <script>
+                                    var fileSound;
+                                    // Stworzenie instancji 
+                                    var wavesurfer = WaveSurfer.create({
+                                        container: '#waveform',
+                                        waveColor: 'violet',
+                                        fillParent: true,
+                                    });
+                                    // Play uploaded audio
+                                    input.onchange = function(e) {
+                                        var sound = document.getElementById('waveform');
+                                        fileSound = this.files[0];
+                                        sound.src = URL.createObjectURL(fileSound);
+
+                                        wavesurfer.load(URL.createObjectURL(fileSound));
+                                        // not really needed in this exact case, but since it is really important in other cases,
+                                        // don't forget to revoke the blobURI when you don't need it
+                                        sound.onend = function(e) {
+                                            URL.revokeObjectURL(this.src);
+                                        }
+                                    }
+                                    wavesurfer.on('ready', function() {
+                                        // Enable creating regions by dragging
+                                        wavesurfer.addRegion({
+                                            id: "startend",
+                                            start: 0, // time in seconds
+                                            end: 6, // time in seconds
+                                            drag: true,
+                                            resize: false,
+                                            color: 'hsla(100, 100%, 30%, 0.1)'
+                                        });
+                                    });
+                                </script>
+                                <div class="controls">
+                                    <button type="button" class="btn btn-primary" onclick="wavesurfer.skipBackward()">
                             <i class="fa fa-step-backward"></i>
                             Backward
                           </button>
-                  
-                          <button type="button" class="btn btn-primary" onclick="wavesurfer.playPause()">
+
+                                    <button type="button" class="btn btn-primary" onclick="wavesurfer.playPause()">
                             <i class="fa fa-play"></i>
                             Play
                             /
                             <i class="fa fa-pause"></i>
                             Pause
                           </button>
-                  
-                          <button type="button" class="btn btn-primary" onclick="wavesurfer.skipForward()">
+
+                                    <button type="button" class="btn btn-primary" onclick="wavesurfer.skipForward()">
                             <i class="fa fa-step-forward"></i>
                             Forward
                           </button>
-                  
-                          <button type="button" class="btn btn-primary" onclick="wavesurfer.toggleMute()">
+
+                                    <button type="button" class="btn btn-primary" onclick="wavesurfer.toggleMute()">
                             <i class="fa fa-volume-off"></i>
                             Toggle Mute
                           </button>
+                                </div>
+                                <p>Or YouTube link</p>
+                                <p><input type="text" name="ytlink" /></p>
+                                <p>Choose exact part of track where you want to recognize the instrument</p>
+                                <p>
+                                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                        <input class="mdl-textfield__input" type="text" pattern="-?[0-9]*(\.[0-9]+)?" id="sample4">
+                                        <label class="mdl-textfield__label" for="sample4">Start [in seconds]</label>
+                                        <span class="mdl-textfield__error">Input is not a number!</span>
+                                    </div>
+                                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                        <input class="mdl-textfield__input" type="text" pattern="-?[0-9]*(\.[0-9]+)?" id="sample4">
+                                        <label class="mdl-textfield__label" for="sample4">Finish [in seconds]</label>
+                                        <span class="mdl-textfield__error">Input is not a number!</span>
+                                    </div>
+                                </p>
+                                <p>{{ recaptcha }}</p>
+                                <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" id="upload-file-btn" type="button">Upload</button>
+                            </form>
+                            <div id="p1" class="mdl-progress mdl-js-progress"></div>
+
+                            <div id="place_for_upload_dialog">
+
+                            </div>
+
+
+                            <script>
+                                $(function() {
+                                    $('#upload-file-btn').click(function() {
+                                        var form_data = new FormData($('#upload-form')[0]);
+                                        var start = wavesurfer.regions.list["startend"].start;
+                                        var end = wavesurfer.regions.list["startend"].end;
+                                        form_data.append('start', start);
+                                        form_data.append('end', end);
+                                        $.ajax({
+                                            type: 'POST',
+                                            url: '/upload',
+                                            data: form_data,
+                                            contentType: false,
+                                            cache: false,
+                                            processData: false,
+                                            async: true,
+                                            xhr: function() {
+                                                var xhr = new window.XMLHttpRequest();
+
+                                                // Upload progress
+                                                xhr.upload.addEventListener("progress", function(evt) {
+                                                    if (evt.lengthComputable) {
+                                                        var percentComplete = evt.loaded / evt.total;
+                                                        percentComplete = parseInt(percentComplete * 100);
+                                                        //Do something with upload progress
+                                                        document.querySelector('#p1').MaterialProgress.setProgress(percentComplete);
+
+                                                    } else {
+                                                        document.querySelector('#p1').MaterialProgress.setProgress(10)
+                                                    };
+                                                }, false);
+
+                                                return xhr;
+                                            },
+                                            success: function(response) {
+                                                console.log("success")
+                                                $("#place_for_upload_dialog").html(response);
+                                                componentHandler.upgradeDom();
+                                            }
+                                        });
+                                    });
+                                });
+                            </script>
                         </div>
-                  <p>Or YouTube link</p>
-                  <p><input type = "text" name = "ytlink" /></p>
-                  <p>Choose exact part of track where you want to recognize the instrument</p>
-                  <p>
-                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                      <input class="mdl-textfield__input" type="text" pattern="-?[0-9]*(\.[0-9]+)?" id="sample4">
-                      <label class="mdl-textfield__label" for="sample4">Start [in seconds]</label>
-                      <span class="mdl-textfield__error">Input is not a number!</span>
-                    </div>
-                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                      <input class="mdl-textfield__input" type="text" pattern="-?[0-9]*(\.[0-9]+)?" id="sample4">
-                      <label class="mdl-textfield__label" for="sample4">Finish [in seconds]</label>
-                      <span class="mdl-textfield__error">Input is not a number!</span>
-                    </div>
-                  </p>
-                  <p>{{ recaptcha }}</p>
-                  <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" id="upload-file-btn" type="button">Upload</button>
-                </form>
-                <div id="p1" class="mdl-progress mdl-js-progress"></div>
-                
-                <div id="place_for_upload_dialog">
-
+                </section>
                 </div>
-                
-                
-                <script>
-                  $(function() {
-                    $('#upload-file-btn').click(function() {
-                        var form_data = new FormData($('#upload-form')[0]);
-                        var start=wavesurfer.regions.list["startend"].start;
-                        var end=wavesurfer.regions.list["startend"].end;
-                        form_data.append('start', start);
-                        form_data.append('end', end);
-                        $.ajax({
-                          type: 'POST',
-                          url: '/upload',
-                          data: form_data,
-                          contentType: false,
-                          cache: false,
-                          processData: false,
-                          async: true,
-                          xhr: function() {
-                              var xhr = new window.XMLHttpRequest();
-
-                              // Upload progress
-                              xhr.upload.addEventListener("progress", function(evt){
-                                  if (evt.lengthComputable) {
-                                      var percentComplete = evt.loaded / evt.total;
-                                      percentComplete = parseInt(percentComplete * 100);
-                                      //Do something with upload progress
-                                      document.querySelector('#p1').MaterialProgress.setProgress(percentComplete);
-                                    
-                                  }
-                                  else{document.querySelector('#p1').MaterialProgress.setProgress(10)};
-                            }, false);
-
-                            return xhr;
-                          },
-                          success: function (response) {
-                            console.log("success")
-                            $("#place_for_upload_dialog").html(response);
-                            componentHandler.upgradeDom();
-                          }
-                        });
-                    });
-                  });
-                  
-              </script>
-            </div>
-          </section>
+        </main>
         </div>
-      </main>
-    </div>
-  </body>
+</body>
+
 </html>

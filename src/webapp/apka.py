@@ -5,6 +5,7 @@ from flask import Flask, render_template, request, session, redirect, url_for, e
 from werkzeug import secure_filename
 from flask_recaptcha import ReCaptcha
 
+import test
 
 UPLOAD_FOLDER = './output/upload/'
 SPECTROGRAMS_FOLDER = './output/spectrograms/'
@@ -36,10 +37,16 @@ app.secret_key = 'InstrumentyDNN'
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
-def create_spectrogram(filename):
+def create_spectrogram(filename, start, end):
     SCRIPT_PATH = os.getcwd() + '/src/classifier/wav_to_spectrograms.py'
+    TEST_SCRIPT_PATH = os.getcwd() + '/src/test.py'
+
     FILE_PATH = UPLOAD_FOLDER + '/' + filename
-    subprocess.check_call(['python', SCRIPT_PATH, '-i', FILE_PATH, '-o', SPECTROGRAMS_FOLDER])
+    subprocess.check_call(['python', SCRIPT_PATH, '-i', FILE_PATH, '-o', SPECTROGRAMS_FOLDER, '--start', str(start), '--end', str(end)])
+    # TODO if success, then allow for classification
+    #output = subprocess.check_output(['python', TEST_SCRIPT_PATH, '--input', os.getcwd() + '/output/spectrograms'])
+
+    return test.run(os.getcwd() + '/output/spectrograms')
 
 #################
 # Routes
@@ -57,11 +64,12 @@ def upload():
             file = request.files['file']
             start = int(float(request.form['start']))
             end = int(float(request.form['end']))
+
             if file and allowed_file(file.filename):
                 filename = secure_filename(file.filename)
                 file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-                create_spectrogram(filename)
-    return render_template('uploading.html', sof=start, eof=end)
+                result = create_spectrogram(filename, start, end)
+    return render_template('uploading.html', sof=start, eof=end, result=result)
 
 if __name__ == '__main__':
     app.run(debug=True, threaded=True)

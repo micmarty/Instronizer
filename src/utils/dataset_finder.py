@@ -8,15 +8,17 @@ from pathlib import Path
 import os
 import os.path
 
+
 def is_spec_file(filename):
     return filename.endswith('.npy')
 
+
 def find_classes(dir):
-    classes = [d for d in os.listdir(dir) if os.path.isdir(os.path.join(dir, d))]
+    classes = [d for d in os.listdir(
+        dir) if os.path.isdir(os.path.join(dir, d))]
     classes.sort()
     class_to_idx = {classes[i]: i for i in range(len(classes))}
     return classes, class_to_idx
-
 
 
 def make_dataset(dir, class_to_idx):
@@ -73,17 +75,18 @@ def irmas_classes():
     class_to_idx = {classes[i]: i for i in range(len(classes))}
     return classes, class_to_idx
 
+
 def make_val_dataset(dir, class_to_idx):
     dir = Path(dir)
     spec_target_pairs = []
 
     # For every file or directory inside dir
     for content in dir.iterdir():
-        
+
         # If it's a txt file, extract all labels
         if content.is_file() and content.suffix == '.txt':
             classes = val_targets(str(content))
-            
+
             # Create a path that should point to a folder with same name as txt file
             spectrogram_dir = content.parent / content.stem
 
@@ -95,10 +98,12 @@ def make_val_dataset(dir, class_to_idx):
                     # Classes are separated by a colon
                     classes_string = ''
                     for class_name in classes:
-                        classes_string += '{};'.format(class_to_idx[class_name])
+                        classes_string += '{};'.format(
+                            class_to_idx[class_name])
                     pair = (str(spectrogram), classes_string)
                     spec_target_pairs.append(pair)
     return spec_target_pairs
+
 
 class SpecFolder(torch.utils.data.Dataset):
     """A generic data loader where the data is like:
@@ -132,7 +137,7 @@ class SpecFolder(torch.utils.data.Dataset):
         classes, class_to_idx = find_classes(root)
         specs = make_dataset(root, class_to_idx)
         if len(specs) == 0:
-            raise(RuntimeError("Found 0 spectrograms in subfolders of: " + root + "\n" + \
+            raise(RuntimeError("Found 0 spectrograms in subfolders of: " + root + "\n" +
                                "Supported spectrogram extensions are: .npy"))
 
         self.root = root
@@ -179,6 +184,7 @@ class ValSpecFolder(torch.utils.data.Dataset):
     <root>/aurora/ containing .npy spectrograms
 
     '''
+
     def __init__(self, root, transform=None, target_transform=None, loader=default_loader):
         classes, class_to_idx = irmas_classes()
         self.class_to_idx = class_to_idx
@@ -227,7 +233,7 @@ class ValSpecFolder(torch.utils.data.Dataset):
 
         spec_target_pairs = []
         for spec_path in spec_files:
-            
+
             encoded_labels = self._encode_labels_into_string(labels)
             spec_npy_path = str(spec_path)
 
