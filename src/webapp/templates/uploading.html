@@ -1,13 +1,16 @@
 <head>
         <link rel="stylesheet" href="{{ url_for('static', filename='material.min.css') }}">
         <script src="{{ url_for('static', filename='material.min.js') }}"></script>
+        <link rel="stylesheet" href="{{ url_for('static', filename='stylesheet.css') }}">
         <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-    
 </head>
 <div>
     <p>Upload completed</p>
+    
     <p>Wait for your answer</p>
+    <p>{{ sof }}</p>
+    <p>{{ eof }}</p>
     <p><div id="p2" class="mdl-progress mdl-js-progress"></div></p>
     <script>
         $.ajax({
@@ -23,6 +26,29 @@
                 $("#place_for_upload_dialog").html(response);
             }
           });
-            
     </script>
+    
+    <script>
+        
+        wavesurfer.addRegion({
+            id: "guitar{{ sof }}{{ eof }}",
+            start: '{{ sof }}', // time in seconds
+            end: '{{ eof }}', // time in seconds
+            drag:false,
+            resize:false,
+            color: 'hsla(100, 100%, 30%, 0.1)',
+            attributes: {
+                label: "Guitar"
+            }
+        });
+        wavesurfer.regions.list["startend"].remove();
+        wavesurfer.addRegion({
+            id: "startend",
+            start: '{{ sof }}', // time in seconds
+            end: '{{ eof }}', // time in seconds
+            drag:true,
+            resize:false,
+            color: 'hsla(100, 100%, 30%, 0.1)',
+        });
+        </script>
 </div>
