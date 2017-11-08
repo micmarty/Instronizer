@@ -1,3 +1,9 @@
+// Put filename int readonly textfield, when file is chosen
+document.getElementById("uploadBtn").onchange = function() {
+    document.getElementById("uploadFile").value = this.files[0].name;
+};
+
+// On page load
 $(function() {
     $("#upload-file-btn").click(function() {
         var form_data = new FormData($("#upload-form")[0]);

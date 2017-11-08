@@ -49,6 +49,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.deep_purple-pink.min.css">
     <link rel="stylesheet" href="static/lib/material.css">
+    <link rel="stylesheet" href="static/style.css">
     <style>
         #view-source {
             position: fixed;
@@ -87,16 +88,26 @@
         <main class="mdl-layout__content">
             <div class="mdl-layout__tab-panel is-active" id="overview">
                 <section class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp">
+                    <!-- Box with upload glyphicon -->
                     <header class="section__play-btn mdl-cell mdl-cell--3-col-desktop mdl-cell--2-col-tablet mdl-cell--4-col-phone mdl-color--teal-100 mdl-color-text--white">
-                        <i class="material-icons">play_circle_filled</i>
+                        <div class="mdl-button mdl-button--primary mdl-button--icon mdl-button--file">
+                            <i id="uploadGlyph" class="material-icons">file_upload</i><input type="file" id="uploadBtn">
+                        </div>
                     </header>
                     <div class="mdl-card mdl-cell mdl-cell--9-col-desktop mdl-cell--6-col-tablet mdl-cell--4-col-phone">
                         <div class="mdl-card__supporting-text">
-                            <h4>Features</h4>
-                            Dolore ex deserunt aute fugiat aute nulla ea sunt aliqua nisi cupidatat eu. Nostrud in laboris labore nisi amet do dolor eu fugiat consectetur elit cillum esse.
+                            <h4>Choose WAV file</h4>
+                            TODO
                         </div>
                         <div class="mdl-card__actions">
-                            <a href="#" class="mdl-button">Read our features</a>
+                            <form id="upload-form" method="POST" enctype="multipart/form-data">
+                                <!-- Readonly textfield which stores selected filename -->
+                                <div class="mdl-textfield mdl-js-textfield mdl-textfield--file">
+                                    <input class="mdl-textfield__input" placeholder="File" type="text" id="uploadFile" readonly/>
+                                </div>
+                                <!-- Upload button -->
+                                <button id="upload-file-btn" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-js-ripple-effect">Upload</button>
+                            </form>
                         </div>
                     </div>
                     <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon" id="btn1">
@@ -317,7 +328,6 @@
     <!-- Custom JavaScript -->
     <script src="static/waveplot.js"></script>
     <script src="static/upload.js"></script>
-
 </body>
 
 </html>

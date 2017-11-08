@@ -1,0 +1,23 @@
+/* Clickable, circle area */
+
+.mdl-button--file {
+    width: 200px;
+    height: 200px;
+    overflow: hidden;
+}
+
+
+/* Upload icon */
+
+#uploadGlyph {}
+
+
+/* Hidden Browse button*/
+
+#uploadBtn {
+    width: 100%;
+    height: 100%;
+    display: block;
+    opacity: 0;
+    overflow: hidden;
+}
