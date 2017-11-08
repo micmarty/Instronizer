@@ -9,8 +9,8 @@
     <p>Upload completed</p>
 
     <p>Wait for your answer</p>
-    <p>{{ sof }}</p>
-    <p>{{ eof }}</p>
+    <p>{{ start }}</p>
+    <p>{{ end }}</p>
     <p>{{ result }}</p>
     <p>
         <div id="p2" class="mdl-progress mdl-js-progress"></div>
@@ -33,9 +33,9 @@
 
     <script>
         wavesurfer.addRegion({
-            id: "guitar{{ sof }}{{ eof }}",
-            start: '{{ sof }}', // time in seconds
-            end: '{{ eof }}', // time in seconds
+            id: "guitar{{ start }}{{ end }}",
+            start: '{{ start }}', // time in seconds
+            end: '{{ end }}', // time in seconds
             drag: false,
             resize: false,
             color: 'hsla(100, 100%, 30%, 0.1)',
@@ -46,8 +46,8 @@
         wavesurfer.regions.list["startend"].remove();
         wavesurfer.addRegion({
             id: "startend",
-            start: '{{ sof }}', // time in seconds
-            end: '{{ eof }}', // time in seconds
+            start: '{{ start }}', // time in seconds
+            end: '{{ end }}', // time in seconds
             drag: true,
             resize: false,
             color: 'hsla(100, 100%, 30%, 0.1)',

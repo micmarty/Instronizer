@@ -7,13 +7,14 @@ import time
 import torch
 import torch.utils.data
 import better_exceptions
+
 # Custom utils
 from models.mobilenet import MobileNet
 from models.densenet import densenet161
-from logger import Logger # Tensorboard
+from utils.tensorboard_logger import Logger # Tensorboard
 from utils.average_meter import AverageMeter
 from utils import printing_functions as pf
-from utils import dataset_finder as df
+import dataset_loader as df
 
 def input_args():
     parser = argparse.ArgumentParser('PyTorch Instrument classifier training script')

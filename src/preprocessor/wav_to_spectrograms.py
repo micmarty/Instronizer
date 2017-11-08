@@ -21,13 +21,14 @@ python src/wav_to_spectrograms.py -i <...>/train/cel -o <...>/cello_spectrograms
 import librosa
 import soundfile as sf
 import argparse
-#import matplotlib.image as image
-from utils import printing_functions as pf
 from pathlib import Path, PurePath
 import numpy as np
 import time
 import scipy
 import better_exceptions
+
+# Custom imports
+from classifier.utils import printing_functions as pf
 
 parser = argparse.ArgumentParser(description='WAV to spectrograms processor')
 
@@ -233,3 +234,4 @@ if __name__ == '__main__':
     args = parser.parse_args()
     p = Preprocessor(args)
     p.process(time_range=(args.start, args.end))
+    exit(0)

@@ -39,6 +39,20 @@ def make_dataset(dir, class_to_idx):
     return images
 
 
+def make_dataset_direct(dir, class_to_idx):
+    '''TODO rewrite it, remove hardcoded 0'''
+    images = []
+    d = os.path.expanduser(dir)
+   
+    for root, _, fnames in sorted(os.walk(d)):
+        for fname in sorted(fnames):
+            if is_spec_file(fname):
+                path = os.path.join(root, fname)
+                item = (path, 0)
+                images.append(item)
+    return images
+
+
 def default_loader(path):
     '''
     It loads numpy 2d spectrogram matrix and creates fake 3d tensor
@@ -135,9 +149,13 @@ class SpecFolder(torch.utils.data.Dataset):
     """
 
     def __init__(self, root, transform=None, target_transform=None,
-                 loader=default_loader):
+                 loader=default_loader, direct=False):
         classes, class_to_idx = find_classes(root)
-        specs = make_dataset(root, class_to_idx)
+        if direct:
+            specs = make_dataset_direct(root, class_to_idx)
+        else:
+            specs = make_dataset(root, class_to_idx)
+
         if len(specs) == 0:
             raise(RuntimeError("Found 0 spectrograms in subfolders of: " + root + "\n" +
                                "Supported spectrogram extensions are: .npy"))

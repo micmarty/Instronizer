@@ -1,37 +1,41 @@
 import torch
 from pathlib import Path
-import dataset_finder_copy as df
 import argparse
-from mobilenet_copy import MobileNet
 
-
-# def parse_args():
-#     parser = argparse.ArgumentParser()
-#     parser.add_argument('--input', default=None, metavar='DIR', help='path to dir containing .npy spectrograms')
-#     return parser.parse_args()
+# Absolute imports
+from classifier.models.mobilenet import MobileNet
+from classifier import dataset_loader as dl
 
 def load_data_from_folder(path):
-    dataset = df.SpecFolder(path)
+    dataset = dl.SpecFolder(path, direct=True)
+    # There are 3 spectrograms from 6s window
     return torch.utils.data.DataLoader(dataset,
                                        batch_size=3,
                                        shuffle=False,
                                        num_workers=3)
 
 def run(input):
-    #args = parse_args()
     model = MobileNet(num_classes=11)
+    # TODO load checkpoint
     
     validation_data = load_data_from_folder(input)
     aggregated_output = None
+
+    # This loop executes once
     for step, (input, target) in enumerate(validation_data):
         input_var = torch.autograd.Variable(input)
         target_var = torch.autograd.Variable(target)
 
         # Compute output
         output = model(input_var)
-        print(output)
+
+        # Sum outputs for each instrument
         aggregated_output = torch.sum(output, dim=0)  # size = [1, ncol]
-        print(aggregated_output)
-        maxe = aggregated_output.max(0)
-        print("Max value", maxe[0], maxe[1])
-    return maxe[1].data[0]
+
+        max_value, max_value_idx = aggregated_output.max(0)
+
+        print('Output: ', output.data)
+        print('Instrument class-wise activation sum', aggregated_output)
+        print('Max: {}, instrument_idx: {}'.format(max_value, max_value_idx))
+    # Cast tensor to python int type
+    return max_value_idx.data[0] 

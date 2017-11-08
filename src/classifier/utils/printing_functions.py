@@ -1,6 +1,7 @@
 import time
 import datetime
 import numpy as np
+
 def print_execution_time(function):
     '''
     Decorator which measures function's execution time
