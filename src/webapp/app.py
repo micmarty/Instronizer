@@ -50,7 +50,7 @@ def classify(spectrograms_dir):
 # Routing
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('index_material.html')
 
 @app.route('/upload', methods=['GET', 'POST'])
 def upload():

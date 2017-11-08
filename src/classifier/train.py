@@ -8,13 +8,13 @@ import torch
 import torch.utils.data
 import better_exceptions
 
-# Custom utils
-from models.mobilenet import MobileNet
-from models.densenet import densenet161
-from utils.tensorboard_logger import Logger # Tensorboard
-from utils.average_meter import AverageMeter
-from utils import printing_functions as pf
-import dataset_loader as df
+# Relative to application application source root
+from classifier.models.mobilenet import MobileNet
+from classifier.models.densenet import densenet161
+from classifier.utils.tensorboard_logger import Logger  # Tensorboard
+from classifier.utils.average_meter import AverageMeter
+from classifier.utils import printing_functions as pf
+import classifier.dataset_loader as df
 
 def input_args():
     parser = argparse.ArgumentParser('PyTorch Instrument classifier training script')

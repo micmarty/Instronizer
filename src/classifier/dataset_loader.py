@@ -2,6 +2,9 @@
 '''
 It's responsible for finding spectrograms in given path and extracting their labels
 '''
+# TODO Needs refactor
+# TODO Rewrite all to pathlib
+# TODO Consider removing ValSpecFolder class
 import torch
 import numpy as np
 from pathlib import Path
@@ -9,10 +12,8 @@ import os
 import os.path
 import torch.utils.data
 
-
 def is_spec_file(filename):
     return filename.endswith('.npy')
-
 
 def find_classes(dir):
     classes = [d for d in os.listdir(

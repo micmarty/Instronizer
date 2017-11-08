@@ -8,14 +8,15 @@ from classifier import dataset_loader as dl
 
 def load_data_from_folder(path):
     dataset = dl.SpecFolder(path, direct=True)
-    # There are 3 spectrograms from 6s window
+    # There are 3 spectrograms from 6s window(assuming 1.5s overlap by default)
     return torch.utils.data.DataLoader(dataset,
                                        batch_size=3,
                                        shuffle=False,
-                                       num_workers=3)
+                                       num_workers=1)
 
 def run(input):
     model = MobileNet(num_classes=11)
+
     # TODO load checkpoint
     
     validation_data = load_data_from_folder(input)

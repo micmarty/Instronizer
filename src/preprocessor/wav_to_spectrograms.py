@@ -1,12 +1,13 @@
 ''' Created by Michał Martyniak 
 
 Description:
-This script supports input like parameters as following: 
+This script supports multiple input variations: 
 - full path to a single wav file
 - dir path to IRMAS dataset
 - path to dir containing wav files
 
 The destination folder doesn't have to exist (it will be automatically created)
+You can set excerpt start and end with options --start and --end
 
 Example with IRMAS dataset (preprocess training data):
 python src/wav_to_spectrograms.py -i <...>/train --irmas -o <...>/spectrograms
@@ -175,7 +176,6 @@ class Preprocessor:
         else:
             print('Skipping')
 
-    #@pf.print_execution_time
     def _resample(self, y, from_sr):
         return librosa.resample(y, from_sr, self.sr, res_type='kaiser_fast')
 
