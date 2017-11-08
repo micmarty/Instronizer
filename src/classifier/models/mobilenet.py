@@ -23,7 +23,7 @@ class MobileNet(nn.Module):
             )
 
         self.model = nn.Sequential(
-            conv_bn(3,  32, 2),
+            conv_bn(1,  32, 2),
             conv_dw(32,  64, 1),
             conv_dw(64, 128, 2),
             conv_dw(128, 128, 1),
@@ -40,9 +40,11 @@ class MobileNet(nn.Module):
             nn.AvgPool2d(7),
         )
         self.fc = nn.Linear(1024, num_classes)
+        self.softmax = nn.Softmax()
 
     def forward(self, x):
         x = self.model(x)
         x = x.view(-1, 1024)
         x = self.fc(x)
+        x = self.softmax(x)
         return x
