@@ -1,16 +1,46 @@
-<section class="mdl-grid mdl-grid--no-spacing mdl-shadow--2dp">
-    <div class="mdl-card mdl-cell mdl-cell--9-col-desktop mdl-cell--6-col-tablet mdl-cell--4-col-phone">
+<section id="waveformSection" class="mdl-grid mdl-grid--no-spacing mdl-shadow--2dp">
+    <div class="mdl-card mdl-cell mdl-cell--12-col-desktop mdl-cell--6-col-tablet mdl-cell--4-col-phone">
+
         <!-- Waveform -->
         <div id="waveform"></div>
+        <div id="waveform-timeline"></div>
 
         <!-- Control buttons -->
-        <div class="mdl-card__actions">
-            <!-- TODO add wavesurfer buttons -->
+        <div class="mdl-grid mdl-card__actions">
 
-            <!-- Classify button -->
-            <button id="getInstrumentNameButton" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-js-ripple-effect">
+
+            <!-- TODO add wavesurfer buttons -->
+            <div class="controls mdl-grid center-items">
+                <!-- Rewind -->
+                <button type="button" onclick="wavesurfer.skipBackward()" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect">
+                    <i class="material-icons">replay_30</i>
+                </button>
+
+                <!-- Play/pause -->
+                <button type="button" onclick="wavesurfer.playPause()" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect">
+                    <i class="material-icons">play_arrow</i>/<i class="material-icons">pause</i>
+                </button>
+
+                <!-- Forward -->
+                <button type="button" onclick="wavesurfer.skipForward()" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect">
+                    <i class="material-icons">forward_30</i>
+                </button>
+
+                <!-- Toggle mute -->
+                <button type="button" onclick="wavesurfer.toggleMute()" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect">
+                    <i class="material-icons">volume_off</i>
+                </button>
+
+                <!-- Zoom Slider -->
+                <p style="width:600px; height:20px">
+                    Zoom:
+                    <input id="zoomSlider" class="mdl-slider mdl-js-slider" type="range" min="1" max="50" value="1" tabindex="0">
+                </p>
+
+                <!-- Classify button -->
+                <button id="getInstrumentNameButton" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-js-ripple-effect">
                     Get instrument name
                 </button>
+            </div>
         </div>
-    </div>
 </section>

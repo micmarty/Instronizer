@@ -2,12 +2,18 @@
 var fileSound;
 var wavesurfer = WaveSurfer.create({
     container: "#waveform",
-    waveColor: "violet",
+    barWidth: 3,
+    height: 300,
+    progressColor: '#512da8',
+    skipLength: 30,
     fillParent: true
 });
 
 // Play uploaded audio
 document.getElementById("uploadedFileInput").onchange = function(e) {
+
+    $("#processingProgress").show();
+
     // Put filename int readonly textfield, when file is chosen
     document.getElementById("uploadFileName").value = this.files[0].name;
 
@@ -15,6 +21,13 @@ document.getElementById("uploadedFileInput").onchange = function(e) {
     var sound = document.getElementById("waveform");
     fileSound = this.files[0];
     sound.src = URL.createObjectURL(fileSound);
+
+    var slider = document.querySelector("#zoomSlider");
+
+    slider.oninput = function() {
+        var zoomLevel = Number(slider.value);
+        wavesurfer.zoom(zoomLevel);
+    };
 
     // Load file
     wavesurfer.load(URL.createObjectURL(fileSound));
@@ -27,6 +40,16 @@ document.getElementById("uploadedFileInput").onchange = function(e) {
 };
 
 wavesurfer.on("ready", function() {
+    $("#processingProgress").hide();
+
+    // Add timeline
+    var timeline = Object.create(WaveSurfer.Timeline);
+    timeline.init({
+        wavesurfer: wavesurfer,
+        container: "#waveform-timeline",
+        timeInterval: 5
+    });
+
     // Enable creating regions by dragging
     wavesurfer.addRegion({
         id: "startend",
@@ -34,6 +57,6 @@ wavesurfer.on("ready", function() {
         end: 6, // time in seconds
         drag: true,
         resize: false,
-        color: "hsla(100, 100%, 30%, 0.1)"
+        color: "hsla(262, 52%, 47%, 0.48)"
     });
 });

@@ -30,3 +30,10 @@ form {
     padding: 0;
     display: block;
 }
+
+
+/* Insert space between waveform control buttons */
+
+.controls>button {
+    margin-right: 20px;
+}
