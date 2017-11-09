@@ -1,12 +1,7 @@
-// Put filename int readonly textfield, when file is chosen
-document.getElementById("uploadBtn").onchange = function() {
-    document.getElementById("uploadFile").value = this.files[0].name;
-};
-
-// On page load
+// Allow to execute when page is fully loaded
 $(function() {
-    $("#upload-file-btn").click(function() {
-        var form_data = new FormData($("#upload-form")[0]);
+    $("#getInstrumentNameButton").click(function() {
+        var form_data = new FormData($("#uploadForm")[0]);
         var start = wavesurfer.regions.list["startend"].start;
         var end = wavesurfer.regions.list["startend"].end;
         form_data.append("start", start);

@@ -14,10 +14,19 @@
 
 /* Hidden Browse button*/
 
-#uploadBtn {
+#uploadedFileInput {
     width: 100%;
     height: 100%;
     display: block;
     opacity: 0;
     overflow: hidden;
+}
+
+
+/* Invisible form - not messing up the layout */
+
+form {
+    margin: 0;
+    padding: 0;
+    display: block;
 }
