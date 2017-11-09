@@ -1,4 +1,4 @@
-<section id="waveformSection" class="mdl-grid mdl-grid--no-spacing mdl-shadow--2dp">
+<section id="waveformSection" style="visibility: hidden" class="mdl-grid mdl-grid--no-spacing mdl-shadow--2dp">
     <div class="mdl-card mdl-cell mdl-cell--12-col-desktop mdl-cell--6-col-tablet mdl-cell--4-col-phone">
 
         <!-- Waveform -->
@@ -12,22 +12,22 @@
             <!-- TODO add wavesurfer buttons -->
             <div class="controls mdl-grid center-items">
                 <!-- Rewind -->
-                <button type="button" onclick="wavesurfer.skipBackward()" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect">
+                <button id="backward" type="button" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect">
                     <i class="material-icons">replay_30</i>
                 </button>
 
                 <!-- Play/pause -->
-                <button type="button" onclick="wavesurfer.playPause()" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect">
+                <button id="togglePlay" type="button" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect">
                     <i class="material-icons">play_arrow</i>/<i class="material-icons">pause</i>
                 </button>
 
                 <!-- Forward -->
-                <button type="button" onclick="wavesurfer.skipForward()" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect">
+                <button id="forward" type="button" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect">
                     <i class="material-icons">forward_30</i>
                 </button>
 
                 <!-- Toggle mute -->
-                <button type="button" onclick="wavesurfer.toggleMute()" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect">
+                <button id="toggleMute" type="button" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect">
                     <i class="material-icons">volume_off</i>
                 </button>
 
