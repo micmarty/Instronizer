@@ -1,25 +1,49 @@
 // Allow to execute when page is fully loaded
 $(function() {
+    // Initialize error dialog
+    var dialog = document.querySelector("dialog");
+    if (!dialog.showModal) {
+        dialogPolyfill.registerDialog(dialog);
+    }
+    dialog.querySelector(".close-dialog").addEventListener("click", function() {
+        dialog.close();
+    });
+    // Initialize Wavesurfer
     var wavesurfer = initWavesurfer();
-    bindOnUploadChange(wavesurfer);
+    bindOnUploadChange(wavesurfer, dialog);
     initWaveformControls(wavesurfer);
     initZoomSlider(wavesurfer);
     initGetInstrumentButton(wavesurfer);
 });
 
-
 /**
  * Bind action when file input element has changed its value
  */
-function bindOnUploadChange(wavesurfer) {
+function bindOnUploadChange(wavesurfer, dialog) {
     $('#uploadFileInput').on('change', function() {
-        $('#processingProgress').show();
+        var fileSize = this.files[0].size / 1024 / 1024;
+        var fileType = this.files[0].type;
 
-        // Put filename int readonly textfield, when file is chosen
-        $('#uploadFileName').val(this.files[0].name);
-        fileUrl = URL.createObjectURL(this.files[0]);
-        wavesurfer.load(fileUrl);
-        wavesurfer.clearRegions();
+        if (fileSize > 20.0 || !fileType.match('audio/wav')) {
+            // Animate with FadeOut effect
+            var waveform = $("#waveformSection");
+            var currentOpacity = waveform.css('opacity');
+            if (currentOpacity == 1.0) {
+                waveform.css({ opacity: currentOpacity, visibility: "visible" }).animate({ opacity: 0.0 }, "slow");
+            }
+
+            // When more than x MB, then show error dialog
+            dialog.showModal();
+        } else {
+            // Show progress bar
+            $("#processingProgress").show();
+
+            // Put filename int readonly textfield, when file is chosen
+            $("#uploadFileName").val(this.files[0].name);
+            fileUrl = URL.createObjectURL(this.files[0]);
+            wavesurfer.load(fileUrl);
+            wavesurfer.clearRegions();
+        }
     });
 }
 

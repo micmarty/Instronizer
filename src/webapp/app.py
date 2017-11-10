@@ -80,10 +80,10 @@ def upload():
 
         # Run preprocessing and classification on trained neural network
         exit_code, spectrograms_dir = generate_spectrograms(filename, time_range=(start, end))
-        return jsonify(start=start, end=end, result='PREPROCESSOR_ERROR')
         if exit_code == 0:
             instrument_name = classify(spectrograms_dir)
             return jsonify(start=start, end=end, result=instrument_name)
+        return jsonify(start=start, end=end, result='PREPROCESSOR_ERROR')
 
 
 if __name__ == '__main__':

@@ -64,6 +64,17 @@
 </head>
 
 <body class="mdl-demo mdl-color--grey-100 mdl-color-text--grey-700 mdl-base">
+    <!-- Hidden error dialog -->
+    <dialog class="mdl-dialog" style="width: 400px">
+        <h4 class="mdl-dialog__title">File upload error</h4>
+        <div class="mdl-dialog__content">
+            <p>Only WAV files under 20MB are allowed.</p>
+        </div>
+        <div class="mdl-dialog__actions">
+            <button type="button" class="mdl-button close-dialog">OK</button>
+        </div>
+    </dialog>
+
     <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
         <header class="mdl-layout__header mdl-layout__header--scroll mdl-color--primary">
             <div class="mdl-layout--large-screen-only mdl-layout__header-row">
@@ -98,7 +109,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/wavesurfer.js/1.2.3/plugin/wavesurfer.regions.min.js"></script>
 
     <!-- Custom JavaScript -->
-
     <!-- Waveplot must be first -->
     <script src="static/waveplot.js"></script>
     <script src="static/upload.js"></script>
