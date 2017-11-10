@@ -1,47 +1,30 @@
-// Allow to execute when page is fully loaded
-$(function() {
-    $("#getInstrumentNameButton").click(function() {
-        var form_data = new FormData($("#uploadForm")[0]);
-        var start = wavesurfer.regions.list["startend"].start;
-        var end = wavesurfer.regions.list["startend"].end;
-        form_data.append("start", start);
-        form_data.append("end", end);
-        $.ajax({
-            type: "POST",
-            url: "/upload",
-            data: form_data,
-            contentType: false,
-            cache: false,
-            processData: false,
-            async: true,
-            xhr: function() {
-                var xhr = new window.XMLHttpRequest();
+// Called from waveplot.js - function initGetInstrumentButton
+function sendFileToServer(data) {
+    $.ajax({
+        type: "POST",
+        url: "/upload",
+        data: data,
+        contentType: false,
+        cache: false,
+        processData: false,
+        async: true,
+        xhr: function() {
+            var xhr = new window.XMLHttpRequest();
+            // TODO progress bar
+            return xhr;
+        },
+        error: function(xhr, status, error) {
+            // TODO when file is too big, or in wrong format display getmdl popup
+            console.log("File upload error");
 
-                // Upload progress
-                xhr.upload.addEventListener(
-                    "progress",
-                    function(evt) {
-                        if (evt.lengthComputable) {
-                            var percentComplete = evt.loaded / evt.total;
-                            percentComplete = parseInt(percentComplete * 100);
-                            //Do something with upload progress
-                            document
-                                .querySelector("#p1")
-                                .MaterialProgress.setProgress(percentComplete);
-                        } else {
-                            document.querySelector("#p1").MaterialProgress.setProgress(10);
-                        }
-                    },
-                    false
-                );
+        },
+        success: function(response) {
+            console.log(response);
 
-                return xhr;
-            },
-            success: function(response) {
-                console.log("success");
-                $("#place_for_upload_dialog").html(response);
-                componentHandler.upgradeDom();
-            }
-        });
+            // TODO display box and put labels into regions
+
+            // $("#place_for_upload_dialog").html(response);
+            // componentHandler.upgradeDom();
+        }
     });
-});
+}

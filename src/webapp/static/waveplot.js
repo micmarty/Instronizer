@@ -4,6 +4,7 @@ $(function() {
     bindOnUploadChange(wavesurfer);
     initWaveformControls(wavesurfer);
     initZoomSlider(wavesurfer);
+    initGetInstrumentButton(wavesurfer);
 });
 
 
@@ -11,7 +12,7 @@ $(function() {
  * Bind action when file input element has changed its value
  */
 function bindOnUploadChange(wavesurfer) {
-    $('#uploadedFileInput').on('change', function() {
+    $('#uploadFileInput').on('change', function() {
         $('#processingProgress').show();
 
         // Put filename int readonly textfield, when file is chosen
@@ -91,4 +92,20 @@ function initZoomSlider(player) {
         var zoomLevel = Number(slider.value);
         player.zoom(zoomLevel);
     };
+}
+
+function initGetInstrumentButton(wavesurfer) {
+    $("#getInstrumentNameButton").click(function() {
+        var form_data = new FormData();
+        file = $("#uploadFileInput")[0].files[0];
+        var start = wavesurfer.regions.list["startend"].start;
+        var end = wavesurfer.regions.list["startend"].end;
+
+        form_data.append("file", file);
+        form_data.append("start", start);
+        form_data.append("end", end);
+
+        // Defined in upload.js
+        sendFileToServer(form_data);
+    });
 }

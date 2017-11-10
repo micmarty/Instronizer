@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, session, redirect, url_for, escape
+from flask import Flask, render_template, request, session, redirect, url_for, escape, Response,jsonify
 from werkzeug import secure_filename
 from pathlib import Path
 import subprocess
@@ -8,10 +8,17 @@ from webapp import lightweight_classifier
 
 ##
 # Constants
-AUDIO_DIR = Path('./webapp/data/audio')
-SPECS_DIR = Path('./webapp/data/specs')
-PROCESSOR_PATH = Path.cwd() / 'preprocessor/wav_to_spectrograms.py'
+CURRENT_DIR = Path(__file__).absolute().parent
+AUDIO_DIR = Path('./data/audio')
+SPECS_DIR = Path('./data/specs')
+PROCESSOR_PATH = CURRENT_DIR.parent / 'preprocessor/wav_to_spectrograms.py'
 ALLOWED_EXTENSIONS = ['.wav']
+
+print('\n=== APP INFO ===')
+print('CURRENT_DIR={}\n\nAUDIO_DIR={}\nSPECS_DIR={}\nPREPROCESSOR_PATH={}\n'.format(
+    CURRENT_DIR, AUDIO_DIR, SPECS_DIR, PROCESSOR_PATH))
+print('ALLOWED_EXTENSIONS={}'.format(ALLOWED_EXTENSIONS))
+print('================\n')
 
 ##
 # Configuration
@@ -52,31 +59,32 @@ def classify(spectrograms_dir):
 def index():
     return render_template('material_layout.html')
 
-@app.route('/upload', methods=['GET', 'POST'])
+@app.route('/upload', methods=['POST'])
 def upload():
-    if request.method == 'POST':
-        # Parse request
-        file = request.files['file']
-        start = round(float(request.form['start']))
-        end = round(float(request.form['end']))
+    # Parse request
+    file = request.files['file']
+    start = round(float(request.form['start']))
+    end = round(float(request.form['end']))
 
-        # Check if file is valid
-        if file and Path(file.filename).suffix in ALLOWED_EXTENSIONS:
-            # Prevent path attack (e.g. ../../../../somefile.sh)
-            filename = secure_filename(file.filename)
+    # Check if file is valid
+    if file and Path(file.filename).suffix in ALLOWED_EXTENSIONS:
+        # Prevent path attack (e.g. ../../../../somefile.sh)
+        filename = secure_filename(file.filename)
 
-            # Make sure folder for uploaded audio files exists
-            AUDIO_DIR.mkdir(parents=True, exist_ok=True)
+        # Make sure folder for uploaded audio files exists
+        AUDIO_DIR.mkdir(parents=True, exist_ok=True)
 
-            # Build destination path and save
-            destination_path = str(AUDIO_DIR / filename)
-            file.save(destination_path)
+        # Build destination path and save
+        destination_path = str(AUDIO_DIR / filename)
+        file.save(destination_path)
 
-            # Run preprocessing and classification on trained neural network
-            exit_code, spectrograms_dir = generate_spectrograms(filename, time_range=(start, end))
-            if exit_code == 0:
-                instrument_name = classify(spectrograms_dir)
-                return render_template('update.html', start=start, end=end, result=instrument_name)
+        # Run preprocessing and classification on trained neural network
+        exit_code, spectrograms_dir = generate_spectrograms(filename, time_range=(start, end))
+        return jsonify(start=start, end=end, result='PREPROCESSOR_ERROR')
+        if exit_code == 0:
+            instrument_name = classify(spectrograms_dir)
+            return jsonify(start=start, end=end, result=instrument_name)
+
 
 if __name__ == '__main__':
     app.run(debug=True, threaded=True)
