@@ -24,7 +24,7 @@ function bindOnUploadChange(wavesurfer, dialog) {
         var fileSize = this.files[0].size / 1024 / 1024;
         var fileType = this.files[0].type;
 
-        if (fileSize > 20.0 || !fileType.match('audio/wav')) {
+        if (fileSize > 60.0 || !fileType.match('audio/wav')) {
             // Animate with FadeOut effect
             var waveform = $("#waveformSection");
             var currentOpacity = waveform.css('opacity');
@@ -35,11 +35,21 @@ function bindOnUploadChange(wavesurfer, dialog) {
             // When more than x MB, then show error dialog
             dialog.showModal();
         } else {
+            window.localStorage.removeItem('SavedFilePath');
+            console.log("File path was removed from localStorage")
+
             // Show progress bar
             $("#processingProgress").show();
 
             // Put filename int readonly textfield, when file is chosen
             $("#uploadFileName").val(this.files[0].name);
+
+            // Start uploading to the server
+            var form_data = new FormData();
+            form_data.append('file', this.files[0])
+            sendFileToServer(form_data);
+
+            // Wavesurfer load and clear regions
             fileUrl = URL.createObjectURL(this.files[0]);
             wavesurfer.load(fileUrl);
             wavesurfer.clearRegions();
@@ -73,7 +83,7 @@ function initWavesurfer() {
     var wavesurfer = WaveSurfer.create({
         container: '#waveform',
         barWidth: 3,
-        height: 300,
+        height: 150,
         progressColor: '#512da8',
         skipLength: 30,
         fillParent: true
@@ -120,16 +130,20 @@ function initZoomSlider(player) {
 
 function initGetInstrumentButton(wavesurfer) {
     $("#getInstrumentNameButton").click(function() {
-        var form_data = new FormData();
-        file = $("#uploadFileInput")[0].files[0];
-        var start = wavesurfer.regions.list["startend"].start;
-        var end = wavesurfer.regions.list["startend"].end;
+        if (window.localStorage.getItem('SavedFilePath')) {
+            var form_data = new FormData();
+            var fileLocationOnServer = window.localStorage.getItem("SavedFilePath");
+            var start = wavesurfer.regions.list["startend"].start;
+            var end = wavesurfer.regions.list["startend"].end;
 
-        form_data.append("file", file);
-        form_data.append("start", start);
-        form_data.append("end", end);
+            form_data.append("file_path", fileLocationOnServer);
+            form_data.append("start", start);
+            form_data.append("end", end);
 
-        // Defined in upload.js
-        sendFileToServer(form_data);
+            sendRegionsToServer(form_data);
+        } else {
+            console.log("Cannot send regions because no was uploaded before")
+        }
+
     });
 }

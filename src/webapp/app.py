@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, session, redirect, url_for, e
 from werkzeug import secure_filename
 from pathlib import Path
 import subprocess
-
+from classifier.utils.printing_functions import print_execution_time
 # Relative to application application source root
 from webapp import lightweight_classifier
 
@@ -24,11 +24,14 @@ print('================\n')
 # Configuration
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = AUDIO_DIR
-app.config['MAX_CONTENT_LENGTH'] = 20 * 1024 * 1024 # 20 MB
+app.config['MAX_CONTENT_LENGTH'] = 60 * 1024 * 1024 # 60 MB
 app.secret_key = 'TODO use random value'
 
 ##
 # Functions
+
+
+@print_execution_time
 def generate_spectrograms(audio_filename, time_range):
     '''
     Transforms wav into spetrograms
@@ -45,6 +48,8 @@ def generate_spectrograms(audio_filename, time_range):
     spectrograms_dir = SPECS_DIR / Path(audio_filename).stem
     return exit_code, spectrograms_dir
 
+
+@print_execution_time
 def classify(spectrograms_dir):
     '''
     Runs simplified classificator
@@ -63,9 +68,7 @@ def index():
 def upload():
     # Parse request
     file = request.files['file']
-    start = round(float(request.form['start']))
-    end = round(float(request.form['end']))
-
+    
     # Check if file is valid
     if file and Path(file.filename).suffix in ALLOWED_EXTENSIONS:
         # Prevent path attack (e.g. ../../../../somefile.sh)
@@ -78,13 +81,22 @@ def upload():
         destination_path = str(AUDIO_DIR / filename)
         file.save(destination_path)
 
-        # Run preprocessing and classification on trained neural network
-        exit_code, spectrograms_dir = generate_spectrograms(filename, time_range=(start, end))
-        if exit_code == 0:
-            instrument_name = classify(spectrograms_dir)
-            return jsonify(start=start, end=end, result=instrument_name)
-        return jsonify(start=start, end=end, result='PREPROCESSOR_ERROR')
+        # Send back to client
+        return jsonify(success=True, path=str(filename))
 
+@app.route('/classify', methods=['POST'])
+def get_instruments():
+    file_path = request.form['file_path']
+    start = round(float(request.form['start']))
+    end = round(float(request.form['end']))
+
+    # Run preprocessing and classification on trained neural network
+    exit_code, spectrograms_dir = generate_spectrograms(
+        file_path, time_range=(start, end))
+    if exit_code == 0:
+        instrument_name = classify(spectrograms_dir)
+        return render_template('results.html', start=start, end=end, result=instrument_name)
+    return jsonify(start=start, end=end, result='PREPROCESSOR_ERROR')
 
 if __name__ == '__main__':
     app.run(debug=True, threaded=True)
