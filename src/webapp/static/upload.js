@@ -49,6 +49,7 @@ function sendRegionsToServer(data) {
         },
         success: function(response) {
             console.log("Regions were successfully uploaded");
+            $("#waitingForResultsProgress").hide();
             $("#results")
                 .prepend(response)
                 .slideDown();

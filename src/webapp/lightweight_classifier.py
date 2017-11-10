@@ -36,7 +36,7 @@ def run(input):
         max_value, max_value_idx = aggregated_output.max(0)
 
         print('Output: ', output.data)
-        print('Instrument class-wise activation sum', aggregated_output)
+        print('Instrument class-wise activation sum averaged', aggregated_output/3)
         print('Max: {}, instrument_idx: {}'.format(max_value, max_value_idx))
-    # Cast tensor to python int type
-    return max_value_idx.data[0] 
+    # Arithmetic average, to preserve softmax output
+    return (aggregated_output.data / 3).cpu().numpy().reshape(-1).tolist()

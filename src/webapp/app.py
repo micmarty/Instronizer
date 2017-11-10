@@ -53,10 +53,9 @@ def generate_spectrograms(audio_filename, time_range):
 def classify(spectrograms_dir):
     '''
     Runs simplified classificator
-    Returns string - instrument name
+    Returns list of floats
     '''
-    instrument_name = lightweight_classifier.run(spectrograms_dir)
-    return instrument_name
+    return lightweight_classifier.run(spectrograms_dir)
 
 ##
 # Routing
@@ -94,8 +93,8 @@ def get_instruments():
     exit_code, spectrograms_dir = generate_spectrograms(
         file_path, time_range=(start, end))
     if exit_code == 0:
-        instrument_name = classify(spectrograms_dir)
-        return render_template('results.html', start=start, end=end, result=instrument_name)
+        instruments_results_list = classify(spectrograms_dir)
+        return render_template('results.html', start=start, end=end, result=instruments_results_list)
     return jsonify(start=start, end=end, result='PREPROCESSOR_ERROR')
 
 if __name__ == '__main__':

@@ -141,6 +141,7 @@ function initGetInstrumentButton(wavesurfer) {
             form_data.append("end", end);
 
             sendRegionsToServer(form_data);
+            $('#waitingForResultsProgress').show();
         } else {
             console.log("Cannot send regions because no was uploaded before")
         }
