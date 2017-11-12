@@ -13,6 +13,26 @@ https://www.youtube.com/watch?v=OGe-WXhbmBg stranger_things_medley_4m
 https://www.youtube.com/watch?v=mGQLXRTl3Z0 mischa_maisky_plays_bach_solo_20m
 https://www.youtube.com/watch?v=-2Y3qj9auBE mischa_maisky_the_swan_orchestra_3m
 
+[val/cello]
+# around 24 min
+# wyciac 13s z poczatku i 30s od konca
+https://www.youtube.com/watch?v=9NMEqi7LG6w aurore_dessesse_6m
+# wyciac 5s z poczatku, 10 z konca
+https://www.youtube.com/watch?v=PCicM6i59_I yoyoma_bach_suite_2m
+# wyciac 13 z poczatku
+https://www.youtube.com/watch?v=mmJim2h-byQ toccata_5m
+# wyciac 30s z konca
+https://www.youtube.com/watch?v=jTQiXKy8DZg subway_impro_3m
+# wyciac 10 z konca
+https://www.youtube.com/watch?v=Jr_3mUGOacI got_medley_3m
+# wyciac 7s z poczatku i 10s z konca
+https://www.youtube.com/watch?v=yYu6c0qBzTs interstellar_2m
+# wyciac 3s z poczatku i 20 z konca
+https://www.youtube.com/watch?v=poCw2CCrfzA gaillard_bach_prelude_3m
+# wyciac 6s z konca
+https://www.youtube.com/watch?v=19CdPaHrVPQ september_solo_3m
+
+
 # around 2h7m
 [train/piano]
 https://www.youtube.com/watch?v=M56RtC_cXxE chopin_1h_24m
@@ -20,6 +40,17 @@ https://www.youtube.com/watch?v=GEJKQWGiR9o popular_song_compilation_7m
 https://www.youtube.com/watch?v=588D3bKH3Dg piano_medley_coldplay_20m
 https://www.youtube.com/watch?v=V1Tr1qCHwq4 carol_of_the_bells_5m
 https://www.youtube.com/watch?v=rkWfSo2WFGE plnk_floyd_breathe_piano_11m
+
+# around 35m
+[val/piano]
+https://www.youtube.com/watch?v=qID3_70KAtk law_and_the_fist_mozdzer_11m
+# wyciac 3s z poczatku i 10s z konca
+https://www.youtube.com/watch?v=f-1Lm4uN_g8 turkisch_march_4m
+# wyciac 10s z poczatku i 10s z konca
+https://www.youtube.com/watch?v=Ynz98iBh9qw Nuvole_Bianche_5m
+# 6 z poczatku i 10 z konca
+https://www.youtube.com/watch?v=oPEBWXvo1Xc 4_pieces_yiruma_15m
+
 
 # around 1h40m
 [train/gac]
