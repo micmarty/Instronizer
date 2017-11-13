@@ -1,9 +1,7 @@
-# You can specify downloaded file name after the link
-
 ############
 # Training
 # around 1h44m
-# [train/cello]
+# [train/cel]
 # https://www.youtube.com/watch?v=Z7-oHCWoU8s relaxing_cello_soothing_1h
 # https://www.youtube.com/watch?v=Au4FTJeTQwM sleep_eric_octet_4m
 # https://www.youtube.com/watch?v=mjvGjUovxPU apocalyptica_nothing_else_matters_3m
@@ -13,7 +11,7 @@
 # https://www.youtube.com/watch?v=mGQLXRTl3Z0 mischa_maisky_plays_bach_solo_20m
 # https://www.youtube.com/watch?v=-2Y3qj9auBE mischa_maisky_the_swan_orchestra_3m
 
-[val/cello]
+[val/cel]
 # around 27 min
 # wyciac 13s z poczatku i 30s od konca
 https://www.youtube.com/watch?v=9NMEqi7LG6w aurore_dessesse_6m
@@ -34,7 +32,7 @@ https://www.youtube.com/watch?v=19CdPaHrVPQ september_solo_3m
 
 
 # around 2h7m
-# [train/piano]
+# [train/pia]
 # https://www.youtube.com/watch?v=M56RtC_cXxE chopin_1h_24m
 # https://www.youtube.com/watch?v=GEJKQWGiR9o popular_song_compilation_7m
 # https://www.youtube.com/watch?v=588D3bKH3Dg piano_medley_coldplay_20m
@@ -42,7 +40,7 @@ https://www.youtube.com/watch?v=19CdPaHrVPQ september_solo_3m
 # https://www.youtube.com/watch?v=rkWfSo2WFGE plnk_floyd_breathe_piano_11m
 
 # around 35m
-[val/piano]
+[val/pia]
 https://www.youtube.com/watch?v=qID3_70KAtk law_and_the_fist_mozdzer_11m
 # wyciac 3s z poczatku i 10s z konca
 https://www.youtube.com/watch?v=f-1Lm4uN_g8 turkisch_march_4m
@@ -111,7 +109,7 @@ https://www.youtube.com/watch?v=STNLPhmTttg josh_turner_nocturne_4m
 https://www.youtube.com/watch?v=7sZp0XzHNJ8 josh_blued_in_d_3m
 
 # around 1h46m
-# [train/gel]
+#[train/gel]
 # # wyciac mowe na poczatku!
 # https://www.youtube.com/watch?v=xiC__IjCa2s 100_riffs_boston_exchange_12m
 # # wyciac 30s z poczatku
@@ -131,7 +129,7 @@ https://www.youtube.com/watch?v=7sZp0XzHNJ8 josh_blued_in_d_3m
 # https://www.youtube.com/watch?v=a3QJiMTa130 ten_songs_one_string_santos_4m
 
 # around 33m
-[val/gel] 
+[val/gel]
 # wyciac 6s z konca
 https://www.youtube.com/watch?v=hRezta6mdFI despacito_bieber_4m
 
@@ -209,3 +207,4 @@ https://www.youtube.com/watch?v=mfT5AvkH1nc alexander_labko_tango_5m
 
 # wyciac pierwsze 6s i ostatnie 40s
 https://www.youtube.com/watch?v=XahhzJU18os fiddle_solo_mark_oconnor_8m
+# end
