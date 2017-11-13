@@ -3,15 +3,15 @@
 ############
 # Training
 # around 1h44m
-[train/cello]
-https://www.youtube.com/watch?v=Z7-oHCWoU8s relaxing_cello_soothing_1h
-https://www.youtube.com/watch?v=Au4FTJeTQwM sleep_eric_octet_4m
-https://www.youtube.com/watch?v=mjvGjUovxPU apocalyptica_nothing_else_matters_3m
-https://www.youtube.com/watch?v=x97f-_y93a0 apocalyptica_fade_to_black_5m
-https://www.youtube.com/watch?v=3eBroYj_Qv0 apocalyptica_farewell_5m
-https://www.youtube.com/watch?v=OGe-WXhbmBg stranger_things_medley_4m
-https://www.youtube.com/watch?v=mGQLXRTl3Z0 mischa_maisky_plays_bach_solo_20m
-https://www.youtube.com/watch?v=-2Y3qj9auBE mischa_maisky_the_swan_orchestra_3m
+# [train/cello]
+# https://www.youtube.com/watch?v=Z7-oHCWoU8s relaxing_cello_soothing_1h
+# https://www.youtube.com/watch?v=Au4FTJeTQwM sleep_eric_octet_4m
+# https://www.youtube.com/watch?v=mjvGjUovxPU apocalyptica_nothing_else_matters_3m
+# https://www.youtube.com/watch?v=x97f-_y93a0 apocalyptica_fade_to_black_5m
+# https://www.youtube.com/watch?v=3eBroYj_Qv0 apocalyptica_farewell_5m
+# https://www.youtube.com/watch?v=OGe-WXhbmBg stranger_things_medley_4m
+# https://www.youtube.com/watch?v=mGQLXRTl3Z0 mischa_maisky_plays_bach_solo_20m
+# https://www.youtube.com/watch?v=-2Y3qj9auBE mischa_maisky_the_swan_orchestra_3m
 
 [val/cello]
 # around 27 min
@@ -34,12 +34,12 @@ https://www.youtube.com/watch?v=19CdPaHrVPQ september_solo_3m
 
 
 # around 2h7m
-[train/piano]
-https://www.youtube.com/watch?v=M56RtC_cXxE chopin_1h_24m
-https://www.youtube.com/watch?v=GEJKQWGiR9o popular_song_compilation_7m
-https://www.youtube.com/watch?v=588D3bKH3Dg piano_medley_coldplay_20m
-https://www.youtube.com/watch?v=V1Tr1qCHwq4 carol_of_the_bells_5m
-https://www.youtube.com/watch?v=rkWfSo2WFGE plnk_floyd_breathe_piano_11m
+# [train/piano]
+# https://www.youtube.com/watch?v=M56RtC_cXxE chopin_1h_24m
+# https://www.youtube.com/watch?v=GEJKQWGiR9o popular_song_compilation_7m
+# https://www.youtube.com/watch?v=588D3bKH3Dg piano_medley_coldplay_20m
+# https://www.youtube.com/watch?v=V1Tr1qCHwq4 carol_of_the_bells_5m
+# https://www.youtube.com/watch?v=rkWfSo2WFGE plnk_floyd_breathe_piano_11m
 
 # around 35m
 [val/piano]
@@ -53,36 +53,36 @@ https://www.youtube.com/watch?v=oPEBWXvo1Xc 4_pieces_yiruma_15m
 
 
 # around 1h40m
-[train/gac]
-# wyciac 30s z poczatku
-https://www.youtube.com/watch?v=2flHxtWq6sU top5_acoustic_covers_19m
-
-# wyciac 30s z poczatku i 30s konca
-https://www.youtube.com/watch?v=TTXeqVSIQCs 25_iconic_fingerstyle_songs_8m
-
-# wyciac 10s z poczatku
-https://www.youtube.com/watch?v=hXQxSi34GWY beliver_imagine_fingerstyle_3m
-
-# wyciac ostatnie 30s
-https://www.youtube.com/watch?v=XabiWE3X1eQ 20_acoustic_riffs_intros_3m
-
-# wyciac 10s z poczatku
-https://www.youtube.com/watch?v=VATStoHAbXs 100_acoustic_riffs_and_intros_12m
-
-# wyciac 50s od konca
-https://www.youtube.com/watch?v=7gphiFVVtUI estas_street_golden_dragon_8m
-
-https://www.youtube.com/watch?v=DfW0k6aJVIA 20_best_acoustic_songs_10m
-https://www.youtube.com/watch?v=r3ebOxltJ1w hotel_california_2m
-https://www.youtube.com/watch?v=qv23U4uNaU8 canon_d_1m
-https://www.youtube.com/watch?v=nySDgzgaSFA civil_war_1m
-https://www.youtube.com/watch?v=hxwjT90i8Ys stairway_to_heaven_1m
-https://www.youtube.com/watch?v=9wniwSCyDoA sultans_dire_1m
-https://www.youtube.com/watch?v=m6aS8PJ66Xw layla_1m
-https://www.youtube.com/watch?v=MRqjOuhZsoY comf_numb_2m
-https://www.youtube.com/watch?v=Na8TduVkpIM 15_clean_riffs_6m
-https://www.youtube.com/watch?v=jdYJf_ybyVo butler_ocean_12m
-https://www.youtube.com/watch?v=xVZgUiRljdU estas_golden_dragon_9m
+# [train/gac]
+# # wyciac 30s z poczatku
+# https://www.youtube.com/watch?v=2flHxtWq6sU top5_acoustic_covers_19m
+# 
+# # wyciac 30s z poczatku i 30s konca
+# https://www.youtube.com/watch?v=TTXeqVSIQCs 25_iconic_fingerstyle_songs_8m
+# 
+# # wyciac 10s z poczatku
+# https://www.youtube.com/watch?v=hXQxSi34GWY beliver_imagine_fingerstyle_3m
+# 
+# # wyciac ostatnie 30s
+# https://www.youtube.com/watch?v=XabiWE3X1eQ 20_acoustic_riffs_intros_3m
+# 
+# # wyciac 10s z poczatku
+# https://www.youtube.com/watch?v=VATStoHAbXs 100_acoustic_riffs_and_intros_12m
+# 
+# # wyciac 50s od konca
+# https://www.youtube.com/watch?v=7gphiFVVtUI estas_street_golden_dragon_8m
+# 
+# https://www.youtube.com/watch?v=DfW0k6aJVIA 20_best_acoustic_songs_10m
+# https://www.youtube.com/watch?v=r3ebOxltJ1w hotel_california_2m
+# https://www.youtube.com/watch?v=qv23U4uNaU8 canon_d_1m
+# https://www.youtube.com/watch?v=nySDgzgaSFA civil_war_1m
+# https://www.youtube.com/watch?v=hxwjT90i8Ys stairway_to_heaven_1m
+# https://www.youtube.com/watch?v=9wniwSCyDoA sultans_dire_1m
+# https://www.youtube.com/watch?v=m6aS8PJ66Xw layla_1m
+# https://www.youtube.com/watch?v=MRqjOuhZsoY comf_numb_2m
+# https://www.youtube.com/watch?v=Na8TduVkpIM 15_clean_riffs_6m
+# https://www.youtube.com/watch?v=jdYJf_ybyVo butler_ocean_12m
+# https://www.youtube.com/watch?v=xVZgUiRljdU estas_golden_dragon_9m
 
 # around 33m
 [val/gac]
@@ -111,27 +111,27 @@ https://www.youtube.com/watch?v=STNLPhmTttg josh_turner_nocturne_4m
 https://www.youtube.com/watch?v=7sZp0XzHNJ8 josh_blued_in_d_3m
 
 # around 1h46m
-[train/gel]
-# wyciac mowe na poczatku!
-https://www.youtube.com/watch?v=xiC__IjCa2s 100_riffs_boston_exchange_12m
-# wyciac 30s z poczatku
-https://www.youtube.com/watch?v=d1JUO5VkS1Y 50_acdc_riffs_13m
-# wyciac 20s z poczatku i z konca
-https://www.youtube.com/watch?v=KB8-cV7lLDk rock_stars_4m
-https://www.youtube.com/watch?v=VOcABtJTpho 100_riffs_progmind_38m
-https://www.youtube.com/watch?v=yw6kT7jvlx0 badass_riffs_7m
-https://www.youtube.com/watch?v=CpiCgPV5MJo 10_classic_funky_riffs_2m
-https://www.youtube.com/watch?v=IQEBeGEUCXA rhcp_riff_medley_4m
-# wyciac 10s z poczatku
-https://www.youtube.com/watch?v=IaiJCMcF61o 10_indie_santos_4m
-https://www.youtube.com/watch?v=Lei4TvWxytE 10_muse_riffs_santos_5m
-# wyciac 3s z poczatku
-https://www.youtube.com/watch?v=qXT1NetbfGc 20_riffs_all_the_time_santos_comment_req_6m
-https://www.youtube.com/watch?v=2905olNvEM0 20_riffs_all_the_time_santos_7m
-https://www.youtube.com/watch?v=a3QJiMTa130 ten_songs_one_string_santos_4m
+# [train/gel]
+# # wyciac mowe na poczatku!
+# https://www.youtube.com/watch?v=xiC__IjCa2s 100_riffs_boston_exchange_12m
+# # wyciac 30s z poczatku
+# https://www.youtube.com/watch?v=d1JUO5VkS1Y 50_acdc_riffs_13m
+# # wyciac 20s z poczatku i z konca
+# https://www.youtube.com/watch?v=KB8-cV7lLDk rock_stars_4m
+# https://www.youtube.com/watch?v=VOcABtJTpho 100_riffs_progmind_38m
+# https://www.youtube.com/watch?v=yw6kT7jvlx0 badass_riffs_7m
+# https://www.youtube.com/watch?v=CpiCgPV5MJo 10_classic_funky_riffs_2m
+# https://www.youtube.com/watch?v=IQEBeGEUCXA rhcp_riff_medley_4m
+# # wyciac 10s z poczatku
+# https://www.youtube.com/watch?v=IaiJCMcF61o 10_indie_santos_4m
+# https://www.youtube.com/watch?v=Lei4TvWxytE 10_muse_riffs_santos_5m
+# # wyciac 3s z poczatku
+# https://www.youtube.com/watch?v=qXT1NetbfGc 20_riffs_all_the_time_santos_comment_req_6m
+# https://www.youtube.com/watch?v=2905olNvEM0 20_riffs_all_the_time_santos_7m
+# https://www.youtube.com/watch?v=a3QJiMTa130 ten_songs_one_string_santos_4m
 
-# around TODO
-[val/gel]
+# around 33m
+[val/gel] 
 # wyciac 6s z konca
 https://www.youtube.com/watch?v=hRezta6mdFI despacito_bieber_4m
 
@@ -140,43 +140,72 @@ https://www.youtube.com/watch?v=Yjarkl3VWPE linkin_park_numb_3m
 
 https://www.youtube.com/watch?v=MKtOcEouaWE part1_100_riffs_greatest_rocknroll_9m
 https://www.youtube.com/watch?v=IulqIFJMdgY part2_100_riffs_greatest_rocknroll_7m
-# TODO
 
-# around 2h15m
-[train/org]
-# Church organs
-https://www.youtube.com/watch?v=AgDMxs4aHZU bach_1h
-https://www.youtube.com/watch?v=magnG5fJDIA pirates_6m
-https://www.youtube.com/watch?v=ho9rZjlsyYY toccata_fugue_9m
-https://www.youtube.com/watch?v=D-_qS_3KXBA pirates_4m
-https://www.youtube.com/watch?v=uIosf0OzhNw phantom_opera_5m
-https://www.youtube.com/watch?v=m_HdrywerGE mormon_christmas_2m
-https://www.youtube.com/watch?v=0hF33RlhSl8 church_4m
-https://www.youtube.com/watch?v=4x9QIt_fqQE valkyries_5m
-https://www.youtube.com/watch?v=NNbXIzQRt6k cao_thu_organ_disco_5m
-https://www.youtube.com/watch?v=i119LgMDIXI two_steps_from_hell_2m
-https://www.youtube.com/watch?v=8FH4dx42HrI british_anthem_2m
-https://www.youtube.com/watch?v=ZEgXDlc2dHc hallelujah_4m
-https://www.youtube.com/watch?v=ey_8VSD7fgc arrival_queen_sheba_4m
-# wyciac pierwsze 20s
-https://www.youtube.com/watch?v=4oAbqFhYZps peter_aumndsen_toccata_6m
-# wyciac 30s z poczatku
-https://www.youtube.com/watch?v=I8unH4U1K7g abba_gimme_3m
-# wyciac 10s z poczatku
-https://www.youtube.com/watch?v=Q9lzGVyD6So abba_knowing_4m
-# wyciac 10s z poczatku
-https://www.youtube.com/watch?v=jSgV_ikxVh8 abba_super_trouper_4m
-# wyciac 10s z poczatku
-https://www.youtube.com/watch?v=GGEF_rsIwAk abba_lay_all_your_love_4m
-# wyciac 10s z poczatku
-https://www.youtube.com/watch?v=yyAJfcbyYxE abba_thank_you_4m
-# wyciac 30s z konca
-https://www.youtube.com/watch?v=Wd6qZS1_1aU bohemian_rhapsody_6m
-# wyciac 1min od konca
-https://www.youtube.com/watch?v=c9-R4N5zng0 pomp_and_circum_gert_8m
+# wyciac 16s z poczatku i 10m od konca - chce skrocic o polowe (do 10 minut)
+https://www.youtube.com/watch?v=QPQVvT87efk mettalica_guitar_solos_10m_of_19m
+
+# # around 2h3m
+# [train/org]
+# # Church organs
+# https://www.youtube.com/watch?v=AgDMxs4aHZU bach_1h
+# https://www.youtube.com/watch?v=magnG5fJDIA pirates_6m
+# https://www.youtube.com/watch?v=ho9rZjlsyYY toccata_fugue_9m
+# https://www.youtube.com/watch?v=uIosf0OzhNw phantom_opera_5m
+# https://www.youtube.com/watch?v=m_HdrywerGE mormon_christmas_2m
+# https://www.youtube.com/watch?v=0hF33RlhSl8 church_4m
+# https://www.youtube.com/watch?v=NNbXIzQRt6k cao_thu_organ_disco_5m
+# https://www.youtube.com/watch?v=i119LgMDIXI two_steps_from_hell_2m
+# https://www.youtube.com/watch?v=ey_8VSD7fgc arrival_queen_sheba_4m
+# # wyciac 10s z poczatku
+# https://www.youtube.com/watch?v=Q9lzGVyD6So abba_knowing_4m
+# # wyciac 10s z poczatku
+# https://www.youtube.com/watch?v=GGEF_rsIwAk abba_lay_all_your_love_4m
+# # wyciac 10s z poczatku
+# https://www.youtube.com/watch?v=yyAJfcbyYxE abba_thank_you_4m
+# # wyciac 30s z konca
+# https://www.youtube.com/watch?v=Wd6qZS1_1aU bohemian_rhapsody_6m
+# # wyciac 1min od konca
+# https://www.youtube.com/watch?v=c9-R4N5zng0 pomp_and_circum_gert_8m
+
+# # UWAGA TO JEST WYCIAGNIETY NADMIAR Z TRENINGOWYCH, NIE TRZEBA POBIERAC TYLKO PRZENIESC DO VAL
+# # around 28m
+# [val/org]
+# https://www.youtube.com/watch?v=D-_qS_3KXBA pirates_4m
+# https://www.youtube.com/watch?v=ZEgXDlc2dHc hallelujah_4m
+# https://www.youtube.com/watch?v=8FH4dx42HrI british_anthem_2m
+# https://www.youtube.com/watch?v=4x9QIt_fqQE valkyries_5m
+# # wyciac 10s z poczatku
+# https://www.youtube.com/watch?v=jSgV_ikxVh8 abba_super_trouper_4m
+# 
+# # wyciac 30s z poczatku
+# https://www.youtube.com/watch?v=I8unH4U1K7g abba_gimme_3m
+# 
+# # wyciac pierwsze 20s
+# https://www.youtube.com/watch?v=4oAbqFhYZps peter_aumndsen_toccata_6m
 
 # around 2h
 [train/vio]
-https://www.youtube.com/watch?v=5Jj5AWPF3m4 top10_violin_solo_11m
-https://www.youtube.com/watch?v=i2mTmi9tUag paganini_1h_25m
-https://www.youtube.com/watch?v=6KaYzgofHjc bach_partita_33m
+# https://www.youtube.com/watch?v=5Jj5AWPF3m4 top10_violin_solo_11m
+# https://www.youtube.com/watch?v=i2mTmi9tUag paganini_1h_25m
+# https://www.youtube.com/watch?v=6KaYzgofHjc bach_partita_33m
+
+# around 35m
+[val/vio]
+# wyciac 3s z poczatku i 20s z konca
+https://www.youtube.com/watch?v=0jXXWBt5URw paganini_caprice_sumina_studer_2m
+
+# wyciac 10s z poczatku i 10s od konca
+https://www.youtube.com/watch?v=FTUWCr3IXxw sonata_g_minor_bach_bartje_14m
+
+# podchwytiliwe (vio dominuje,ale pianino calkiem wyrazne)
+# wyciac 6s od konca
+https://www.youtube.com/watch?v=gqOHNP-RThU jealousy_tango_katica_3m
+
+# strasznie dziwne...
+https://www.youtube.com/watch?v=COTgXNeKKE8 vigilia_tango_3m
+
+# wyciac 6s z poczatku i 40s od konca
+https://www.youtube.com/watch?v=mfT5AvkH1nc alexander_labko_tango_5m
+
+# wyciac pierwsze 6s i ostatnie 40s
+https://www.youtube.com/watch?v=XahhzJU18os fiddle_solo_mark_oconnor_8m
