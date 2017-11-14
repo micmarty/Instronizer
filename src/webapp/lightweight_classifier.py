@@ -15,16 +15,20 @@ def load_data_from_folder(path):
                                        num_workers=1)
 
 
+
 def run(input):
     model = MobileNet(num_classes=6)
-    model = torch.nn.DataParallel(model)
 
-    checkpoint_path = '/home/miczi/Projects/instrument-classifier-polyphonic/src/webapp/checkpoint_43.pth.tar'
+    # Load checkpoint
+    checkpoint_path = '/home/miczi/Projects/instrument-classifier-polyphonic/src/webapp/checkpoint.pth.tar'
+    # Map storage to cpu
     checkpoint = torch.load(checkpoint_path, map_location=lambda storage, loc: storage)
+    print('[lightweight_classifier.py] using checkpoint: \n{}'.format(checkpoint_path))
+
+    # Load model state
     state_dict = checkpoint['state_dict']
     model.load_state_dict(state_dict)
     model.cpu()
-    # TODO load checkpoint
     
     validation_data = load_data_from_folder(input)
     aggregated_output = None
