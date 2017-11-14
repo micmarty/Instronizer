@@ -368,10 +368,19 @@ def validate_single_labeled(validation_data, model, criterion):
 
 def run_training(training_data, validation_data, model, criterion, optimizer):
     global best_precision_1
+
+    # Validate before training (how good model is guessing on random weight)
+    precision_1 = validate_single_labeled(validation_data, model, criterion)
+    logger.scalar_summary('validation_overall', precision_1, 0)
+
+    # Run normal train-validate cycle
     for epoch in range(args.start_epoch, args.start_epoch + args.epochs):
         adjust_learning_rate(optimizer, epoch)
         train(training_data, model, criterion, optimizer, epoch)
         precision_1 = validate_single_labeled(validation_data, model, criterion)
+        
+        # Log overall validation performance on separate chart
+        logger.scalar_summary('validation_overall', precision_1, epoch)
         #run_validation(model, val_criterion)
 
         best_precision_1 = max(precision_1, best_precision_1)
@@ -408,8 +417,8 @@ def main():
 
     # IMPORTANT model .cuda() needs to be called before optimizer definition!
     # source: http://pytorch.org/docs/master/optim.html
-    #model = MobileNet(num_classes=args.num_classes)
-    model = densenet161(drop_rate=0.2, num_classes=11)
+    model = MobileNet(num_classes=args.num_classes)
+    #model = densenet161(drop_rate=0.2, num_classes=11)
     if args.use_cuda:
         model = torch.nn.DataParallel(model).cuda()
     print(model)
