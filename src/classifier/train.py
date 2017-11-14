@@ -211,8 +211,8 @@ def train(training_data, model, criterion, optimizer, epoch):
         if args.use_cuda:
             target = target.cuda(async=True)
             input = input.cuda() 
-        input_var = torch.autograd.Variable(input, volatile=True)
-        target_var = torch.autograd.Variable(target, volatile=True)
+        input_var = torch.autograd.Variable(input)
+        target_var = torch.autograd.Variable(target)
 
 
         # Compute output
