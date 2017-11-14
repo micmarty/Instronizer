@@ -421,7 +421,9 @@ def main():
     model = MobileNet(num_classes=args.num_classes)
     #model = densenet161(drop_rate=0.2, num_classes=11)
     if args.use_cuda:
-        model = torch.nn.DataParallel(model).cuda()
+        # Removed DataParallel because that could be a reason for 
+        # failures with loading saved models on CPU
+        model.cuda()
     print(model)
 
     # TODO consider Adam as an optimizer function
