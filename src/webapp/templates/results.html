@@ -1,0 +1,46 @@
+<div style="padding: 60px">
+    <h4>Segment from {{start}}s to {{end}}s</h4>
+    <div id="top_x_div"></div>
+</div>
+
+<script>
+    google.charts.load('current', {
+        'packages': ['bar']
+    });
+    google.charts.setOnLoadCallback(drawStuff);
+    var instrument_names = ['Cello', 'Acoustic guitar', 'Electric guitar', 'Church organs', 'Piano', 'Violin']
+
+    function drawStuff() {
+        var results = JSON.parse("{{result}}");
+        results = results.map(function(value, i) {
+            return [instrument_names[i], value];
+        });
+        var header = [
+            ['Instrument', 'Probability']
+        ];
+        data = header.concat(results);
+        console.log(data);
+        var data = new google.visualization.arrayToDataTable(data);
+
+        var options = {
+            width: 700,
+            legend: {
+                position: 'none'
+            },
+            axes: {
+                x: {
+                    0: {
+                        side: 'top',
+                    } // Top x-axis.
+                }
+            },
+            bar: {
+                groupWidth: "90%"
+            }
+        };
+
+        var chart = new google.charts.Bar(document.getElementById('top_x_div'));
+        // Convert the Classic options to Material options.
+        chart.draw(data, google.charts.Bar.convertOptions(options));
+    };
+</script>

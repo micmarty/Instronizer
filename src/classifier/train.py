@@ -7,13 +7,14 @@ import time
 import torch
 import torch.utils.data
 import better_exceptions
-# Custom utils
-from models.mobilenet import MobileNet
-from models.densenet import densenet161
-from logger import Logger # Tensorboard
-from utils.average_meter import AverageMeter
-from utils import printing_functions as pf
-from utils import dataset_finder as df
+
+# Relative to application application source root
+from classifier.models.mobilenet import MobileNet
+from classifier.models.densenet import densenet161
+from classifier.utils.tensorboard_logger import Logger  # Tensorboard
+from classifier.utils.average_meter import AverageMeter
+from classifier.utils import printing_functions as pf
+import classifier.dataset_loader as df
 
 def input_args():
     parser = argparse.ArgumentParser('PyTorch Instrument classifier training script')
@@ -51,10 +52,12 @@ def input_args():
 
 
 def save_checkpoint(state, is_best, start_epoch, filename='checkpoint.pth.tar'):
-    if start_epoch < 15:
+    # Store first n checkpoints in a single file (overriding)
+    if start_epoch < 10:
         torch.save(state, filename)
     else:
-        torch.save(state, 'checkpoint_{}.pth.tar'.format(start_epoch))
+        filename = 'checkpoint_{}.pth.tar'
+        torch.save(state, filename.format(start_epoch))
     if is_best:
         shutil.copyfile(filename, 'model_best_{}.pth.tar'.format(start_epoch))
 
@@ -206,7 +209,8 @@ def train(training_data, model, criterion, optimizer, epoch):
         data_time.update(time.time() - timer_start)
 
         if args.use_cuda:
-            target = target.cuda(async=True) 
+            target = target.cuda(async=True)
+            input = input.cuda() 
         input_var = torch.autograd.Variable(input)
         target_var = torch.autograd.Variable(target)
 
@@ -239,92 +243,6 @@ def train(training_data, model, criterion, optimizer, epoch):
         print_training_step(epoch, step, len(training_data), batch_time, data_time, losses, top1, topk)
         log_to_tensorboard(model, step, input_var, losses, top1, topk, mode='train')
 
-def string_to_class_idx(strings):
-    '''Transforms a list of strings into 2d list
-    Array element: '1;2;3;5;9;'
-    Returned element: [1,2,3,5,9]
-
-    Array: ['1;2;3;5;9;', '1;2;', '1;2;9;']
-    Returns: [[1,2,3,5,9], [1,2], [1,2,9]]
-    '''
-    result = []
-    for label_string in strings:
-        # Remove trailing semicolon and split by this separator
-        labels = label_string[:-1].split(';')
-        # Convert all elements from string to int
-        result.append(list(map(int, labels)))
-    return result
-
-def onehot(y):
-    y_onehot = torch.FloatTensor(args.num_classes).zero_()
-    for i in y:
-        y_onehot[i] = 1
-    return y_onehot
-
-def onehot_2d(classes_list, rows):
-    result = torch.FloatTensor(rows, args.num_classes)
-    for row, classes in enumerate(classes_list):
-        classes = torch.LongTensor(classes)
-        result[row, :] = onehot(classes)
-    return result
-
-def validate(validation_data, model, criterion):
-    batch_time = AverageMeter()
-    losses = AverageMeter()
-    top1 = AverageMeter()
-    topk = AverageMeter()
-    model.eval()
-
-    # Tensor for storing all aggregated outputs for one song (many spectrograms)
-    summed_output_classwise = torch.FloatTensor(1, args.num_classes).zero_()
-
-    timer_start = time.time()
-    for step, (input, target, song_path) in enumerate(validation_data):
-        
-        # Adjust 2d onehot matrix height to mini-batch size
-        target = onehot_2d(string_to_class_idx(target), rows=input.shape[0])
-
-        if args.use_cuda:
-            target = target.cuda(async=True)
-        input_var = torch.autograd.Variable(input)
-        target_var = torch.autograd.Variable(target)
-        
-        # Compute output
-        output = model(input_var)
-        
-
-        # Sum activations class-wise
-        [summed_output_classwise.add_(row) for row in output.cpu().data]
-
-        # DEBUG one row for simplicity
-        print('Song path: {}\n'.format(Path(song_path[0]).stem))
-        print('Output - ', output[0])
-        print('Target: ', target[0])
-        
-        # TODO fix and uncomment code below
-        # TODO figure out how to measure accuracy
-
-        # prec_1, prec_k = accuracy(output.data, target, topk=(1, args.top_k))
-        # top1.update(prec_1[0], input.size(0))
-        # topk.update(prec_k[0], input.size(0))
-
-        # Measure batch performance and update timer
-        batch_time.update(time.time() - timer_start)
-        timer_start = time.time()
-
-        # Print to the console and log to Tenorboard
-    
-    loss = criterion(output, target_var)
-    losses.update(loss.data[0], input.size(0))
-    print_validation_step(step, len(validation_data), batch_time, losses, top1, topk)
-    log_to_tensorboard(model, step, input_var, losses, top1, topk, mode='val')
-    # Print normalized vector of answers for one song
-    print('==============================================')
-    print('Aggregated output for: {}'.format(Path(song_path[0]).stem), summed_output_classwise / torch.max(summed_output_classwise))
-    print('Target: ', target[0].view(1, -1))
-    print('==============================================')
-    print(' * Prec@1 {top1.avg:.3f} Prec@{} {topk.avg:.3f}'.format(args.top_k, top1=top1, topk=topk))
-    return top1.avg
 
 
 def validate_single_labeled(validation_data, model, criterion):
@@ -336,16 +254,18 @@ def validate_single_labeled(validation_data, model, criterion):
 
     timer_start = time.time()
     for step, (input, target) in enumerate(validation_data):
-        target = target.cuda(async=True)
-        input_var = torch.autograd.Variable(input)
-        target_var = torch.autograd.Variable(target)
+        if args.use_cuda:
+            target = target.cuda(async=True)
+            input = input.cuda()
+        # Volatile option means: "Don't calculate the gradients"
+        # We don't need gradients because no backward() functions is called
+        input_var = torch.autograd.Variable(input, volatile=True)
+        target_var = torch.autograd.Variable(target, volatile=True)
 
-        # Compute output
+        # Compute the output
         output = model(input_var)
         loss = criterion(output, target_var)
 
-        # TODO add some kind of checking if output was close to target
-        # TODO change accuracy function for validation
         prec_1, prec_k = accuracy(output.data, target, topk=(1, args.top_k))
         losses.update(loss.data[0], input.size(0))
         top1.update(prec_1[0], input.size(0))
@@ -358,8 +278,11 @@ def validate_single_labeled(validation_data, model, criterion):
         # Print to the console and log to Tenorboard
         print_validation_step(step, len(validation_data),
                               batch_time, losses, top1, topk)
-        log_to_tensorboard(model, step, input_var,
-                           losses, top1, topk, mode='val')
+
+        # We don't need to disort plot with chaotic points
+        # Log to tensorboard only once per validation phase (see run_training function)
+        # log_to_tensorboard(model, step, input_var,
+        #                  losses, top1, topk, mode='val')
     print(
         ' * Prec@1 {top1.avg:.3f} Prec@{} {topk.avg:.3f}'.format(args.top_k, top1=top1, topk=topk))
     return top1.avg
@@ -367,11 +290,19 @@ def validate_single_labeled(validation_data, model, criterion):
 
 def run_training(training_data, validation_data, model, criterion, optimizer):
     global best_precision_1
+
+    # Validate before training (how good model is guessing on random weight)
+    precision_1 = validate_single_labeled(validation_data, model, criterion)
+    logger.scalar_summary('validation_overall', precision_1, 0)
+
+    # Run normal train-validate cycle
     for epoch in range(args.start_epoch, args.start_epoch + args.epochs):
         adjust_learning_rate(optimizer, epoch)
         train(training_data, model, criterion, optimizer, epoch)
         precision_1 = validate_single_labeled(validation_data, model, criterion)
-        #run_validation(model, val_criterion)
+        
+        # Log overall validation performance on separate chart
+        logger.scalar_summary('validation_overall', precision_1, epoch)
 
         best_precision_1 = max(precision_1, best_precision_1)
         is_best = precision_1 > best_precision_1
@@ -385,41 +316,30 @@ def run_training(training_data, validation_data, model, criterion, optimizer):
             'optimizer': optimizer.state_dict(),
         }, is_best, start_epoch=epoch + 1)
 
-def run_validation(model, criterion):
-    root = Path(args.data, 'val')
-    spec_folder = df.ValSpecFolder(str(root))
-
-    for val_song_idx in range(20):
-        validation_data = torch.utils.data.DataLoader(spec_folder,
-                                                  batch_size=args.val_batch_size,
-                                                  shuffle=False,
-                                                  num_workers=args.workers)
-        validate(validation_data, model, criterion)
-        validation_data.dataset.next_song()
 
 def main():
     global args, logger, best_precision_1
     args = input_args()
-    logger = Logger('./logs')   # Tensorboard logger
+    logger = Logger('./tensorboard_logs')   # Tensorboard logger
     best_precision_1 = 0          # Global record
 
     pf.print_args(args) 
 
-    # IMPORTANT model .cuda() needs to be called before optimizer definition!
+    # IMPORTANT model.cuda() needs to be called before optimizer definition!
     # source: http://pytorch.org/docs/master/optim.html
-    #model = MobileNet(num_classes=args.num_classes)
-    model = densenet161(drop_rate=0.2, num_classes=11)
+    model = MobileNet(num_classes=args.num_classes)
+    #model = densenet161(drop_rate=0.2, num_classes=6)
     if args.use_cuda:
-        model = torch.nn.DataParallel(model).cuda()
+        # Removed DataParallel because that was the reason of
+        # failures when loading checkpoints onto CPU
+        model.cuda()
     print(model)
 
     # TODO consider Adam as an optimizer function
     criterion = torch.nn.CrossEntropyLoss()
-    #val_criterion = torch.nn.MultiLabelSoftMarginLoss()
 
     if args.use_cuda:
         criterion = criterion.cuda()
-        #val_criterion = val_criterion.cuda()
     optimizer = torch.optim.SGD(model.parameters(), 
                                 lr=args.learning_rate, 
                                 momentum=args.momentum, 
@@ -431,12 +351,112 @@ def main():
     if args.evaluate:
         validation_data = load_data_from_folder('val')
         validate_single_labeled(validation_data, model, criterion)
-        #run_validation(model, val_criterion)
     else:
         validation_data = load_data_from_folder('val')
         training_data = load_data_from_folder('train')
-        # validation_data = load_data_from_folder('val')
         run_training(training_data, validation_data, model, criterion, optimizer)
 
 if __name__ == '__main__':
     main()
+
+
+# UNUSED CODEBASE for multilabel validation on IRMAS
+#
+# def run_validation(model, criterion):
+#     root = Path(args.data, 'val')
+#     spec_folder = df.ValSpecFolder(str(root))
+
+#     for val_song_idx in range(20):
+#         validation_data = torch.utils.data.DataLoader(spec_folder,
+#                                                   batch_size=args.val_batch_size,
+#                                                   shuffle=False,
+#                                                   num_workers=args.workers)
+#         validate(validation_data, model, criterion)
+#         validation_data.dataset.next_song()
+
+# def string_to_class_idx(strings):
+#     '''Transforms a list of strings into 2d list
+#     Array element: '1;2;3;5;9;'
+#     Returned element: [1,2,3,5,9]
+
+#     Array: ['1;2;3;5;9;', '1;2;', '1;2;9;']
+#     Returns: [[1,2,3,5,9], [1,2], [1,2,9]]
+#     '''
+#     result = []
+#     for label_string in strings:
+#         # Remove trailing semicolon and split by this separator
+#         labels = label_string[:-1].split(';')
+#         # Convert all elements from string to int
+#         result.append(list(map(int, labels)))
+#     return result
+
+# def onehot(y):
+#     y_onehot = torch.FloatTensor(args.num_classes).zero_()
+#     for i in y:
+#         y_onehot[i] = 1
+#     return y_onehot
+
+# def onehot_2d(classes_list, rows):
+#     result = torch.FloatTensor(rows, args.num_classes)
+#     for row, classes in enumerate(classes_list):
+#         classes = torch.LongTensor(classes)
+#         result[row, :] = onehot(classes)
+#     return result
+
+# def validate(validation_data, model, criterion):
+#     batch_time = AverageMeter()
+#     losses = AverageMeter()
+#     top1 = AverageMeter()
+#     topk = AverageMeter()
+#     model.eval()
+
+#     # Tensor for storing all aggregated outputs for one song (many spectrograms)
+#     summed_output_classwise = torch.FloatTensor(1, args.num_classes).zero_()
+
+#     timer_start = time.time()
+#     for step, (input, target, song_path) in enumerate(validation_data):
+        
+#         # Adjust 2d onehot matrix height to mini-batch size
+#         target = onehot_2d(string_to_class_idx(target), rows=input.shape[0])
+
+#         if args.use_cuda:
+#             target = target.cuda(async=True)
+#         input_var = torch.autograd.Variable(input)
+#         target_var = torch.autograd.Variable(target)
+        
+#         # Compute output
+#         output = model(input_var)
+        
+
+#         # Sum activations class-wise
+#         [summed_output_classwise.add_(row) for row in output.cpu().data]
+
+#         # DEBUG one row for simplicity
+#         print('Song path: {}\n'.format(Path(song_path[0]).stem))
+#         print('Output - ', output[0])
+#         print('Target: ', target[0])
+        
+#         # TODO fix and uncomment code below
+#         # TODO figure out how to measure accuracy
+
+#         # prec_1, prec_k = accuracy(output.data, target, topk=(1, args.top_k))
+#         # top1.update(prec_1[0], input.size(0))
+#         # topk.update(prec_k[0], input.size(0))
+
+#         # Measure batch performance and update timer
+#         batch_time.update(time.time() - timer_start)
+#         timer_start = time.time()
+
+#         # Print to the console and log to Tenorboard
+    
+#     loss = criterion(output, target_var)
+#     losses.update(loss.data[0], input.size(0))
+#     print_validation_step(step, len(validation_data), batch_time, losses, top1, topk)
+#     log_to_tensorboard(model, step, input_var, losses, top1, topk, mode='val')
+#     # Print normalized vector of answers for one song
+#     print('==============================================')
+#     print('Aggregated output for: {}'.format(Path(song_path[0]).stem), summed_output_classwise / torch.max(summed_output_classwise))
+#     print('Target: ', target[0].view(1, -1))
+#     print('==============================================')
+#     print(' * Prec@1 {top1.avg:.3f} Prec@{} {topk.avg:.3f}'.format(args.top_k, top1=top1, topk=topk))
+#     return top1.avg

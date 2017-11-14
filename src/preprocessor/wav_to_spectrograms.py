@@ -1,12 +1,13 @@
 ''' Created by Michał Martyniak 
 
 Description:
-This script supports input like parameters as following: 
+This script supports multiple input variations: 
 - full path to a single wav file
 - dir path to IRMAS dataset
 - path to dir containing wav files
 
 The destination folder doesn't have to exist (it will be automatically created)
+You can set excerpt start and end with options --start and --end
 
 Example with IRMAS dataset (preprocess training data):
 python src/wav_to_spectrograms.py -i <...>/train --irmas -o <...>/spectrograms
@@ -21,13 +22,14 @@ python src/wav_to_spectrograms.py -i <...>/train/cel -o <...>/cello_spectrograms
 import librosa
 import soundfile as sf
 import argparse
-#import matplotlib.image as image
-from utils import printing_functions as pf
 from pathlib import Path, PurePath
 import numpy as np
 import time
 import scipy
 import better_exceptions
+
+# Custom imports
+from classifier.utils import printing_functions as pf
 
 parser = argparse.ArgumentParser(description='WAV to spectrograms processor')
 
@@ -174,7 +176,6 @@ class Preprocessor:
         else:
             print('Skipping')
 
-    #@pf.print_execution_time
     def _resample(self, y, from_sr):
         return librosa.resample(y, from_sr, self.sr, res_type='kaiser_fast')
 
@@ -233,3 +234,4 @@ if __name__ == '__main__':
     args = parser.parse_args()
     p = Preprocessor(args)
     p.process(time_range=(args.start, args.end))
+    exit(0)

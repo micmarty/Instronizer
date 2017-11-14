@@ -1,3 +1,4 @@
+# Source: Original PyTorch implementation of DenseNet
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -15,9 +16,6 @@ model_urls = {
     'densenet161': 'https://download.pytorch.org/models/densenet161-17b70270.pth',
 }
 
-
-
-
 def densenet121(pretrained=False, **kwargs):
     r"""Densenet-121 model from
     `"Densely Connected Convolutional Networks" <https://arxiv.org/pdf/1608.06993.pdf>`
@@ -30,9 +28,6 @@ def densenet121(pretrained=False, **kwargs):
     if pretrained:
         model.load_state_dict(model_zoo.load_url(model_urls['densenet121']))
     return model
-
-
-
 
 def densenet169(pretrained=False, **kwargs):
     r"""Densenet-169 model from
@@ -47,8 +42,6 @@ def densenet169(pretrained=False, **kwargs):
         model.load_state_dict(model_zoo.load_url(model_urls['densenet169']))
     return model
 
-
-
 def densenet201(pretrained=False, **kwargs):
     r"""Densenet-201 model from
     `"Densely Connected Convolutional Networks" <https://arxiv.org/pdf/1608.06993.pdf>`
@@ -62,9 +55,6 @@ def densenet201(pretrained=False, **kwargs):
         model.load_state_dict(model_zoo.load_url(model_urls['densenet201']))
     return model
 
-
-
-
 def densenet161(pretrained=False, **kwargs):
     r"""Densenet-161 model from
     `"Densely Connected Convolutional Networks" <https://arxiv.org/pdf/1608.06993.pdf>`
@@ -77,7 +67,6 @@ def densenet161(pretrained=False, **kwargs):
     if pretrained:
         model.load_state_dict(model_zoo.load_url(model_urls['densenet161']))
     return model
-
 
 class _DenseLayer(nn.Sequential):
     def __init__(self, num_input_features, growth_rate, bn_size, drop_rate):
@@ -99,7 +88,6 @@ class _DenseLayer(nn.Sequential):
                 new_features, p=self.drop_rate, training=self.training)
         return torch.cat([x, new_features], 1)
 
-
 class _DenseBlock(nn.Sequential):
     def __init__(self, num_layers, num_input_features, bn_size, growth_rate, drop_rate):
         super(_DenseBlock, self).__init__()
@@ -107,7 +95,6 @@ class _DenseBlock(nn.Sequential):
             layer = _DenseLayer(num_input_features + i *
                                 growth_rate, growth_rate, bn_size, drop_rate)
             self.add_module('denselayer%d' % (i + 1), layer)
-
 
 class _Transition(nn.Sequential):
     def __init__(self, num_input_features, num_output_features):
@@ -117,7 +104,6 @@ class _Transition(nn.Sequential):
         self.add_module('conv', nn.Conv2d(num_input_features, num_output_features,
                                           kernel_size=1, stride=1, bias=False))
         self.add_module('pool', nn.AvgPool2d(kernel_size=2, stride=2))
-
 
 class DenseNet(nn.Module):
     r"""Densenet-BC model class, based on

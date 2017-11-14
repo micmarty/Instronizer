@@ -1,0 +1,46 @@
+<section id="waveformSection" style="visibility: hidden;opacity: 0.0" class="mdl-grid mdl-grid--no-spacing mdl-shadow--2dp">
+    <div class="mdl-card mdl-cell mdl-cell--12-col-desktop mdl-cell--6-col-tablet mdl-cell--4-col-phone">
+
+        <!-- Waveform -->
+        <div id="waveform"></div>
+        <div id="waveform-timeline"></div>
+
+        <!-- Control buttons -->
+        <div class="mdl-grid mdl-card__actions">
+
+            <!-- TODO add wavesurfer buttons -->
+            <div class="controls mdl-grid center-items">
+                <!-- Zoom Slider -->
+                <p style="width:300px; height:40px">
+                    Zoom:
+                    <input id="zoomSlider" class="mdl-slider mdl-js-slider" type="range" min="0" max="100" value="0" tabindex="0">
+                </p>
+                <!-- Rewind -->
+                <button id="backward" type="button" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect">
+                    <i class="material-icons">replay_30</i>
+                </button>
+
+                <!-- Play/pause -->
+                <button id="togglePlay" type="button" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect">
+                    <i class="material-icons">play_arrow</i>/<i class="material-icons">pause</i>
+                </button>
+
+                <!-- Forward -->
+                <button id="forward" type="button" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect">
+                    <i class="material-icons">forward_30</i>
+                </button>
+
+                <!-- Toggle mute -->
+                <button id="toggleMute" type="button" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect">
+                    <i class="material-icons">volume_off</i>
+                </button>
+
+                <!-- Classify button -->
+                <button id="getInstrumentNameButton" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-js-ripple-effect">
+                    Get instrument name
+                </button>
+            </div>
+        </div>
+    </div>
+    <div id="waitingForResultsProgress" style="width: 100%; height: 10px; display: none" class="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div>
+</section>

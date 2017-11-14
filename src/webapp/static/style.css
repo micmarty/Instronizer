@@ -1,0 +1,44 @@
+/* Clickable, circle area */
+
+.mdl-button--file {
+    width: 200px;
+    height: 200px;
+    overflow: hidden;
+}
+
+
+/* Upload icon */
+
+#uploadGlyph {}
+
+
+/* Hidden Browse button*/
+
+#uploadFileInput {
+    width: 100%;
+    height: 100%;
+    display: block;
+    opacity: 0;
+    overflow: hidden;
+}
+
+
+/* Invisible form - not messing up the layout */
+
+form {
+    margin: 0;
+    padding: 0;
+    display: block;
+}
+
+
+/* Insert space between waveform control buttons */
+
+.controls>button {
+    margin-right: 20px;
+}
+
+#scrollable {
+    overflow-y: scroll;
+    height: 400px;
+}
