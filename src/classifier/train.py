@@ -52,10 +52,11 @@ def input_args():
 
 
 def save_checkpoint(state, is_best, start_epoch, filename='checkpoint.pth.tar'):
-    if start_epoch < 15:
+    if start_epoch < 10:
         torch.save(state, filename)
     else:
-        torch.save(state, 'checkpoint_{}.pth.tar'.format(start_epoch))
+        filename = 'checkpoint_{}.pth.tar'
+        torch.save(state, filename.format(start_epoch))
     if is_best:
         shutil.copyfile(filename, 'model_best_{}.pth.tar'.format(start_epoch))
 
