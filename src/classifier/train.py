@@ -52,6 +52,7 @@ def input_args():
 
 
 def save_checkpoint(state, is_best, start_epoch, filename='checkpoint.pth.tar'):
+    # Store first n checkpoints in a single file (overriding)
     if start_epoch < 10:
         torch.save(state, filename)
     else:
@@ -208,9 +209,10 @@ def train(training_data, model, criterion, optimizer, epoch):
         data_time.update(time.time() - timer_start)
 
         if args.use_cuda:
-            target = target.cuda(async=True) 
-        input_var = torch.autograd.Variable(input)
-        target_var = torch.autograd.Variable(target)
+            target = target.cuda(async=True)
+            input = input.cuda() 
+        input_var = torch.autograd.Variable(input, volatile=True)
+        target_var = torch.autograd.Variable(target, volatile=True)
 
 
         # Compute output
@@ -338,9 +340,11 @@ def validate_single_labeled(validation_data, model, criterion):
 
     timer_start = time.time()
     for step, (input, target) in enumerate(validation_data):
-        target = target.cuda(async=True)
-        input_var = torch.autograd.Variable(input)
-        target_var = torch.autograd.Variable(target)
+        if args.use_cuda:
+            target = target.cuda(async=True)
+            input = input.cuda()
+        input_var = torch.autograd.Variable(input, volatile=True)
+        target_var = torch.autograd.Variable(target, volatile=True)
 
         # Compute output
         output = model(input_var)
