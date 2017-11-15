@@ -42,3 +42,12 @@ form {
     overflow-y: scroll;
     height: 400px;
 }
+
+
+/* Visible labels  for waveform */
+
+region.wavesurfer-region:before {
+    content: attr(data-region-label);
+    position: absolute;
+    top: 0;
+}
