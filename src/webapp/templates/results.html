@@ -43,4 +43,40 @@
         // Convert the Classic options to Material options.
         chart.draw(data, google.charts.Bar.convertOptions(options));
     };
+
+    // Add regions to waveform 
+    results = JSON.parse("{{result}}");
+    var maxValueIndex = -1;
+    var maxValue = -1;
+    for (var i = 0; i < 6; i++) {
+        if (results[i] > maxValue) {
+            maxValueIndex = i;
+            maxValue = results[i];
+        }
+    }
+    var dominantInstrumentName = instrument_names[maxValueIndex];
+    console.log("dominant instrument: ", dominantInstrumentName);
+    // Remove seleted region
+    // And create identical but non-draggale
+    wavesurfer.addRegion({
+        id: "dominantInstrumentName",
+        start: '{{ start }}', // time in seconds 
+        end: '{{ end }}', // time in seconds 
+        drag: false,
+        resize: false,
+        color: 'hsla(213, 92%, 85%, 0.48)',
+        attributes: {
+            label: dominantInstrumentName
+        }
+    });
+    wavesurfer.regions.list["startend"].remove();
+    // Add new, draggable region
+    wavesurfer.addRegion({
+        id: "startend",
+        start: '{{ end }}', // time in seconds 
+        end: '{{ end + 6 }}', // time in seconds 
+        drag: true,
+        resize: false,
+        color: 'hsla(262, 52%, 47%, 0.48)',
+    });
 </script>

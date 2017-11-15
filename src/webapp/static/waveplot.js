@@ -1,4 +1,5 @@
 // Allow to execute when page is fully loaded
+var wavesurfer;
 $(function() {
     // Initialize error dialog
     var dialog = document.querySelector("dialog");
@@ -9,7 +10,8 @@ $(function() {
         dialog.close();
     });
     // Initialize Wavesurfer
-    var wavesurfer = initWavesurfer();
+    wavesurfer = initWavesurfer();
+    //localStorage.setItem('wavesurferObject', JSON.stringify(wavesurfer));
     bindOnUploadChange(wavesurfer, dialog);
     initWaveformControls(wavesurfer);
     initZoomSlider(wavesurfer);
@@ -83,7 +85,7 @@ function initWavesurfer() {
     var wavesurfer = WaveSurfer.create({
         container: '#waveform',
         barWidth: 3,
-        height: 150,
+        height: 300,
         progressColor: '#512da8',
         skipLength: 30,
         fillParent: true
@@ -105,7 +107,7 @@ function initWavesurfer() {
             container: '#waveform-timeline',
             timeInterval: 5
         });
-
+        wavesurfer.clearRegions();
         // Enable creating regions by dragging
         wavesurfer.addRegion({
             id: 'startend',
