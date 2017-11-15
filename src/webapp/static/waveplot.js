@@ -25,20 +25,22 @@ function bindOnUploadChange(wavesurfer, dialog) {
     $('#uploadFileInput').on('change', function() {
         var fileSize = this.files[0].size / 1024 / 1024;
         var fileType = this.files[0].type;
-
-        if (fileSize > 100.0 || !fileType.match('audio/wav')) {
+        var maxUploadSize = 100.0; // MB
+        if (fileSize > maxUploadSize || !fileType.match("audio/wav")) {
             // Animate with FadeOut effect
             var waveform = $("#waveformSection");
-            var currentOpacity = waveform.css('opacity');
+            var currentOpacity = waveform.css("opacity");
             if (currentOpacity == 1.0) {
-                waveform.css({ opacity: currentOpacity, visibility: "visible" }).animate({ opacity: 0.0 }, "slow");
+                waveform
+                    .css({ opacity: currentOpacity, visibility: "visible" })
+                    .animate({ opacity: 0.0 }, "slow");
             }
 
             // When more than x MB, then show error dialog
             dialog.showModal();
         } else {
-            window.localStorage.removeItem('SavedFilePath');
-            console.log("File path was removed from localStorage")
+            window.localStorage.removeItem("SavedFilePath");
+            console.log("File path was removed from localStorage");
 
             // Show progress bar
             $("#processingProgress").show();
@@ -48,7 +50,7 @@ function bindOnUploadChange(wavesurfer, dialog) {
 
             // Start uploading to the server
             var form_data = new FormData();
-            form_data.append('file', this.files[0])
+            form_data.append("file", this.files[0]);
             sendFileToServer(form_data);
 
             // Wavesurfer load and clear regions
