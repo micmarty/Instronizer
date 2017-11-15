@@ -24,7 +24,7 @@ print('================\n')
 # Configuration
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = AUDIO_DIR
-app.config['MAX_CONTENT_LENGTH'] = 60 * 1024 * 1024 # 60 MB
+app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024 # 60 MB
 app.secret_key = 'TODO use random value'
 
 ##

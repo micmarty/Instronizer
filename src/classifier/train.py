@@ -281,8 +281,7 @@ def validate_single_labeled(validation_data, model, criterion):
 
         # We don't need to disort plot with chaotic points
         # Log to tensorboard only once per validation phase (see run_training function)
-        # log_to_tensorboard(model, step, input_var,
-        #                  losses, top1, topk, mode='val')
+        log_to_tensorboard(model, step, input_var, losses, top1, topk, mode='val')
     print(
         ' * Prec@1 {top1.avg:.3f} Prec@{} {topk.avg:.3f}'.format(args.top_k, top1=top1, topk=topk))
     return top1.avg

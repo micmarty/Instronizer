@@ -24,7 +24,7 @@ function bindOnUploadChange(wavesurfer, dialog) {
         var fileSize = this.files[0].size / 1024 / 1024;
         var fileType = this.files[0].type;
 
-        if (fileSize > 60.0 || !fileType.match('audio/wav')) {
+        if (fileSize > 100.0 || !fileType.match('audio/wav')) {
             // Animate with FadeOut effect
             var waveform = $("#waveformSection");
             var currentOpacity = waveform.css('opacity');
