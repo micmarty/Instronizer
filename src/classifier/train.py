@@ -53,7 +53,7 @@ def input_args():
 
 def save_checkpoint(state, is_best, start_epoch, filename='checkpoint.pth.tar'):
     # Store first n checkpoints in a single file (overriding)
-    if start_epoch < 10:
+    if start_epoch < 2:
         torch.save(state, filename)
     else:
         filename = 'checkpoint_{}.pth.tar'
@@ -290,10 +290,6 @@ def validate_single_labeled(validation_data, model, criterion):
 def run_training(training_data, validation_data, model, criterion, optimizer):
     global best_precision_1
 
-    # Validate before training (how good model is guessing on random weight)
-    precision_1 = validate_single_labeled(validation_data, model, criterion)
-    logger.scalar_summary('validation_overall', precision_1, 0)
-
     # Run normal train-validate cycle
     for epoch in range(args.start_epoch, args.start_epoch + args.epochs):
         adjust_learning_rate(optimizer, epoch)
@@ -328,6 +324,7 @@ def main():
     # source: http://pytorch.org/docs/master/optim.html
     model = MobileNet(num_classes=args.num_classes)
     #model = densenet161(drop_rate=0.2, num_classes=6)
+    
     if args.use_cuda:
         # Removed DataParallel because that was the reason of
         # failures when loading checkpoints onto CPU
