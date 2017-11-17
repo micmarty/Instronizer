@@ -25,7 +25,7 @@ function bindOnUploadChange(wavesurfer, dialog) {
     $('#uploadFileInput').on('change', function() {
         var fileSize = this.files[0].size / 1024 / 1024;
         var fileType = this.files[0].type;
-        var maxUploadSize = 100.0; // MB
+        var maxUploadSize = 200.0; // MB
         if (fileSize > maxUploadSize || !fileType.match("audio/wav")) {
             // Animate with FadeOut effect
             var waveform = $("#waveformSection");
@@ -33,6 +33,18 @@ function bindOnUploadChange(wavesurfer, dialog) {
             if (currentOpacity == 1.0) {
                 waveform
                     .css({ opacity: currentOpacity, visibility: "visible" })
+                    .animate({ opacity: 0.0 }, "slow");
+            }
+
+            // Animate with FadeOut effect
+            var results = $("#resultsSection");
+            currentOpacity = results.css("opacity");
+            if (currentOpacity == 1.0) {
+                results
+                    .css({
+                        opacity: currentOpacity,
+                        visibility: "visible"
+                    })
                     .animate({ opacity: 0.0 }, "slow");
             }
 
@@ -114,7 +126,7 @@ function initWavesurfer() {
         wavesurfer.addRegion({
             id: 'startend',
             start: 0, // in seconds
-            end: 6, // in seconds
+            end: 1, // in seconds
             drag: true,
             resize: false,
             color: 'hsla(262, 52%, 47%, 0.48)'

@@ -24,7 +24,7 @@ print('================\n')
 # Configuration
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = AUDIO_DIR
-app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024 # 60 MB
+app.config['MAX_CONTENT_LENGTH'] = 200 * 1024 * 1024 # 60 MB
 app.secret_key = 'TODO use random value'
 
 ##
@@ -37,12 +37,14 @@ def generate_spectrograms(audio_filename, time_range):
     Transforms wav into spetrograms
     Returns exit code for preprocessing operation
     '''
-    command = 'python {script_path} --input {audio_path} --output-dir {spec_dir} --start {start} --end {end}'.format(
+    command = 'python {script_path} --input {audio_path} --output-dir {spec_dir} --start {start} --end {end} --segment-length {length} --segment-overlap-length {overlap}'.format(
         script_path=PROCESSOR_PATH,
         audio_path=AUDIO_DIR / audio_filename,
         spec_dir=SPECS_DIR,
         start=time_range[0],
-        end=time_range[1]
+        end=time_range[1],
+        length=1,
+        overlap=1
     )
     exit_code = subprocess.check_call(command, shell=True)
     spectrograms_dir = SPECS_DIR / Path(audio_filename).stem
@@ -92,6 +94,7 @@ def get_instruments():
     # Run preprocessing and classification on trained neural network
     exit_code, spectrograms_dir = generate_spectrograms(
         file_path, time_range=(start, end))
+    # If success
     if exit_code == 0:
         instruments_results_list = classify(spectrograms_dir)
         return render_template('results.html', start=start, end=end, result=instruments_results_list)
