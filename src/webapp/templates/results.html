@@ -59,7 +59,7 @@
     // Remove seleted region
     // And create identical but non-draggale
     wavesurfer.addRegion({
-        id: "dominantInstrumentName",
+        id: dominantInstrumentName + "at {{ start }}",
         start: '{{ start }}', // time in seconds 
         end: '{{ end }}', // time in seconds 
         drag: false,
@@ -69,14 +69,17 @@
             label: dominantInstrumentName
         }
     });
-    wavesurfer.regions.list["startend"].remove();
-    // Add new, draggable region
-    wavesurfer.addRegion({
-        id: "startend",
-        start: '{{ end }}', // time in seconds 
-        end: '{{ end + 1 }}', // time in seconds 
-        drag: true,
-        resize: false,
-        color: 'hsla(262, 52%, 47%, 0.48)',
-    });
+
+    // Disable selecting region reset
+    // It speeds up queueing request to the server and is more user-friendly
+    // wavesurfer.regions.list["startend"].remove();
+    // // Add new, draggable region
+    // wavesurfer.addRegion({
+    //     id: "startend",
+    //     start: '{{ end }}', // time in seconds 
+    //     end: '{{ end + 1 }}', // time in seconds 
+    //     drag: true,
+    //     resize: false,
+    //     color: 'hsla(262, 52%, 47%, 0.48)',
+    // });
 </script>

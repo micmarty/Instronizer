@@ -16,11 +16,8 @@ def load_data_from_folder(path):
 
 
 
-def run(input):
+def run(input, checkpoint_path):
     model = MobileNet(num_classes=6)
-
-    # Load checkpoint
-    checkpoint_path = '/home/miczi/Projects/instrument-classifier-polyphonic/src/webapp/checkpoint_start_5.pth.tar'
     # Map storage to cpu
     checkpoint = torch.load(checkpoint_path, map_location=lambda storage, loc: storage)
     print('[lightweight_classifier.py] using checkpoint: \n{}'.format(checkpoint_path))

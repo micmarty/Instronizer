@@ -27,7 +27,7 @@ function bindOnUploadChange(wavesurfer, dialog) {
         var fileType = this.files[0].type;
         var maxUploadSize = 200.0; // MB
         if (fileSize > maxUploadSize || !fileType.match("audio/wav")) {
-            // Animate with FadeOut effect
+            // Animate "Waveform section" with FadeOut effect
             var waveform = $("#waveformSection");
             var currentOpacity = waveform.css("opacity");
             if (currentOpacity == 1.0) {
@@ -36,7 +36,7 @@ function bindOnUploadChange(wavesurfer, dialog) {
                     .animate({ opacity: 0.0 }, "slow");
             }
 
-            // Animate with FadeOut effect
+            // Animate "Result section" with FadeOut effect
             var results = $("#resultsSection");
             currentOpacity = results.css("opacity");
             if (currentOpacity == 1.0) {
@@ -51,6 +51,20 @@ function bindOnUploadChange(wavesurfer, dialog) {
             // When more than x MB, then show error dialog
             dialog.showModal();
         } else {
+            // Animate "Result section" with FadeOut effect
+            var results = $("#resultsSection");
+            currentOpacity = results.css("opacity");
+            if (currentOpacity == 1.0) {
+                results
+                    .css({
+                        opacity: currentOpacity,
+                        visibility: "visible"
+                    })
+                    .animate({ opacity: 0.0 }, "slow");
+            }
+            // Empty div content
+            $("#results").empty();
+
             window.localStorage.removeItem("SavedFilePath");
             console.log("File path was removed from localStorage");
 
@@ -60,15 +74,17 @@ function bindOnUploadChange(wavesurfer, dialog) {
             // Put filename int readonly textfield, when file is chosen
             $("#uploadFileName").val(this.files[0].name);
 
+            // Clean up regions
+            wavesurfer.clearRegions();
+
             // Start uploading to the server
             var form_data = new FormData();
             form_data.append("file", this.files[0]);
             sendFileToServer(form_data);
 
-            // Wavesurfer load and clear regions
+            // Wavesurfer load audio
             fileUrl = URL.createObjectURL(this.files[0]);
             wavesurfer.load(fileUrl);
-            wavesurfer.clearRegions();
         }
     });
 }
@@ -121,7 +137,6 @@ function initWavesurfer() {
             container: '#waveform-timeline',
             timeInterval: 5
         });
-        wavesurfer.clearRegions();
         // Enable creating regions by dragging
         wavesurfer.addRegion({
             id: 'startend',

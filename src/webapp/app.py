@@ -1,10 +1,17 @@
 from flask import Flask, render_template, request, session, redirect, url_for, escape, Response,jsonify
 from werkzeug import secure_filename
 from pathlib import Path
+from argparse import ArgumentParser
 import subprocess
 from classifier.utils.printing_functions import print_execution_time
 # Relative to application application source root
 from webapp import lightweight_classifier
+
+def input_args(): 
+    parser = ArgumentParser()
+    parser.add_argument('-c', '--checkpoint', default='', type=str, required=True, metavar='PATH', help='File with saved weights (some state of trained model)')
+    parser.add_argument('-p', '--port', default=5000, type=int, metavar='PORT')
+    return parser.parse_args()
 
 ##
 # Constants
@@ -29,8 +36,6 @@ app.secret_key = 'TODO use random value'
 
 ##
 # Functions
-
-
 @print_execution_time
 def generate_spectrograms(audio_filename, time_range):
     '''
@@ -50,14 +55,13 @@ def generate_spectrograms(audio_filename, time_range):
     spectrograms_dir = SPECS_DIR / Path(audio_filename).stem
     return exit_code, spectrograms_dir
 
-
 @print_execution_time
 def classify(spectrograms_dir):
     '''
     Runs simplified classificator
     Returns list of floats
     '''
-    return lightweight_classifier.run(spectrograms_dir)
+    return lightweight_classifier.run(spectrograms_dir, checkpoint_path=args.checkpoint)
 
 ##
 # Routing
@@ -101,4 +105,6 @@ def get_instruments():
     return jsonify(start=start, end=end, result='PREPROCESSOR_ERROR')
 
 if __name__ == '__main__':
-    app.run(debug=True, threaded=True)
+    global args
+    args = input_args()
+    app.run(debug=True, threaded=True,port=args.port)
