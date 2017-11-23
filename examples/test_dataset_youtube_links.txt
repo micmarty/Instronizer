@@ -18,7 +18,7 @@ https://www.youtube.com/watch?v=Sv-wIFW-pAM tetris_theme
 @get 30s-1m30s
 https://www.youtube.com/watch?v=krpW9YI06Ew darth_vaders_theme
 7.
-@get 56s-1m53s
+@get 56s-1m23s, 1m28s-1m53s
 https://www.youtube.com/watch?v=I8xFgvbf7tQ 7_years_old_plays_church_organ
 8.
 @get 11s-1m11s
@@ -95,6 +95,8 @@ https://www.youtube.com/watch?v=VqW_oKhChmg praise_to_the_lord_the_almighty
 
 
 
+
+
 [pia]
 1.
 @get 45s-1m45s
@@ -133,10 +135,10 @@ https://www.youtube.com/watch?v=rNsgHMklBW0 pachelbel_canon_in_d
 @get 12s-1m12s
 https://www.youtube.com/watch?v=fOop0dE8hQI coldplay_clocks
 13.
-@get 4m07s-8m07s
+@get 4m07s-4m48s, 4m55s-8m07s
 https://www.youtube.com/watch?v=bOtd9P2cD50 debussy_piano_solo
 14.
-@get 4m19s-8m19s
+@get 4m19s-7m26s, 7m37s-8m19s
 https://www.youtube.com/watch?v=P8ZHToXlp1o schubert_piano_solo
 15.
 @get 1m9s-2m9s
@@ -148,8 +150,8 @@ https://www.youtube.com/watch?v=f8xmSlMb1dg random_guy_sits_and_plays
 @get 31s-1m31s
 https://www.youtube.com/watch?v=n1Y1zXevy1A michael_nyman_the_sacrifice
 18.
-@get 39s-1m39s
-https://www.youtube.com/watch?v=Ow0lbyPkpnU piano_lullaby
+@get 0s-3m12s
+https://www.youtube.com/watch?v=d3V6zJ7muz8 costantino_carrara
 19.
 @get 50s-1m50s
 https://www.youtube.com/watch?v=LqoV4ZW7xTA pianist_in_tears
@@ -186,6 +188,8 @@ https://www.youtube.com/watch?v=pUIhted5gEE i_can_go_the_distance
 30.
 @get 1m3s-2m3s
 https://www.youtube.com/watch?v=3ojt7e88g2I swanee_river_boogie_woogie
+
+
 
 
 
