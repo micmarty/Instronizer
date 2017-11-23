@@ -93,6 +93,8 @@ https://www.youtube.com/watch?v=nb4P2_t-NL4 jazz_on_church_organ
 @get 30s-1m30s
 https://www.youtube.com/watch?v=VqW_oKhChmg praise_to_the_lord_the_almighty
 
+
+
 [pia]
 1.
 @get 45s-1m45s
@@ -184,3 +186,97 @@ https://www.youtube.com/watch?v=pUIhted5gEE i_can_go_the_distance
 30.
 @get 1m3s-2m3s
 https://www.youtube.com/watch?v=3ojt7e88g2I swanee_river_boogie_woogie
+
+
+
+[vio]
+1.
+@get 2s-57s
+https://www.youtube.com/watch?v=r-zzWiyO8Hg pokemon_opening_theme
+2.
+@get 1m58s-2m55s
+https://www.youtube.com/watch?v=o87hNhgfZvI fairy_tail_theme
+3.
+@get 1m11s-2m11s
+https://www.youtube.com/watch?v=byii_k4cvm8 the_death_of_a_violin
+4.
+@get 1m30s-2m30s
+https://www.youtube.com/watch?v=SZUcEmREZ9Y gladiator_theme
+5.
+@get 57s-1m57s
+https://www.youtube.com/watch?v=bZ_BoOlAXyk david_garret_viva_la_vida
+6.
+@get 19s-1m19s
+https://www.youtube.com/watch?v=bapfkDpaSGw charles_yang_fast_violin
+7.
+@get 39s-1m39s
+https://www.youtube.com/watch?v=KA8a5qibUJU lindsey_stirling_zelda_violin_duet
+8.
+@get 4m25s-4m42s
+https://www.youtube.com/watch?v=k_tQk25pR60 electric_fastest_violinist_int_the_world
+9.
+@get 22s-1m22s
+https://www.youtube.com/watch?v=6aO_Zl85u60 canon_in_d_violin_duet
+10.
+@get 1m55s-2m55s
+https://www.youtube.com/watch?v=MsW_BUIrZUg comparison_wooden_vs_carbon_fiber
+11.
+@get 3s-59s
+https://www.youtube.com/watch?v=qvZxwd6qJ8Y trumpet_voluntary_violin_duo
+12.
+@get 15s-1m15s
+https://www.youtube.com/watch?v=IL5K09mqwZc skyrim_cover
+13.
+@get 2m17s-3m17s
+https://www.youtube.com/watch?v=zXDQ-QliMJI vitali_chaconne
+14.
+@get 57s-1m57s
+https://www.youtube.com/watch?v=Gcrj3snFjJA chopin_nocturne
+15.
+@get 33s-1m15s, 1m19s-1m35s
+https://www.youtube.com/watch?v=T3XQ3EWdKkM queen_of_the_damned
+16.
+@get 1m44s-2m9s, 2m43s-2m58s
+https://www.youtube.com/watch?v=TPB15Ma2o48 michel_schwalbe_scheherazade
+17.
+@get 10m23s-10m57s, 11m6s-13m49s, 13m59s-14m23s
+https://www.youtube.com/watch?v=L9U9DEDe2yg tartini_solo_sonatas
+18.
+@get 25s-1m25s
+https://www.youtube.com/watch?v=psgi8W_FLKs kamil_skicki_extreme_violin_solo
+19.
+@get 17s-1m17s
+https://www.youtube.com/watch?v=VuDxLNdxl6I in_christ_alone
+20.
+@get 53s-1m53s
+https://www.youtube.com/watch?v=aFWDSTuF6wc kreisler_liebesfreud
+21.
+@get 30s-1m30s
+https://www.youtube.com/watch?v=ghLcsEZS0lY iron_maiden_the_trooper
+22.
+@get 20s-1m20s
+https://www.youtube.com/watch?v=ARnAIrxxFB4 astor_piazzolla_libertango
+23.
+@get 2m13s-3m13s
+https://www.youtube.com/watch?v=zjB1Xc_l150 bach_partita_iii_yehudi_menuhin
+24.
+@get 15s-1m14s
+https://www.youtube.com/watch?v=5QS2BNF7kjI binks_sake
+25.
+@get 33s-1m33s
+https://www.youtube.com/watch?v=TrCLhUZPCGw wedding_ceremony
+26.
+@get 1m8s-2m8s
+https://www.youtube.com/watch?v=bXkVy1sVQT8 ive_got_rythm_fantasy_for_violin_solo
+27.
+@get 1m34s-1m38s, 1m40s-1m46s, 2m0s-2m15s, 2m18s-2m34s
+https://www.youtube.com/watch?v=xAwSxtaD4II the_music_of_erich_zann
+28.
+@get 5s-58s
+https://www.youtube.com/watch?v=I3Hw5adoiHE ode_to_joy
+29.
+@get 31s-39s, 1m4s-1m40s, 2m53s-3m3s, 3m15s-3m24s
+https://www.youtube.com/watch?v=6qvDQw80SVU casta_diva_joshua_bell
+30.
+@get 1m1s-2m1s
+https://www.youtube.com/watch?v=pXlT4IBAoBw if_i_were_a_rich_man
