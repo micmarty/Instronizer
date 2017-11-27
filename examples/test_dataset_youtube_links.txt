@@ -284,3 +284,285 @@ https://www.youtube.com/watch?v=6qvDQw80SVU casta_diva_joshua_bell
 30.
 @get 1m1s-2m1s
 https://www.youtube.com/watch?v=pXlT4IBAoBw if_i_were_a_rich_man
+
+
+
+[gac]
+1.
+@get 1m5s-2m5s
+https://www.youtube.com/watch?v=_EQAhQZAVZ4 marcel_mokbel_how_it_hurts
+2.
+@get 1m9s-2m9s
+https://www.youtube.com/watch?v=uVksVFGBjKw nothing_else_matters_fingerstyle
+3.
+@get 1m5s-2m5s
+https://www.youtube.com/watch?v=5aS7_QMX_xg stevie_ray_vaughan_rare
+4.
+@get 10s-1m10s
+https://www.youtube.com/watch?v=evsh1qa6eoc sweet_child_o_mine
+5.
+@get 27s-1m27s
+https://www.youtube.com/watch?v=PDohhCaNf98 back_in_black
+6.
+@get 3s-1m3s
+https://www.youtube.com/watch?v=q7rOSN701E0 dust_in_the_wind
+7.
+@get 22s-1m22s
+https://www.youtube.com/watch?v=pdxjhqA23gg yuki_matsui_overtake
+8.
+@get 20s-1m20s
+https://www.youtube.com/watch?v=a305PgAssd4 wiz_khalifa_see_you_again
+9.
+@get 1m1s-2m1s
+https://www.youtube.com/watch?v=HCGiow5ILvI nhung_ban_nhac_tre_hay_nhat
+10.
+@get 1s-1m1s
+https://www.youtube.com/watch?v=XF3YZUcKpEU the_best_romantic_guitar_love_song
+11. 
+@get 12s-1m12s
+https://www.youtube.com/watch?v=BAL2n3rQH-w avenged_sevenfold_dear_god
+12.
+@get 4s-1m4s
+https://www.youtube.com/watch?v=KuA7bRpEQE0 steven_law_doraemon
+13.
+@get 28s-1m28s
+https://www.youtube.com/watch?v=pIF17c1vXUU free_bird
+14.
+@get 11s-1m11s
+https://www.youtube.com/watch?v=1Ky5Ugj3t1E calum_graham_farewell
+15.
+@get 4s-1m4s
+https://www.youtube.com/watch?v=xeIsoWbcgeY ed_sheeran_thinking_out_loud
+16.
+@get 10s-1m10s
+https://www.youtube.com/watch?v=Px2SQG5zSWc xin_dung_lang_im_soobin_hoang_son
+17.
+@get 1m1s-2m1s
+https://www.youtube.com/watch?v=uoxnPJOLBks justin_johnson_tonewood_amp_demo
+18.
+@get 1m50s-2m50s
+https://www.youtube.com/watch?v=xsm_00i0Sl4 michael_kobrin_alive
+19.
+@get 1m25s-2m25s
+https://www.youtube.com/watch?v=sUnooGqugCM christoffer_brandsborg_titanium
+20.
+@get 3s-1m3s
+https://www.youtube.com/watch?v=PY3pK0Guf2Y the_godfather_theme
+21.
+@get 23s-1m23s
+https://www.youtube.com/watch?v=tR3VdTVSxiA rick_graham_amazing_grace
+22.
+@get 1m30s-2m30s
+https://www.youtube.com/watch?v=N3O9R_jFG8A here_comes_the_sun
+23.
+@get 51s-1m51s
+https://www.youtube.com/watch?v=1cRxA_rviS0 scarbrough_fair
+24.
+@get 37s-1m37s
+https://www.youtube.com/watch?v=DqdrEVrIoyM yuki_matsui_hey_jude
+25.
+@get 21s-1m21s
+https://www.youtube.com/watch?v=tc-hx0Amcpg hurong_tram_ngoc
+26.
+@get 47s-1m47s
+https://www.youtube.com/watch?v=oC9Wlp6D5Bo elvis_suspicious_minds
+27.
+@get 10s-1m10s
+https://www.youtube.com/watch?v=d_dt2ZsCU9U bil_withers_aint_no_sunshine
+28.
+@get 50s-1m50s
+https://www.youtube.com/watch?v=1E7U1w2Z8C0 november_rain
+29.
+@get 30s-1m30s
+https://www.youtube.com/watch?v=zcKC5mN4XBI unchained_melody
+30.
+@get 20s-1m20s
+https://www.youtube.com/watch?v=KmHvUcxM6Lk the_beatles_let_it_be
+
+
+
+[gel]
+1.
+@get 33s-1m33s
+https://www.youtube.com/watch?v=i8bKhPjbsFY jimi_hendrix_little_wing
+2.
+@get 22s-1m22s
+https://www.youtube.com/watch?v=L9eKE206Hdc igor_presnyakov_sleepwalk
+3.
+@get 20s-1m20s
+https://www.youtube.com/watch?v=fDTm1IzQf-U van_halen_eruption
+4.
+@get 14s-1m14s
+https://www.youtube.com/watch?v=_hreIJn-W48 a_random_electric_guitar
+5.
+@get 33s-1m33s
+https://www.youtube.com/watch?v=wRyaBj7LPdc insane_hs_talent
+6.
+@get 39s-1m39s
+https://www.youtube.com/watch?v=ZKVeqPT1_dY silent_night
+7.
+@get 27s-1m27s
+https://www.youtube.com/watch?v=Y6kydqX8UD4 yellow_ledbetter
+8.
+@get 40s-1m40s
+https://www.youtube.com/watch?v=ffPXn9_N0e4 isn_she_lovely
+9.
+@get 41s-1m41s
+https://www.youtube.com/watch?v=0RVzCG_mqtI crazy_talent_show
+10.
+@get 2m27s-3m27s
+https://www.youtube.com/watch?v=HSuVvMfDp1s metallica_enter_sandman
+11.
+@get 27s-1m27s
+https://www.youtube.com/watch?v=f96jUCRzDMA santana_black_magic_woman
+12.
+@get 1m4s-2m4s
+https://www.youtube.com/watch?v=Nknqd0UUVjk the_best_of_times_guitar_solo
+13.
+@get 11s-1m11s
+https://www.youtube.com/watch?v=Bl-WZtBfQeo pirates_of_the_caribbean_theme
+14.
+@get 20s-1m20s
+https://www.youtube.com/watch?v=g5NUYz8olRw eagles_hotel_california
+15.
+@get 31s-1m31s
+https://www.youtube.com/watch?v=n2S_cTlHkJs muse_reapers
+16.
+@get 1m15s-2m15s
+https://www.youtube.com/watch?v=Pv-OcgFTjlo nothing_else_matters
+17.
+@get 38s-1m38s
+https://www.youtube.com/watch?v=4_2JM5y9FuE acdc_thunderstruck
+18.
+@get 22s-1m22s
+https://www.youtube.com/watch?v=BNmi-e6q6ZQ slow_blues_in_minor_key
+19.
+@get 32s-1m32s
+https://www.youtube.com/watch?v=_fNDkE_GejQ hotel_california_truly_epic
+20.
+@get 10s-1m10s
+https://www.youtube.com/watch?v=IzQnaI3MP1E disturbed_sound_of_silence
+21.
+@get 10s-1m10s
+https://www.youtube.com/watch?v=JQ3Lsq9Yy7g all_of_me
+22.
+@get 35s-1m35s
+https://www.youtube.com/watch?v=gpR6pACUJ_E chris_isaak_wicked_game
+23.
+@get 4s-1m4s
+https://www.youtube.com/watch?v=59O1bX5mRaQ slash_plays_national_anthem
+24.
+@get 8s-1m8s
+https://www.youtube.com/watch?v=P4MMdL_lhYg kristian_stanfill_mighty_to_save
+25.
+@get 13s-1m13s
+https://www.youtube.com/watch?v=ldrMPdJsxT0 mario_theme
+26.
+@get 34s-1m34s
+https://www.youtube.com/watch?v=aabxOUzPvpI nothing_else_matters_behnaz
+27.
+@get 13s-1m13s
+https://www.youtube.com/watch?v=buGubvAxMhE aftermatch_cancerslug
+28.
+@get 46s-1m46s
+https://www.youtube.com/watch?v=pTt04A_Gph4 dont_dream_its_over
+29.
+@get 30s-1m30s
+https://www.youtube.com/watch?v=grZcUHiziEE ozzy_osbourne_mr_crowley
+30.
+@get 35s-1m35s
+https://www.youtube.com/watch?v=skoZ7j5PBE8 angus_young_solo
+
+
+
+[cel]
+1.
+@get 31s-1m31s
+https://www.youtube.com/watch?v=1u3yHICR_BU the_swan_solo
+2.
+@get 30s-1m30s
+https://www.youtube.com/watch?v=poCw2CCrfzA ophelie_gaillard_bach
+3.
+@get 3s-29s, 37s-50s, 57s-1m24s
+https://www.youtube.com/watch?v=9Ab2bZweNao exposition
+4.
+@get 37s-1m37s
+https://www.youtube.com/watch?v=EtP6JBWtd7s somewhere_only_we_know
+5.
+@get 1m36s-2m36s
+https://www.youtube.com/watch?v=Ry4BzonlVlw 8_cellos
+6.
+@get 3m1s-4m1s
+https://www.youtube.com/watch?v=wqhR37qSUMA 6_cello_suites
+7.
+@get 4s-1m4s
+https://www.youtube.com/watch?v=6U9oduO68Dw somewhere_only_we_know_cello_bass
+8.
+@get 10s-1m10s
+https://www.youtube.com/watch?v=O1mFwDceMI8 sad_cello_music
+9.
+@get 5s-1m5s
+https://www.youtube.com/watch?v=fHPF3oD1NbY glwysen_solo
+10.
+@get 46s-1m46s
+https://www.youtube.com/watch?v=J73cZQzhPW0 tina_guo_the_rains_of_castamere
+11.
+@get 22s-1m22s
+https://www.youtube.com/watch?v=-ZMb-QiqDJY pachelbels_canon
+12.
+@get 15s-1m15s
+https://www.youtube.com/watch?v=i0qdbN7ENSc paganini_variation
+13.
+@get 36m36s-37m36s
+https://www.youtube.com/watch?v=w3WcfB9EDr0 sad_cello_music_part2
+14.
+@get 10s-1m10s
+https://www.youtube.com/watch?v=5vyYjNOzidE un_lee_4_prelude
+15.
+@get 14m40s-15m40s
+https://www.youtube.com/watch?v=Hp135aHgCw0 top50_bes_classical_cello
+16.
+@get 1m30s-2m30s
+https://www.youtube.com/watch?v=10_kB-M5qsg classical_music
+17.
+@get 30s-1m30s
+https://www.youtube.com/watch?v=u0KQqOai-uA sad_cello_solo
+18.
+@get 6m11s-7m11s
+https://www.youtube.com/watch?v=MFHV85kmRhI suites_for_cello_1954
+19.
+@get 8m1s-9m1s
+https://www.youtube.com/watch?v=imWZY9qpw3Q suites_for_cello_1989
+20.
+@get 9m26s-10m26s
+https://www.youtube.com/watch?v=KX1YtvFZOj0 bach_cello_no_1
+21.
+@get 4m10s-5m10s
+https://www.youtube.com/watch?v=tDyUCK7K0mE kodaly_solo_sonata
+22.
+@get 2m5s-3m5s
+https://www.youtube.com/watch?v=s92f3CW9IdQ gyorgy_ligeti_sonata
+23.
+@get 1m10s-2m10s
+https://www.youtube.com/watch?v=Mx0xCI1jaUM 2cellos_smooth_criminal
+24.
+@get 1m36s-2m36s
+https://www.youtube.com/watch?v=GsqdXVr3Zcc prokofiev_sonata
+25.
+@get 54s-1m54s
+https://www.youtube.com/watch?v=DcFpvolRN3w 2cellos_game_of_thrones
+26.
+@get 20s-1m20s
+https://www.youtube.com/watch?v=0Yu5fAEytgw don_giovanni_batti_batti
+27.
+@get 3s-1m3s
+https://www.youtube.com/watch?v=gosY-UrpHcA nearer_my_gad_to_thee_9_cellos
+28.
+@get 18s-1m18s
+https://www.youtube.com/watch?v=9bsqIsEpbpI you_raise_me_up
+29.
+@get 1m5s-2m5s
+https://www.youtube.com/watch?v=dSSLf6m9u9E coco_remember_me
+30.
+@get 16s-1m16s
+https://www.youtube.com/watch?v=h213G8jGXG0 enya_only_time
