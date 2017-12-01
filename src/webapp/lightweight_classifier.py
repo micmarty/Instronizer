@@ -5,7 +5,9 @@ import argparse
 # Absolute imports
 from classifier.models.mobilenet import MobileNet
 from classifier import dataset_loader as dl
+from classifier.utils.printing_functions import print_execution_time
 
+@print_execution_time
 def load_data_from_folder(path):
     dataset = dl.SpecFolder(path, direct=True)
     # There are 3 spectrograms from 6s window(assuming 1.5s overlap by default)
