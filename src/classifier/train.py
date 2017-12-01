@@ -38,6 +38,8 @@ def input_args():
     parser.add_argument('-P', '--print-freq',  default=10, type=int, metavar='N', help='print frequency (default: 10)')
     parser.add_argument('-T', '--tensorboard-freq', default=10, type=int, help='Updating tensorboard state in iterations (default: 10)')
     parser.add_argument('--evaluate', dest='evaluate', action='store_true', help='evaluate model on validation set')
+    parser.add_argument('--test', dest='test',
+                        action='store_true', help='run model on testing set')
 
     # Other
     parser.add_argument('-j', '--workers', default=4, type=int, metavar='N', help='number of data loading workers (default: 4)')
@@ -71,12 +73,21 @@ def load_checkpoint(model, optimizer):
         print("[load_checkpoint]: Loading checkpoint from '{}'".format(args.resume))
 
         # Retrieve persisted data
-        checkpoint = torch.load(args.resume)
-        args.start_epoch = checkpoint['start_epoch']
-        best_precision_1 = checkpoint['best_precision_1']
-        model.load_state_dict(checkpoint['state_dict'])
-        optimizer.load_state_dict(checkpoint['optimizer'])
-        print('[load_checkpoint]: Checkpoint loaded successfully!')
+        if args.test:
+            checkpoint = torch.load(
+                args.resume, map_location=lambda storage, loc: storage)
+            args.start_epoch = checkpoint['start_epoch']
+            best_precision_1 = checkpoint['best_precision_1']
+            state_dict = checkpoint['state_dict']
+            model.load_state_dict(state_dict)
+            model.cpu()
+        else:
+            checkpoint = torch.load(args.resume)
+            args.start_epoch = checkpoint['start_epoch']
+            best_precision_1 = checkpoint['best_precision_1']
+            model.load_state_dict(checkpoint['state_dict'])
+            optimizer.load_state_dict(checkpoint['optimizer'])
+            print('[load_checkpoint]: Checkpoint loaded successfully!')
     else:
         print("[load_checkpoint]: No checkpoint found at '{}'".format(args.resume))
 
@@ -92,7 +103,7 @@ def load_data_from_folder(folder):
     if folder == 'train':
         dataset = df.SpecFolder(str(path))
         batch_size = args.batch_size
-    elif folder == 'val':
+    elif folder == 'val' or folder == 'test':
         dataset = df.SpecFolder(str(path))
         batch_size = args.val_batch_size
     return torch.utils.data.DataLoader(dataset,
@@ -347,6 +358,9 @@ def main():
     if args.evaluate:
         validation_data = load_data_from_folder('val')
         validate_single_labeled(validation_data, model, criterion)
+    elif args.test:
+        testing_data = load_data_from_folder('test')
+        validate_single_labeled(testing_data, model, criterion)
     else:
         validation_data = load_data_from_folder('val')
         training_data = load_data_from_folder('train')
