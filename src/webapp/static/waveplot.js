@@ -26,7 +26,7 @@ function bindOnUploadChange(wavesurfer, dialog) {
         var fileSize = this.files[0].size / 1024 / 1024;
         var fileType = this.files[0].type;
         var maxUploadSize = 200.0; // MB
-        if (fileSize > maxUploadSize || !fileType.match("audio/wav")) {
+        if (fileSize > maxUploadSize || !(fileType.match("audio/wav") || fileType.match("audio/flac") || fileType.match("audio/mp3"))) {
             // Animate "Waveform section" with FadeOut effect
             var waveform = $("#waveformSection");
             var currentOpacity = waveform.css("opacity");
@@ -41,10 +41,7 @@ function bindOnUploadChange(wavesurfer, dialog) {
             currentOpacity = results.css("opacity");
             if (currentOpacity == 1.0) {
                 results
-                    .css({
-                        opacity: currentOpacity,
-                        visibility: "visible"
-                    })
+                    .css({ opacity: currentOpacity, visibility: "visible" })
                     .animate({ opacity: 0.0 }, "slow");
             }
 
@@ -56,10 +53,7 @@ function bindOnUploadChange(wavesurfer, dialog) {
             currentOpacity = results.css("opacity");
             if (currentOpacity == 1.0) {
                 results
-                    .css({
-                        opacity: currentOpacity,
-                        visibility: "visible"
-                    })
+                    .css({ opacity: currentOpacity, visibility: "visible" })
                     .animate({ opacity: 0.0 }, "slow");
             }
             // Empty div content
@@ -137,14 +131,22 @@ function initWavesurfer() {
             container: '#waveform-timeline',
             timeInterval: 5
         });
-        // Enable creating regions by dragging
+        // Draggable region
         wavesurfer.addRegion({
             id: 'startend',
             start: 0, // in seconds
-            end: 1, // in seconds
+            end: 3, // in seconds
             drag: true,
             resize: false,
             color: 'hsla(262, 52%, 47%, 0.48)'
+        });
+
+        wavesurfer.on("region-dblclick", function(region, event) {
+            if (region.id != 'startend') {
+                region.remove();
+            } else {
+                getInstrument();
+            }
         });
     });
     return wavesurfer;
@@ -159,23 +161,26 @@ function initZoomSlider(player) {
     };
 }
 
+function getInstrument() {
+    if (window.localStorage.getItem("SavedFilePath")) {
+        var form_data = new FormData();
+        var fileLocationOnServer = window.localStorage.getItem("SavedFilePath");
+        var start = wavesurfer.regions.list["startend"].start;
+        var end = wavesurfer.regions.list["startend"].end;
+
+        form_data.append("file_path", fileLocationOnServer);
+        form_data.append("start", start);
+        form_data.append("end", end);
+
+        sendRegionsToServer(form_data);
+        $("#waitingForResultsProgress").show();
+    } else {
+        console.log("Cannot send regions because no was uploaded before");
+    }
+}
+
 function initGetInstrumentButton(wavesurfer) {
     $("#getInstrumentNameButton").click(function() {
-        if (window.localStorage.getItem('SavedFilePath')) {
-            var form_data = new FormData();
-            var fileLocationOnServer = window.localStorage.getItem("SavedFilePath");
-            var start = wavesurfer.regions.list["startend"].start;
-            var end = wavesurfer.regions.list["startend"].end;
-
-            form_data.append("file_path", fileLocationOnServer);
-            form_data.append("start", start);
-            form_data.append("end", end);
-
-            sendRegionsToServer(form_data);
-            $('#waitingForResultsProgress').show();
-        } else {
-            console.log("Cannot send regions because no was uploaded before")
-        }
-
+        getInstrument();
     });
 }
