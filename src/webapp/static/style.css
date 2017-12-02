@@ -73,6 +73,8 @@ region.wavesurfer-region:before {
     background-color: #f44336;
     color: white;
     font-size: 1.3em;
+    opacity: 1;
+    transition: opacity 0.6s;
 }
 
 .closebtn {
@@ -88,4 +90,8 @@ region.wavesurfer-region:before {
 
 .closebtn:hover {
     color: black;
+}
+
+.alert.info {
+    background-color: #2196F3;
 }

@@ -22,7 +22,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="description" content="Engineer's Thesis Project - Detecting instruments in audio excerpts with Deep Neural Network">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
-    <title>Instrument identification with Deep Neural Network</title>
+    <title>Instronizer</title>
 
     <!-- TODO change favicon - multiple size combinations -->
     <!-- Add to homescreen for Chrome on Android -->
@@ -39,7 +39,7 @@
     <!-- <meta name="msapplication-TileImage" content="images/touch/ms-touch-icon-144x144-precomposed.png"> -->
     <!-- <meta name="msapplication-TileColor" content="#3372DF"> -->
 
-    <!-- <link rel="shortcut icon" href="static/favicon.png"> -->
+    <link rel="shortcut icon" href="static/favico.png">
 
     <link rel="stylesheet" href="static/lib/material_design/material_fonts.css">
     <link rel="stylesheet" href="static/lib/material_design/material_icons.css">
@@ -56,19 +56,25 @@
     </div>
 
     <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+        <!-- Navigation bar with tabs -->
         <header class="mdl-layout__header mdl-layout__header--scroll mdl-color--primary">
+            <!-- Title surrounded by spacers above and below it -->
+            <div style="height: 32px" class="mdl-layout--large-screen-only mdl-layout__header-row"></div>
             <div class="mdl-layout--large-screen-only mdl-layout__header-row">
+                <h3>Instronizer</h3>
             </div>
             <div class="mdl-layout--large-screen-only mdl-layout__header-row">
-                <h3>Instrument identification with Deep Neural Network</h3>
+                <h4>Instrument identification system based on Deep Neural Networks</h4>
             </div>
-            <div class="mdl-layout--large-screen-only mdl-layout__header-row">
-            </div>
+            <div style="height: 32px" class="mdl-layout--large-screen-only mdl-layout__header-row"></div>
+
+            <!-- Tab names -->
             <div class="mdl-layout__tab-bar mdl-js-ripple-effect mdl-color--primary-dark">
                 <a href="#overview" class="mdl-layout__tab is-active">Demo</a>
-                <a href="#details" class="mdl-layout__tab">Details</a>
-                <a href="#features" class="mdl-layout__tab">Technology</a>
-                <a href="#features" class="mdl-layout__tab">FAQ</a>
+                <a href="#details" class="mdl-layout__tab">Implementation details</a>
+                <a href="#about" class="mdl-layout__tab">About</a>
+                <a href="#contact" class="mdl-layout__tab">Contact</a>
+
                 <!-- TODO change to real github link 1/2-->
                 <a href="https://github.com/micmarty/instrument-classifier-polyphonic" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored mdl-shadow--4dp mdl-color--accent" id="add">
                     <i class="material-icons" role="presentation">star_rate</i>
@@ -76,11 +82,13 @@
                 </a>
             </div>
         </header>
+
+        <!-- Tabs content -->
         <main class="mdl-layout__content">
             <div class="mdl-layout__tab-panel is-active" id="overview">
                 {% include 'upload_page.html' %}
             </div>
-            <div class="mdl-layout__tab-panel is-active" id="overview">
+            <div class="mdl-layout__tab-panel" id="details">
                 {% include 'details_page.html' %}
             </div>
         </main>
@@ -103,6 +111,7 @@
     </script>
     <script src="static/waveplot.js"></script>
     <script src="static/upload.js"></script>
+    <script src="static/alert_boxes.js"></script>
 </body>
 
 </html>

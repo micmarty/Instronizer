@@ -10,12 +10,11 @@ function sendFileToServer(data) {
         async: true,
         xhr: function() {
             var xhr = new window.XMLHttpRequest();
-            // TODO progress bar
             return xhr;
         },
         error: function(xhr, status, error) {
-            // TODO when file is too big, or in wrong format display getmdl popup
-            console.log("File upload error");
+            alert("Unexpected file upload error");
+            console.log("File upload error. Please try again later.");
         },
         success: function(response) {
             console.log("File was successfuly uploaded");
@@ -40,11 +39,10 @@ function sendRegionsToServer(data) {
         async: true,
         xhr: function() {
             var xhr = new window.XMLHttpRequest();
-            // TODO progress bar
             return xhr;
         },
         error: function(xhr, status, error) {
-            // TODO when file is too big, or in wrong format display getmdl popup
+            alert("Unexpected region processing error. Please try again later.");
             console.log("Regions upload error");
         },
         success: function(response) {
