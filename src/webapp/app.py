@@ -12,12 +12,12 @@ from webapp import lightweight_classifier
 ##
 # Constants
 CURRENT_DIR = Path(__file__).absolute().parent
-AUDIO_DIR = Path('./data/audio')
-NON_WAV_DIR = Path('./data/non_wav_audio')
-SPECS_DIR = Path('./data/specs')
+AUDIO_DIR = Path('./upload/wav')
+TMP_DIR = Path('./upload/tmp')
+SPECS_DIR = Path('./upload/specs')
 PROCESSOR_PATH = CURRENT_DIR.parent / 'preprocessor/wav_to_spectrograms.py'
 ALLOWED_EXTENSIONS = ['.wav', '.flac', '.mp3']
-MAX_UPLOAD_SIZE = 200 # MB
+MAX_UPLOAD_SIZE = 50 # MB
 SPEC_LENGTH = 3 # in seconds
 
 ##
@@ -110,23 +110,15 @@ def upload():
         extenstion = Path(filename).suffix
         mimetype = file.content_type
 
-        # Make sure folder for uploaded audio files exists
+        # Prepare paths
+        TMP_DIR.mkdir(parents=True, exist_ok=True)
         AUDIO_DIR.mkdir(parents=True, exist_ok=True)
+        tmp_path = str(TMP_DIR / filename)
         destination_path = str(AUDIO_DIR / (basename + '.wav'))
-        
-        # Uploaded file needs conversion to wav format
-        if mimetype != 'audio/wav' and extenstion != '.wav':
-            NON_WAV_DIR.mkdir(parents=True, exist_ok=True)
-            # File with non-wav extension
-            tmp_path = str(NON_WAV_DIR / filename)
 
-            # Convert and save as wav
-            file.save(tmp_path)
-            convert_to_wav(tmp_path, destination_path)
-
-        # Uploaded file is wav already
-        else:
-            file.save(destination_path)
+        # Convert supported formats to wav
+        file.save(tmp_path)
+        convert_to_wav(tmp_path, destination_path)
 
         # Send back to client
         return jsonify(success=True, path=str(basename + '.wav'))

@@ -51,3 +51,41 @@ region.wavesurfer-region:before {
     position: absolute;
     top: 0;
 }
+
+
+/* VIEW SOURCE button in right, bottom corner */
+
+#view-source {
+    position: fixed;
+    display: block;
+    right: 0;
+    bottom: 0;
+    margin-right: 40px;
+    margin-bottom: 40px;
+    z-index: 900;
+}
+
+
+/* Alert box */
+
+.alert {
+    padding: 20px;
+    background-color: #f44336;
+    color: white;
+    font-size: 1.3em;
+}
+
+.closebtn {
+    margin-left: 15px;
+    color: white;
+    font-weight: bold;
+    float: right;
+    font-size: 22px;
+    line-height: 20px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.closebtn:hover {
+    color: black;
+}

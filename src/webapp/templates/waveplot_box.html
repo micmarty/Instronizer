@@ -5,15 +5,19 @@
         <div id="waveform"></div>
         <div id="waveform-timeline"></div>
 
-        <!-- Control buttons -->
+        <!-- Helpful info, mouse actions -->
+        <div class="mdl-grid">
+            <div class="controls mdl-grid center-items">
+                <p>Double-click on draggable region to get result<br/>Double-click on result region to delete it</p>
+            </div>
+        </div>
         <div class="mdl-grid mdl-card__actions">
-
-            <!-- TODO add wavesurfer buttons -->
+            <!-- Control buttons -->
             <div class="controls mdl-grid center-items">
                 <!-- Zoom Slider -->
                 <p style="width:300px; height:40px">
                     Zoom:
-                    <input id="zoomSlider" class="mdl-slider mdl-js-slider" type="range" min="0" max="100" value="0" tabindex="0">
+                    <input id="zoomSlider" class="mdl-slider mdl-js-slider " type="range" min="0" max="100" value="0" tabindex="0">
                 </p>
                 <!-- Rewind -->
                 <button id="backward" type="button" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect">
@@ -22,7 +26,7 @@
 
                 <!-- Play/pause -->
                 <button id="togglePlay" type="button" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect">
-                    <i class="material-icons">play_arrow</i>/<i class="material-icons">pause</i>
+                    <i class="material-icons">play_arrow</i>/<i class="material-icons ">pause</i>
                 </button>
 
                 <!-- Forward -->

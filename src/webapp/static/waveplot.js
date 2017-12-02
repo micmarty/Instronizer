@@ -1,18 +1,10 @@
 // Allow to execute when page is fully loaded
 var wavesurfer;
 $(function() {
-    // Initialize error dialog
-    var dialog = document.querySelector("dialog");
-    if (!dialog.showModal) {
-        dialogPolyfill.registerDialog(dialog);
-    }
-    dialog.querySelector(".close-dialog").addEventListener("click", function() {
-        dialog.close();
-    });
     // Initialize Wavesurfer
     wavesurfer = initWavesurfer();
     //localStorage.setItem('wavesurferObject', JSON.stringify(wavesurfer));
-    bindOnUploadChange(wavesurfer, dialog);
+    bindOnUploadChange(wavesurfer);
     initWaveformControls(wavesurfer);
     initZoomSlider(wavesurfer);
     initGetInstrumentButton(wavesurfer);
@@ -21,12 +13,16 @@ $(function() {
 /**
  * Bind action when file input element has changed its value
  */
-function bindOnUploadChange(wavesurfer, dialog) {
+function bindOnUploadChange(wavesurfer) {
     $('#uploadFileInput').on('change', function() {
         var fileSize = this.files[0].size / 1024 / 1024;
         var fileType = this.files[0].type;
-        var maxUploadSize = 200.0; // MB
-        if (fileSize > maxUploadSize || !(fileType.match("audio/wav") || fileType.match("audio/flac") || fileType.match("audio/mp3"))) {
+        var maxUploadSize = maxUploadSizeFromJinja || 50;
+        if (fileSize > maxUploadSize || !(fileType.match("audio/wav") ||
+                fileType.match("audio/flac") ||
+                fileType.match("audio/mp3") ||
+                fileType.match("audio/x-wav"))) {
+
             // Animate "Waveform section" with FadeOut effect
             var waveform = $("#waveformSection");
             var currentOpacity = waveform.css("opacity");
@@ -46,7 +42,7 @@ function bindOnUploadChange(wavesurfer, dialog) {
             }
 
             // When more than x MB, then show error dialog
-            dialog.showModal();
+            $("#alert").show();
         } else {
             // Animate "Result section" with FadeOut effect
             var results = $("#resultsSection");
@@ -58,7 +54,7 @@ function bindOnUploadChange(wavesurfer, dialog) {
             }
             // Empty div content
             $("#results").empty();
-
+            $("#alert").hide();
             window.localStorage.removeItem("SavedFilePath");
             console.log("File path was removed from localStorage");
 
