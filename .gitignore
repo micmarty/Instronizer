@@ -109,3 +109,7 @@ venv.bak/
 src/webapp/data/
 
 data/
+
+upload/
+
+tensorboard_logs/
