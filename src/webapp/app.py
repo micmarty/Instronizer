@@ -95,7 +95,7 @@ def convert_to_wav(tmp_path, dest_path):
 # Routes
 @app.route('/')
 def index():
-    return render_template('layout.html')
+    return render_template('layout.html', max_upload=MAX_UPLOAD_SIZE)
 
 @app.route('/upload', methods=['POST'])
 def upload():

@@ -2,16 +2,18 @@
     <!-- Box with upload glyphicon -->
     <header class="section__play-btn mdl-cell mdl-cell--3-col-desktop mdl-cell--2-col-tablet mdl-cell--4-col-phone mdl-color--teal-100 mdl-color-text--white">
         <div class="mdl-button mdl-button--primary mdl-button--icon mdl-button--file">
-            <i id="uploadGlyph" class="material-icons">file_upload</i>
-
             <!-- File input -->
             <input id="uploadFileInput" type="file" name="file">
+            <i id="uploadGlyph" class="material-icons" style="font-size: 200px; left: 5%">file_upload</i>
+            </input>
         </div>
     </header>
     <div class="mdl-card mdl-cell mdl-cell--9-col-desktop mdl-cell--6-col-tablet mdl-cell--4-col-phone">
         <!-- Text -->
         <div class="mdl-card__supporting-text">
-            <h4>Choose WAV file below [TODO]MB</h4>TODO
+            <h4>Choose audio file to classify</h4>
+            WAV, FLAC and MP3 files below {{max_upload}}MB
+
         </div>
 
         <!-- Bottom -->
