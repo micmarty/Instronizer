@@ -136,14 +136,6 @@ function initWavesurfer() {
             resize: false,
             color: 'hsla(262, 52%, 47%, 0.48)'
         });
-
-        wavesurfer.on("region-dblclick", function(region, event) {
-            if (region.id != 'startend') {
-                region.remove();
-            } else {
-                getInstrument();
-            }
-        });
     });
     return wavesurfer;
 }
@@ -178,5 +170,10 @@ function getInstrument() {
 function initGetInstrumentButton(wavesurfer) {
     $("#getInstrumentNameButton").click(function() {
         getInstrument();
+        var btn = $(this);
+        btn.prop('disabled',true);
+        window.setTimeout(function(){ 
+        btn.prop('disabled',false);
+        },2000);
     });
 }

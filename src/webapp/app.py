@@ -1,9 +1,11 @@
 from flask import Flask, render_template, request, session, redirect, url_for, escape, Response,jsonify
 from werkzeug import secure_filename
 from pathlib import Path
-from argparse import ArgumentParser
 import subprocess
 import ffmpeg
+import time
+import arrow
+import uwsgi
 from classifier.utils.printing_functions import print_execution_time
 
 # Relative to application application source root
@@ -37,11 +39,23 @@ app.secret_key = 'TODO use random value'
 
 ##
 # Functions
-def input_args():
-    parser = ArgumentParser()
-    parser.add_argument('-c', '--checkpoint', default='', type=str, required=True, metavar='PATH', help='File with saved weights (some state of trained model)')
-    parser.add_argument('-p', '--port', default=5000, type=int, metavar='PORT')
-    return parser.parse_args()
+def delete_files(folder_path):
+    criticalTime = arrow.now().shift(minutes=-5)
+    for element in folder_path.iterdir():
+        if element.is_dir():
+            delete_files(element)
+        else:
+            elementTime = arrow.get(element.stat().st_atime)
+            if elementTime < criticalTime:
+                element.unlink()
+
+def delete_unused_files(signum):
+    delete_files(AUDIO_DIR)
+    delete_files(TMP_DIR)
+    delete_files(SPECS_DIR)
+
+uwsgi.register_signal(1, "", delete_unused_files)
+uwsgi.add_timer(1, 300)
 
 @print_execution_time
 def generate_spectrograms(audio_filename, time_range, length, offset):
@@ -74,7 +88,7 @@ def classify(spectrograms_dir):
     Returns:
         A list of floats (output vector from model)
     '''
-    return lightweight_classifier.run(spectrograms_dir, checkpoint_path=args.checkpoint)
+    return lightweight_classifier.run(spectrograms_dir)
 
 @print_execution_time
 def convert_to_wav(tmp_path, dest_path):
@@ -139,6 +153,4 @@ def get_instruments():
     return jsonify(start=start, end=end, result='PREPROCESSOR_ERROR')
 
 if __name__ == '__main__':
-    global args
-    args = input_args()
     app.run(debug=True, threaded=True,port=args.port)

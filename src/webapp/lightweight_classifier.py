@@ -18,8 +18,10 @@ def load_data_from_folder(path):
 
 
 
-def run(input, checkpoint_path):
+def run(input):
     model = MobileNet(num_classes=6)
+    
+    checkpoint_path = '/home/filip/checkpoint_16.pth.tar'
     # Map storage to cpu
     checkpoint = torch.load(checkpoint_path, map_location=lambda storage, loc: storage)
     print('[lightweight_classifier.py] using checkpoint: \n{}'.format(checkpoint_path))
