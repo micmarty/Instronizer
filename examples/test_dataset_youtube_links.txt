@@ -1,3 +1,6 @@
+# To download these audio excerpts use the following script: 
+# python <REPO_ROOT_DIR>/src/script_tools/test_data_download.py --input <PATH_TO_THIS_FILE>
+# 
 [org]
 1.
 @get 1m26s-2m26s
@@ -95,8 +98,6 @@ https://www.youtube.com/watch?v=VqW_oKhChmg praise_to_the_lord_the_almighty
 
 
 
-
-
 [pia]
 1.
 @get 45s-1m45s
@@ -188,8 +189,6 @@ https://www.youtube.com/watch?v=pUIhted5gEE i_can_go_the_distance
 30.
 @get 1m3s-2m3s
 https://www.youtube.com/watch?v=3ojt7e88g2I swanee_river_boogie_woogie
-
-
 
 
 

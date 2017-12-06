@@ -24,7 +24,8 @@ function bindOnUploadChange(wavesurfer) {
                 fileType.match("audio/wav") ||
                 fileType.match("audio/flac") ||
                 fileType.match("audio/mp3") ||
-                fileType.match("audio/x-wav")
+                fileType.match("audio/x-wav") ||
+                fileType.match("audio/mpeg")
             )
         ) {
             // Animate "Waveform section" with FadeOut effect
@@ -179,10 +180,10 @@ function getInstrument() {
 
 function initGetInstrumentButton(wavesurfer) {
     $("#getInstrumentNameButton").click(function() {
-        var btnGIN=$("#getInstrumentNameButton")
-        btnGIN.prop('disabled',true);
-        var btnUFI=$("#uploadFileInput")
-        btnUFI.prop('disabled',true);
+        var btnGIN = $("#getInstrumentNameButton");
+        btnGIN.prop("disabled", true);
+        var btnUFI = $("#uploadFileInput");
+        btnUFI.prop("disabled", true);
         getInstrument();
     });
 }
