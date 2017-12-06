@@ -17,7 +17,6 @@ def load_data_from_folder(path):
                                        num_workers=1)
 
 
-
 def run(input, checkpoint_path):
     model = MobileNet(num_classes=6)
     # Map storage to cpu

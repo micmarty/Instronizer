@@ -14,15 +14,19 @@ $(function() {
  * Bind action when file input element has changed its value
  */
 function bindOnUploadChange(wavesurfer) {
-    $('#uploadFileInput').on('change', function() {
+    $("#uploadFileInput").on("change", function() {
         var fileSize = this.files[0].size / 1024 / 1024;
         var fileType = this.files[0].type;
         var maxUploadSize = maxUploadSizeFromJinja || 50;
-        if (fileSize > maxUploadSize || !(fileType.match("audio/wav") ||
+        if (
+            fileSize > maxUploadSize ||
+            !(
+                fileType.match("audio/wav") ||
                 fileType.match("audio/flac") ||
                 fileType.match("audio/mp3") ||
-                fileType.match("audio/x-wav"))) {
-
+                fileType.match("audio/x-wav")
+            )
+        ) {
             // Animate "Waveform section" with FadeOut effect
             var waveform = $("#waveformSection");
             var currentOpacity = waveform.css("opacity");
@@ -40,7 +44,8 @@ function bindOnUploadChange(wavesurfer) {
                     .css({ opacity: currentOpacity, visibility: "visible" })
                     .animate({ opacity: 0.0 }, "slow");
             }
-
+            //clear file name
+            document.getElementById("uploadFileName").value = "";
             // When more than x MB, then show error dialog
             $("#alert").show();
         } else {
@@ -83,16 +88,16 @@ function bindOnUploadChange(wavesurfer) {
  * Assign actions to player buttons
  */
 function initWaveformControls(player) {
-    $('#backward').click(function() {
+    $("#backward").click(function() {
         player.skipBackward();
     });
-    $('#togglePlay').click(function() {
+    $("#togglePlay").click(function() {
         player.playPause();
     });
-    $('#forward').click(function() {
+    $("#forward").click(function() {
         player.skipForward();
     });
-    $('#toggleMute').click(function() {
+    $("#toggleMute").click(function() {
         player.toggleMute();
     });
 }
@@ -103,45 +108,42 @@ function initWaveformControls(player) {
  */
 function initWavesurfer() {
     var wavesurfer = WaveSurfer.create({
-        container: '#waveform',
+        container: "#waveform",
         barWidth: 3,
         height: 300,
-        progressColor: '#512da8',
+        progressColor: "#512da8",
         skipLength: 30,
         fillParent: true
     });
 
-    wavesurfer.on('ready', function() {
+    wavesurfer.on("ready", function() {
         // Hide Progress bar
-        $('#processingProgress').hide();
+        $("#processingProgress").hide();
 
         // Animate with FadeIn effect
-        $('#waveformSection')
-            .css({ opacity: 0.0, visibility: 'visible' })
-            .animate({ opacity: 1.0 }, 'slow');
+        $("#waveformSection")
+            .css({ opacity: 0.0, visibility: "visible" })
+            .animate({ opacity: 1.0 }, "slow");
 
         // Add timeline
         var timeline = Object.create(WaveSurfer.Timeline);
         timeline.init({
             wavesurfer: wavesurfer,
-            container: '#waveform-timeline',
+            container: "#waveform-timeline",
             timeInterval: 5
         });
         // Draggable region
         wavesurfer.addRegion({
-            id: 'startend',
+            id: "startend",
             start: 0, // in seconds
             end: 3, // in seconds
             drag: true,
             resize: false,
-            color: 'hsla(262, 52%, 47%, 0.48)'
+            color: "hsla(262, 52%, 47%, 0.48)"
         });
-
         wavesurfer.on("region-dblclick", function(region, event) {
-            if (region.id != 'startend') {
+            if (region.id != "startend") {
                 region.remove();
-            } else {
-                getInstrument();
             }
         });
     });
@@ -177,6 +179,10 @@ function getInstrument() {
 
 function initGetInstrumentButton(wavesurfer) {
     $("#getInstrumentNameButton").click(function() {
+        var btnGIN=$("#getInstrumentNameButton")
+        btnGIN.prop('disabled',true);
+        var btnUFI=$("#uploadFileInput")
+        btnUFI.prop('disabled',true);
         getInstrument();
     });
 }
