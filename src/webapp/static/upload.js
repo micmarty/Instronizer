@@ -3,10 +3,12 @@ var timerInterval;
 function startTimer() {
     clearInterval(timerInterval);
     var duration = 60 * 5;
-    display = document.querySelector('#time');
-    var timer = duration, minutes, seconds;
-    timerInterval = setInterval(function () {
-        minutes = parseInt(timer / 60, 10)
+    display = document.querySelector("#time");
+    var timer = duration,
+        minutes,
+        seconds;
+    timerInterval = setInterval(function() {
+        minutes = parseInt(timer / 60, 10);
         seconds = parseInt(timer % 60, 10);
 
         minutes = minutes < 10 ? "0" + minutes : minutes;
@@ -34,7 +36,6 @@ function startTimer() {
                 results
                     .css({ opacity: currentOpacity, visibility: "visible" })
                     .animate({ opacity: 0.0 }, "slow");
-                    
             }
             clearInterval(timerInterval);
         }
@@ -60,12 +61,12 @@ function sendFileToServer(data) {
         },
         success: function(response) {
             console.log("File was successfuly uploaded");
-            if (response['success']) {
-                startTimer()
-                window.localStorage.setItem('SavedFilePath', response['path']);
+            if (response["success"]) {
+                startTimer();
+                window.localStorage.setItem("SavedFilePath", response["path"]);
                 console.log("File path saved to localStorage");
             } else {
-                console.log("Server responed with no success status")
+                console.log("Server responed with no success status");
             }
         }
     });
@@ -89,7 +90,7 @@ function sendRegionsToServer(data) {
             console.log("Regions upload error");
         },
         success: function(response) {
-            startTimer()
+            startTimer();
             console.log("Regions were successfully uploaded");
             $("#waitingForResultsProgress").hide();
             $("#results")
