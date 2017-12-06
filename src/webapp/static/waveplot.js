@@ -40,7 +40,8 @@ function bindOnUploadChange(wavesurfer) {
                     .css({ opacity: currentOpacity, visibility: "visible" })
                     .animate({ opacity: 0.0 }, "slow");
             }
-
+            //clear file name
+            document.getElementById("uploadFileName").value = "";
             // When more than x MB, then show error dialog
             $("#alert").show();
         } else {
