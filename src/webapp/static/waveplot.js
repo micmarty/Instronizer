@@ -137,6 +137,11 @@ function initWavesurfer() {
             resize: false,
             color: 'hsla(262, 52%, 47%, 0.48)'
         });
+		wavesurfer.on("region-dblclick", function(region, event) {
+            if (region.id != 'startend') {
+                region.remove();
+            }
+        });
     });
     return wavesurfer;
 }

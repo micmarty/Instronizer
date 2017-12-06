@@ -5,7 +5,7 @@ function startTimer() {
     var duration = 60 * 5;
     display = document.querySelector('#time');
     var timer = duration, minutes, seconds;
-    timerInerval = setInterval(function () {
+    timerInterval = setInterval(function () {
         minutes = parseInt(timer / 60, 10)
         seconds = parseInt(timer % 60, 10);
 
