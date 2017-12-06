@@ -63,7 +63,7 @@ https://www.youtube.com/watch?v=Ynz98iBh9qw Nuvole_Bianche_5m
 https://www.youtube.com/watch?v=oPEBWXvo1Xc 4_pieces_yiruma_15m
 
 
-# around 1h40m
+# around 1h43m
 # [train/gac]
 # wyciac 25,5s z poczatku i 4,5s z konca
 # https://www.youtube.com/watch?v=2flHxtWq6sU top5_acoustic_covers_19m
@@ -101,6 +101,9 @@ https://www.youtube.com/watch?v=oPEBWXvo1Xc 4_pieces_yiruma_15m
 # wyciac 1,5s z poczatku i 13,5s z konca
 # https://www.youtube.com/watch?v=xVZgUiRljdU estas_golden_dragon_9m
 
+# wyciac 6s z poczatku i 10s z konca
+https://www.youtube.com/watch?v=7sZp0XzHNJ8 josh_blued_in_d_3m
+
 # around 33m
 [val/gac]
 # wyciac 1m15s od konca
@@ -123,9 +126,6 @@ https://www.youtube.com/watch?v=-Vk0y55hJjo let_her_go_finger_passenger_4m
 
 # wyciac 3s z poczatku i 10s z konca
 https://www.youtube.com/watch?v=STNLPhmTttg josh_turner_nocturne_4m
-
-# wyciac 6s z poczatku i 10s z konca
-https://www.youtube.com/watch?v=7sZp0XzHNJ8 josh_blued_in_d_3m
 
 # around 1h46m
 #[train/gel]
@@ -247,4 +247,4 @@ https://www.youtube.com/watch?v=mfT5AvkH1nc alexander_labko_tango_5m
 
 # wyciac pierwsze 6s i ostatnie 40s
 https://www.youtube.com/watch?v=XahhzJU18os fiddle_solo_mark_oconnor_8m
-# end
+

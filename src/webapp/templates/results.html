@@ -58,17 +58,37 @@
     console.log("dominant instrument: ", dominantInstrumentName);
     // Remove seleted region
     // And create identical but non-draggale
+    var updateLabel = function(region) {
+        if (region.id != 'startend') {
+            // Possible multiple regions with the same id (the same instrument and time segment)
+            // Only when Math.random() pick the same number - very rare cases!
+            var regions = document.querySelectorAll('region[data-id="' + region.id + '"]');
+            for (index = 0; index < regions.length; index++) {
+                regions[index].style.height = '80%';
+                regions[index].style.top = '10%';
+            }
+
+        }
+        console.log('nie');
+    };
+    wavesurfer.on('region-created', updateLabel);
+    wavesurfer.on('region-updated', updateLabel);
+
+    var regionId = dominantInstrumentName + "at {{ start }}, RANDOM_ID: " + Math.random();
     wavesurfer.addRegion({
-        id: dominantInstrumentName + "at {{ start }}",
+        id: regionId,
         start: '{{ start }}', // time in seconds 
         end: '{{ end }}', // time in seconds 
         drag: false,
         resize: false,
         color: 'hsla(213, 92%, 85%, 0.48)',
         attributes: {
-            label: dominantInstrumentName
+            label: dominantInstrumentName,
+            top: '10%',
+            height: '80%'
         }
     });
+
 
     // Disable selecting region reset
     // It speeds up queueing request to the server and is more user-friendly

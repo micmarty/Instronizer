@@ -1,17 +1,18 @@
 <section class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp">
     <!-- Box with upload glyphicon -->
-    <header class="section__play-btn mdl-cell mdl-cell--3-col-desktop mdl-cell--2-col-tablet mdl-cell--4-col-phone mdl-color--teal-100 mdl-color-text--white">
+    <header class="section__play-btn mdl-cell mdl-cell--3-col-desktop mdl-cell--2-col-tablet mdl-cell--4-col-phone mdl-color--primary mdl-color-text--white">
         <div class="mdl-button mdl-button--primary mdl-button--icon mdl-button--file">
-            <i id="uploadGlyph" class="material-icons">file_upload</i>
-
             <!-- File input -->
+            <i id="uploadGlyph" class="material-icons" style="font-size: 200px; left: 5%; color: whitesmoke">file_upload</i>
             <input id="uploadFileInput" type="file" name="file">
+            </input>
         </div>
     </header>
     <div class="mdl-card mdl-cell mdl-cell--9-col-desktop mdl-cell--6-col-tablet mdl-cell--4-col-phone">
         <!-- Text -->
         <div class="mdl-card__supporting-text">
-            <h4>Choose WAV file below [TODO]MB</h4>TODO
+            <h4>Choose audio file to classify</h4>
+            WAV, FLAC and MP3 files below {{max_upload}}MB
         </div>
 
         <!-- Bottom -->
@@ -20,11 +21,15 @@
             <div class="mdl-textfield mdl-js-textfield mdl-textfield--file">
                 <input id="uploadFileName" class="mdl-textfield__input" placeholder="File name" type="text" readonly/>
             </div>
-            <!-- Upload button
-                <button id="upload-file-btn" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-js-ripple-effect">
-                    Upload
-                </button> -->
         </div>
     </div>
+    <div class="alert info" style="width: 100%">
+        <span class="closebtn">&times;</span>
+        <strong>Info!</strong> Instronizer was taught to detect 6 instruments:
+        <br/> Cello, Acoustic guitar, Electric guitar, Piano, Church organs and Violin.
+        <br/>
+        <br/> You can upload a file containing any instrument, but the excerpts will be classified as a combination of the instruments specified above.
+    </div>
+    <!-- Progress bar visible only when needed -->
     <div id="processingProgress" style="width: 100%; height: 10px; display: none" class="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div>
 </section>

@@ -20,99 +20,98 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="description" content="A front-end template that helps you build fast, modern mobile web apps.">
+    <meta name="description" content="Engineer's Thesis Project - Detecting instruments in audio excerpts with Deep Neural Network">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
-    <title>Instrument identification with Deep Neural Network</title>
+    <title>Instronizer</title>
 
+    <!-- TODO change favicon - multiple size combinations -->
     <!-- Add to homescreen for Chrome on Android -->
-    <meta name="mobile-web-app-capable" content="yes">
-    <link rel="icon" sizes="192x192" href="images/android-desktop.png">
+    <!-- <meta name="mobile-web-app-capable" content="yes"> -->
+    <!-- <link rel="icon" sizes="192x192" href="images/android-desktop.png"> -->
 
     <!-- Add to homescreen for Safari on iOS -->
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <meta name="apple-mobile-web-app-title" content="Material Design Lite">
-    <link rel="apple-touch-icon-precomposed" href="images/ios-desktop.png">
+    <!-- <meta name="apple-mobile-web-app-capable" content="yes"> -->
+    <!-- <meta name="apple-mobile-web-app-status-bar-style" content="black"> -->
+    <!-- <meta name="apple-mobile-web-app-title" content="Material Design Lite"> -->
+    <!-- <link rel="apple-touch-icon-precomposed" href="images/ios-desktop.png"> -->
 
     <!-- Tile icon for Win8 (144x144 + tile color) -->
-    <meta name="msapplication-TileImage" content="images/touch/ms-touch-icon-144x144-precomposed.png">
-    <meta name="msapplication-TileColor" content="#3372DF">
+    <!-- <meta name="msapplication-TileImage" content="images/touch/ms-touch-icon-144x144-precomposed.png"> -->
+    <!-- <meta name="msapplication-TileColor" content="#3372DF"> -->
 
-    <link rel="shortcut icon" href="images/favicon.png">
+    <link rel="shortcut icon" href="static/favico.png">
 
-    <!-- SEO: If your mobile URL is different from the desktop URL, add a canonical link to the desktop page https://developers.google.com/webmasters/smartphone-sites/feature-phones -->
-    <!--
-    <link rel="canonical" href="http://www.example.com/">
-    -->
-
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.deep_purple-pink.min.css">
-    <link rel="stylesheet" href="static/lib/material.css">
+    <link rel="stylesheet" href="static/lib/material_design/material_fonts.css">
+    <link rel="stylesheet" href="static/lib/material_design/material_icons.css">
+    <link rel="stylesheet" href="static/lib/material_design/color_palette/deep_purple_indigo.min.css" />
+    <link rel="stylesheet" href="static/lib/material_design/material.css">
     <link rel="stylesheet" href="static/style.css">
-    <style>
-        #view-source {
-            position: fixed;
-            display: block;
-            right: 0;
-            bottom: 0;
-            margin-right: 40px;
-            margin-bottom: 40px;
-            z-index: 900;
-        }
-    </style>
 </head>
 
 <body class="mdl-demo mdl-color--grey-100 mdl-color-text--grey-700 mdl-base">
-    <!-- Hidden error dialog -->
-    <dialog class="mdl-dialog" style="width: 400px">
-        <h4 class="mdl-dialog__title">File upload error</h4>
-        <div class="mdl-dialog__content">
-            <p>Only WAV files under 200MB are allowed.</p>
-        </div>
-        <div class="mdl-dialog__actions">
-            <button type="button" class="mdl-button close-dialog">OK</button>
-        </div>
-    </dialog>
+    <!-- Error dialog -->
+    <div id="alert" class="alert" style="display: none">
+        <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+        <strong>File upload error!</strong> Must be WAV, FLAC or MP3 file below {{max_upload}}MB.
+    </div>
 
     <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+        <!-- Navigation bar with tabs -->
         <header class="mdl-layout__header mdl-layout__header--scroll mdl-color--primary">
+            <!-- Title surrounded by spacers above and below it -->
+            <div style="height: 32px" class="mdl-layout--large-screen-only mdl-layout__header-row"></div>
             <div class="mdl-layout--large-screen-only mdl-layout__header-row">
+                <h3>Instronizer</h3>
             </div>
             <div class="mdl-layout--large-screen-only mdl-layout__header-row">
-                <h3>Instrument identification with Deep Neural Network</h3>
+                <h4>Instrument identification system based on Deep Neural Networks</h4>
             </div>
-            <div class="mdl-layout--large-screen-only mdl-layout__header-row">
-            </div>
+            <div style="height: 32px" class="mdl-layout--large-screen-only mdl-layout__header-row"></div>
+
+            <!-- Tab names -->
             <div class="mdl-layout__tab-bar mdl-js-ripple-effect mdl-color--primary-dark">
                 <a href="#overview" class="mdl-layout__tab is-active">Demo</a>
-                <a href="#details" class="mdl-layout__tab">Details</a>
-                <a href="#features" class="mdl-layout__tab">Technology</a>
-                <a href="#features" class="mdl-layout__tab">FAQ</a>
-                <button class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored mdl-shadow--4dp mdl-color--accent" id="add">
-            <i class="material-icons" role="presentation">add</i>
-            <span class="visuallyhidden">Add</span>
-          </button>
+                <a href="#details" class="mdl-layout__tab">Implementation details</a>
+                <a href="#about" class="mdl-layout__tab">About</a>
+                <a href="#contact" class="mdl-layout__tab">Contact</a>
+
+                <!-- TODO change to real github link 1/2-->
+                <a href="https://github.com/micmarty/instrument-classifier-polyphonic" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored mdl-shadow--4dp mdl-color--accent" id="add">
+                    <i class="material-icons" role="presentation">star_rate</i>
+                    <span class="visuallyhidden">Add</span>
+                </a>
             </div>
         </header>
+
+        <!-- Tabs content -->
         <main class="mdl-layout__content">
             <div class="mdl-layout__tab-panel is-active" id="overview">
                 {% include 'upload_page.html' %}
             </div>
+            <div class="mdl-layout__tab-panel" id="details">
+                {% include 'details_page.html' %}
+            </div>
         </main>
     </div>
-    <a href="https://github.com/google/material-design-lite/blob/mdl-1.x/templates/text-only/" target="_blank" id="view-source" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-color--accent mdl-color-text--accent-contrast">View Source</a>
-    <script src="static/lib/material.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/wavesurfer.js/1.2.3/wavesurfer.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/wavesurfer.js/1.2.3/plugin/wavesurfer.timeline.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/wavesurfer.js/1.2.3/plugin/wavesurfer.regions.min.js"></script>
-    <script src="https://www.gstatic.com/charts/loader.js"></script>
+    <!-- TODO change to real github link 2/2-->
+    <a href="https://github.com/micmarty/instrument-classifier-polyphonic" target="_blank" id="view-source" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-color--accent mdl-color-text--accent-contrast">
+        View Source code
+    </a>
+    <script src="static/lib/material_design/material.min.js"></script>
+    <script src="static/lib/jquery/jquery-3.1.1.min.js"></script>
+    <script src="static/lib/wavesurfer/wavesurfer.min.js"></script>
+    <script src="static/lib/wavesurfer/wavesurfer-timeline.min.js"></script>
+    <script src="static/lib/wavesurfer/wavesurfer-regions.min.js"></script>
+    <script src="static/lib/google_charts/loader.min.js"></script>
 
     <!-- Custom JavaScript -->
-    <!-- Waveplot must be first -->
+    <!-- Order must be preserved -->
+    <script>
+        var maxUploadSizeFromJinja = parseInt('{{max_upload}}');
+    </script>
     <script src="static/waveplot.js"></script>
     <script src="static/upload.js"></script>
+    <script src="static/alert_boxes.js"></script>
 </body>
 
 </html>
