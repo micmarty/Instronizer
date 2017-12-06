@@ -41,6 +41,12 @@ function startTimer() {
         }
     }, 1000);
 }
+function unlockButtons(){
+    var btnGIN=$("#getInstrumentNameButton");
+    btnGIN.prop('disabled',false);
+    var btnUFI=$("#uploadFileInput")
+    btnUFI.prop('disabled',false);
+}
 // Called from waveplot.js - function initGetInstrumentButton
 function sendFileToServer(data) {
     $.ajax({
@@ -86,10 +92,12 @@ function sendRegionsToServer(data) {
             return xhr;
         },
         error: function(xhr, status, error) {
+            unlockButtons();
             alert("Unexpected region processing error. Please try again later.");
             console.log("Regions upload error");
         },
         success: function(response) {
+            unlockButtons();
             startTimer();
             console.log("Regions were successfully uploaded");
             $("#waitingForResultsProgress").hide();

@@ -179,11 +179,10 @@ function getInstrument() {
 
 function initGetInstrumentButton(wavesurfer) {
     $("#getInstrumentNameButton").click(function() {
+        var btnGIN=$("#getInstrumentNameButton")
+        btnGIN.prop('disabled',true);
+        var btnUFI=$("#uploadFileInput")
+        btnUFI.prop('disabled',true);
         getInstrument();
-        var btn = $(this);
-        btn.prop("disabled", true);
-        window.setTimeout(function() {
-            btn.prop("disabled", false);
-        }, 2000);
     });
 }
