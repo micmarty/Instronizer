@@ -8,12 +8,11 @@ services:
   - docker
 
 install:
-  - if [ "$TRAVIS_BRANCH" == "deployment/docker" ]; then
-      docker build -t micmarty/instronizer .
-      docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD" registry.heroku.com;
-      docker tag micmarty/instronizer:latest registry.heroku.com/instronizer/web;
-      docker push registry.heroku.com/instronizer/web;
-    fi
+  - docker build -t micmarty/instronizer .
+    docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD" registry.heroku.com;
+    docker tag micmarty/instronizer:latest registry.heroku.com/instronizer/web;
+    docker push registry.heroku.com/instronizer/web;
+  
 
 dist: "trusty"
 
