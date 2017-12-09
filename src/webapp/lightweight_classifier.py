@@ -18,6 +18,7 @@ def load_data_from_folder(path):
 
 
 def run(input, checkpoint_path):
+    checkpoint_path = '/app/checkpoints/mobilenet__YT_dataset__3s_excerpts.pth.tar'
     model = MobileNet(num_classes=6)
     # Map storage to cpu
     checkpoint = torch.load(checkpoint_path, map_location=lambda storage, loc: storage)

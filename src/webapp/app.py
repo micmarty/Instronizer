@@ -70,7 +70,7 @@ app.secret_key = 'TODO use random value'
 # Functions
 def input_args():
     parser = ArgumentParser()
-    parser.add_argument('-c', '--checkpoint', default='', type=str, required=True,
+    parser.add_argument('-c', '--checkpoint', default='', type=str, required=False,
                         metavar='PATH', help='File with saved weights (some state of trained model)')
     parser.add_argument('-p', '--port', default=5000, type=int, metavar='PORT')
     return parser.parse_args()
