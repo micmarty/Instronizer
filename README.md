@@ -20,6 +20,8 @@ For this reason we've built our own dataset from YouTube.
 
 This project was designed, written and is maintained by **Michał Martyniak**, **Maciej Rutkowski**, **Filip Schodowski**
 
+![Instronizer webapp screenshot](docs/instronizer-webapp.png)
+
 ## System components
 
 - Web application (Python, Flask, uWSGI, nginx, Travis CI, Docker, Google Material Design)
