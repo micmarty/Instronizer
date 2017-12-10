@@ -1,4 +1,7 @@
-# Original source code: https://github.com/pytorch/vision/blob/master/torchvision/datasets/folder.py
+# Original source:
+# https://github.com/pytorch/vision/blob/master/torchvision/datasets/folder.py
+# This file was adapted to our needs
+
 '''
 It's responsible for finding spectrograms in given path and extracting their labels
 '''
@@ -40,8 +43,12 @@ def make_dataset(dir, class_to_idx):
     return images
 
 
-def make_dataset_direct(dir, class_to_idx):
-    '''TODO rewrite it, remove hardcoded 0'''
+def make_dataset_direct(dir):
+    """Finds all spectrogram files within a dir
+
+    Args:
+        dir - path to dir containing spectrograms
+    """
     images = []
     d = os.path.expanduser(dir)
    
@@ -49,6 +56,9 @@ def make_dataset_direct(dir, class_to_idx):
         for fname in sorted(fnames):
             if is_spec_file(fname):
                 path = os.path.join(root, fname)
+
+                # 0 doesn't matter because this function is called when model is evalutaion mode
+                # This means that we don't care about label, because the model needs to figure it out by itself
                 item = (path, 0)
                 images.append(item)
     return images
@@ -153,7 +163,7 @@ class SpecFolder(torch.utils.data.Dataset):
                  loader=default_loader, direct=False):
         classes, class_to_idx = find_classes(root)
         if direct:
-            specs = make_dataset_direct(root, class_to_idx)
+            specs = make_dataset_direct(root)
         else:
             specs = make_dataset(root, class_to_idx)
 
@@ -184,100 +194,6 @@ class SpecFolder(torch.utils.data.Dataset):
         if self.target_transform is not None:
             target = self.target_transform(target)
         return spec, target
-
-    def __len__(self):
-        return len(self.specs)
-
-
-class ValSpecFolder(torch.utils.data.Dataset):
-    '''
-    It expects that:
-    - root contains folders with unique names
-    - root contains .txt files (each containg any number of labels, one per line)
-    - these .txt files should have names matching existing folders, 
-    e.g. aurora.txt, containing: 
-    ```
-    voi
-    pia
-    gac
-    ```
-    +
-    <root>/aurora/ containing .npy spectrograms
-
-    '''
-
-    def __init__(self, root, transform=None, target_transform=None, loader=default_loader):
-        classes, class_to_idx = irmas_classes()
-        self.class_to_idx = class_to_idx
-        self.classes = classes
-        self.root = Path(root)
-        self.txt_files = self.root.glob('*.txt')
-        self.loader = loader
-        specs = self.next_song()
-
-        if len(specs) == 0:
-            raise(RuntimeError("Found 0 spectrograms in subfolders of: " + root + "\n" +
-                               "Supported spectrogram extensions are: .npy"))
-
-        self.specs = specs
-        self.transform = transform
-        self.target_transform = target_transform
-
-    def _encode_labels_into_string(self, labels):
-        '''
-        Convert ['cel', 'gel', 'voi'] to '1;4;6;'
-        PyTorch is loosing elements when array is the target
-        '''
-        classes_string = ''
-        for label in labels:
-            classes_string += '{};'.format(self.class_to_idx[label])
-        return classes_string
-
-    def next_song(self):
-        '''
-        Returns an array of tuples, where one tuple element is 
-        (FloatTensor, multiple labels encoded in string)
-
-        Example:
-        (3x224x224, '1;5;6;8', song_path)
-         ^           ^ 
-        FloatTensor  labels
-        '''
-        song_labels_file = next(self.txt_files, None)
-
-        if song_labels_file is None:
-            return None
-
-        labels = val_targets(str(song_labels_file))
-        spec_dir = song_labels_file.parent / song_labels_file.stem
-        spec_files = spec_dir.glob('*.npy')
-
-        spec_target_pairs = []
-        for spec_path in spec_files:
-
-            encoded_labels = self._encode_labels_into_string(labels)
-            spec_npy_path = str(spec_path)
-
-            pair = (spec_npy_path, encoded_labels)
-            spec_target_pairs.append(pair)
-        self.specs = spec_target_pairs
-        return spec_target_pairs
-
-    def __getitem__(self, index):
-        """
-        Args:
-            index (int): Index
-
-        Returns:
-            tuple: (image, target) where target is a list of strings (labels)
-        """
-        path, target = self.specs[index]
-        spec = self.loader(path)
-        if self.transform is not None:
-            spec = self.transform(spec)
-        if self.target_transform is not None:
-            target = self.target_transform(target)
-        return spec, target, path
 
     def __len__(self):
         return len(self.specs)

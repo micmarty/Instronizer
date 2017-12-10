@@ -1,3 +1,6 @@
+# Original source:
+# https://github.com/marvis/pytorch-mobilenet/blob/master/main.py
+
 class AverageMeter(object):
     '''Computes and stores the average and current value'''
 
