@@ -59,10 +59,52 @@ cd <project_path>
 export PYTHONPATH=<project_path>/src
 ```
 
-## Web application demo - instant and easy to deploy with Docker image
+## Requirements
 
+We reccommend using **conda** to separate you system python packages from our project or to use prepared Dockerfile (webapp only)
 ```bash
+# 1. Install conda first 
+# 2. Create new environment and activate it
+conda create --name instronizer python=3.6 
+source activate instronizer
+
+# 3. Set project root/src
 cd <project_path>
+export PYTHONPATH=$(pwd)/src
+
+# 4. Visit http://pytorch.org/ and install PyTorch for your platform
+# Assuming Linux without CUDA here:
+conda install pytorch torchvision -c pytorch
+
+# 5. Install other dependencies
+conda install -c conda-forge librosa
+pip install better_exceptions tensorflow scipy soundfile Flask
+
+# Example preprocessing
+#
+# dataset_dir can store e.g. train, val, test directories, each having directories for each class, containing WAV excerpts
+# some_dir does not have to be an existing path
+python src/preprocessor/wav_to_spectrograms.py --irmas --input <dataset_dir> --output-dir <some_dir>
+
+# Example training
+#
+# dataset must contain:
+# - train and val in this variation
+# - val when --evaluate
+# - test when --test
+# You need to adjust batch size and validation batch size when the default values are too small or too big
+# add --gpu when using CUDA
+# Let's hav a look at this script first or call it with --help ;)
+python src/classifier/train.py <path_to_dataset> --print-freq 1 --num_classes 6
+
+# Example webapp launch
+#
+# Only docker is required to install, deployment is trivial
+# Must be in project root
 docker build . --tag instronizer
 docker run -p 80:80 --name instronizer_container instronizer
+# 
+# Go to your browser, type: 
+# localhost
+# and smile :)
 ```
