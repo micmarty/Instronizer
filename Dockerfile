@@ -23,3 +23,4 @@ ENV STATIC_INDEX 0
 COPY . /app
 WORKDIR /app/src/webapp
 ENV PYTHONPATH=/app/src
+EXPOSE 80
