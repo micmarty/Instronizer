@@ -16,7 +16,7 @@ At this point it was trained to identify 6 musical instruments:
 
 It performs pretty well, achieving **86%** on our test dataset and **91%** on validation dataset.
 At the beginning we were using **IRMAS** dataset but after some trainings and checking the labels, it turned out to be "not well made".
-For this reason we've built our own dataset from YouTube.
+For this reason **we've built our own dataset from YouTube**.
 
 This project was designed, written and is maintained by **Michał Martyniak**, **Maciej Rutkowski**, **Filip Schodowski**
 
