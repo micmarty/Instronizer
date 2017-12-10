@@ -20,11 +20,11 @@ deploy:
 script:
   - docker login --username=_ --password=${HEROKU_TOKEN} registry.heroku.com
   - docker build -t local/instronizer .
-  - docker tag local/instronizer:latest registry.heroku.com/instronizer/web;
+  - docker tag local/instronizer:latest registry.heroku.com/instrumentalists-dnn/web;
   - docker images
 
 after_success:
-  - docker push registry.heroku.com/instronizer/web
+  - docker push registry.heroku.com/instrumentalists-dnn/web
 
 
 
