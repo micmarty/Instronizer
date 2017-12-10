@@ -4,15 +4,25 @@ language: python
 python:
   - "3.6"
 
+addons:
+  apt:
+    packages:
+      - docker-ce
+
 services:
   - docker
 
+deploy:
+  provider: heroku
+  api_key:
+    - secure: "Kk3xHlomvww5HynrPhBLSpXY722qZz/QBkM1iSQlZ1Gz3Vn8eqKnYpfRLhllFDlIS1i+wdlZYAPoLQK8lcxBqQoQ7u4Tcx0iGwMrUa6ypSNIo+6ZlP4TE+4Z9VuY2Go72nRKsnjx1V137PaNBG/G7Nlbc6cOdKZJzqq5hT0ftJB7UUvTZN6Ka5Mn29pJeTmwnhW7DbWI17dCZisSoWVYLiqgX0jLZ9NS0+PVkjfQ+z2w+KXo0WAcqCvC6z57FwlpVC/44IAd6SDgQjsMNoR2+RmAWTx5dZWHC2C4OOADFPefbBXdSROJarO4MofAMm4answHNYYjUgGyWg4PaRCIHgQt9d2pYqb5y8+pwIxpvKYvoIPpUvziFNMuaz1RDkwnTittasaWCQJ5YifBocGM8D0Zp0lOIUEEVEW2k3eW+gtAfRPFCGgKW62636A/DCsGaK9Z983OOl6iEAjkZuyW2OlB8t4kv/3slrPEBf64ZdQFoRcLElHpFBsnzdiwHcLHrdKGnKvnHPMgHhPoUQs54ErtC+rysMFXOwWz3mJ9XMTT6afAUll7qCUfAWm5gjm12Et0bKRKep2m0LQVUGiWJ/1IqxnpchmC4Xw6o6wawOwBKPWnncitYKgFtiE8O9BHG8VmEFOpEm59sM7hIuJTs/QoErHOjvGGjbkzQ6OmChw="
+  app: instronizer
+
 install:
   - docker build -t micmarty/instronizer .
-    docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD" registry.heroku.com;
-    docker tag micmarty/instronizer:latest registry.heroku.com/instronizer/web;
-    docker push registry.heroku.com/instronizer/web;
-  
+  - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD" registry.heroku.com;
+  - docker tag micmarty/instronizer:latest registry.heroku.com/instronizer/web;
+  - heroku container:push instronizer
 
 dist: "trusty"
 
