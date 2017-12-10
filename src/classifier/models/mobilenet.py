@@ -1,4 +1,7 @@
-# TODO add link to original source
+# Original source:
+# https://github.com/marvis/pytorch-mobilenet
+# This file was adapted to our needs
+
 import torch.nn as nn
 
 class MobileNet(nn.Module):

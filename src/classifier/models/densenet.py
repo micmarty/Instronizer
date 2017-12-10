@@ -1,4 +1,7 @@
-# Source: Original PyTorch implementation of DenseNet
+# Original source: PyTorch implementation of DenseNet
+# https://github.com/pytorch/vision/blob/master/torchvision/models/densenet.py
+# This file was adapted to our needs
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -18,7 +21,7 @@ model_urls = {
 
 def densenet121(pretrained=False, **kwargs):
     r"""Densenet-121 model from
-    `"Densely Connected Convolutional Networks" <https://arxiv.org/pdf/1608.06993.pdf>`
+    `'Densely Connected Convolutional Networks' <https://arxiv.org/pdf/1608.06993.pdf>`
 
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
@@ -31,7 +34,7 @@ def densenet121(pretrained=False, **kwargs):
 
 def densenet169(pretrained=False, **kwargs):
     r"""Densenet-169 model from
-    `"Densely Connected Convolutional Networks" <https://arxiv.org/pdf/1608.06993.pdf>`
+    `'Densely Connected Convolutional Networks' <https://arxiv.org/pdf/1608.06993.pdf>`
 
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
@@ -44,7 +47,7 @@ def densenet169(pretrained=False, **kwargs):
 
 def densenet201(pretrained=False, **kwargs):
     r"""Densenet-201 model from
-    `"Densely Connected Convolutional Networks" <https://arxiv.org/pdf/1608.06993.pdf>`
+    `'Densely Connected Convolutional Networks' <https://arxiv.org/pdf/1608.06993.pdf>`
 
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
@@ -57,7 +60,7 @@ def densenet201(pretrained=False, **kwargs):
 
 def densenet161(pretrained=False, **kwargs):
     r"""Densenet-161 model from
-    `"Densely Connected Convolutional Networks" <https://arxiv.org/pdf/1608.06993.pdf>`
+    `'Densely Connected Convolutional Networks' <https://arxiv.org/pdf/1608.06993.pdf>`
 
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
@@ -107,7 +110,7 @@ class _Transition(nn.Sequential):
 
 class DenseNet(nn.Module):
     r"""Densenet-BC model class, based on
-    `"Densely Connected Convolutional Networks" <https://arxiv.org/pdf/1608.06993.pdf>`
+    `'Densely Connected Convolutional Networks' <https://arxiv.org/pdf/1608.06993.pdf>`
 
     Args:
         growth_rate (int) - how many filters to add each layer (`k` in paper)
