@@ -1,19 +1,26 @@
 sudo: required
 
+os: "linux"
+dist: "trusty"
 language: python
 python:
   - "3.6"
+
+addons:
+  apt:
+    packages:
+      - docker-ce
 
 services:
   - docker
 
 install:
-  - docker build -t micmarty/instronizer .
-    docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD" registry.heroku.com;
-    docker tag micmarty/instronizer:latest registry.heroku.com/instronizer/web;
-    docker push registry.heroku.com/instronizer/web;
-  
+  - docker login --username=_ --password=${HEROKU_TOKEN} registry.heroku.com
+  - docker build -t local/instronizer .
+  - docker tag local/instronizer:latest registry.heroku.com/instronizer/web;
+  - docker images
+  - docker push registry.heroku.com/instronizer/web
 
-dist: "trusty"
 
-os: "linux"
+
+#  - heroku container:push instronizer
