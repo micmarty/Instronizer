@@ -1,1 +1,1 @@
-web: uwsgi src/webapp/uwsgi.ini
+web: "TEST: " + $STATIC_PATH + $(which uwsgi); uwsgi src/webapp/uwsgi.ini
