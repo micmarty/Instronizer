@@ -18,8 +18,7 @@ deploy:
 script:
 - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
 - docker build -t local/instronizer .
-- docker tag local/instronizer:latest micmarty/instronizer;
+- docker tag local/instronizer:latest $DOCKER_USERNAME/instronizer
 - docker images
-after_success:
-- docker push micmarty/instronizer
+- docker push $DOCKER_USERNAME/instronizer
 
