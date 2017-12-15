@@ -22,6 +22,7 @@ script:
 - docker push micmarty/instronizer:latest
 
 after_success:
+- docker login --username=_ --password=${HEROKU_TOKEN} registry.heroku.com
 - docker tag micmarty/instronizer:latest registry.heroku.com/instronizer/web
 - docker push registry.heroku.com/instronizer/web
 
