@@ -21,3 +21,7 @@ script:
 - docker images
 - docker push micmarty/instronizer:latest
 
+after_success:
+- docker tag micmarty/instronizer:latest registry.heroku.com/instronizer/web
+- docker push registry.heroku.com/instronizer/web
+
