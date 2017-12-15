@@ -17,8 +17,7 @@ deploy:
     branch: travis/deployment-test
 script:
 - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
-- docker build -t local/instronizer .
-- docker tag local/instronizer:latest $DOCKER_USERNAME/instronizer
+- docker build -t micmarty/instronizer:latest .
 - docker images
-- docker push $DOCKER_USERNAME/instronizer
+- docker push micmarty/instronizer:latest
 
