@@ -1,1 +1,1 @@
-web: uwsgi uwsgi.ini
+web: uwsgi src/webapp/uwsgi.ini
