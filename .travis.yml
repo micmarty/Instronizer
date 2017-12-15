@@ -16,9 +16,10 @@ deploy:
     repo: micmarty/instrument-classifier-polyphonic
     branch: travis/deployment-test
 script:
-- docker login --username=_ --password=${HEROKU_TOKEN} registry.heroku.com
+- docker login --username=${DOCKER_USERNEME} --password=${DOCKER_PASSWORD}
 - docker build -t local/instronizer .
-- docker tag local/instronizer:latest registry.heroku.com/instrumentalists-dnn/web;
+- docker tag local/instronizer:latest micmarty/instronizer;
 - docker images
 after_success:
-- docker push registry.heroku.com/instrumentalists-dnn/web
+- docker push micmarty/instronizer
+
