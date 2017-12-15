@@ -13,6 +13,7 @@ RUN pip install ffmpeg-python \
 
 ENV NGINX_MAX_UPLOAD 50m
 ENV LISTEN_PORT 80
+RUN export LISTEN_PORT=$PORT
 ENV UWSGI_INI /app/src/webapp/uwsgi.ini
 ENV STATIC_URL /static
 ENV STATIC_PATH /app/src/webapp/static
@@ -23,4 +24,8 @@ ENV STATIC_INDEX 0
 COPY . /app
 WORKDIR /app/src/webapp
 ENV PYTHONPATH=/app/src
+
+RUN chmod -R a+w /app && chmod -R 777 /app
+RUN useradd -m myuser
+USER myuser
 EXPOSE 80
