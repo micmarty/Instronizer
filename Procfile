@@ -1,1 +1,0 @@
-web: docker pull micmarty/instronizer && docker run -p 80:$PORT --name instronizer_container_container micmarty/instronizer
