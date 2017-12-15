@@ -16,7 +16,7 @@ deploy:
     repo: micmarty/instrument-classifier-polyphonic
     branch: travis/deployment-test
 script:
-- docker login -e $DOCKER_EMAIL -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+- docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
 - docker build -t local/instronizer .
 - docker tag local/instronizer:latest micmarty/instronizer;
 - docker images
