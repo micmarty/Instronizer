@@ -22,9 +22,10 @@ For this reason **we've built our own dataset from YouTube**.
 This project was designed, written and is maintained by **Michał Martyniak**, **Maciej Rutkowski**, **Filip Schodowski**
 
 ### Demonstration video and more informations
-[DEMO link](http://martyniak.me/recent_projects.html)
+[Demo link](http://martyniak.me/recent_projects.html)
 
-### Thesis (PL language)
+### Thesis in polish language
+[Download .pdf](https://www.researchgate.net/profile/Michal_Martyniak/project/Musical-instruments-recognition-in-polyphonic-audio-deep-neural-network/attachment/5aa2d5dfb53d2f0bba570d1d/AS:602342382649345@1520621023460/download/Instronizer_Thesis_PL.pdf?context=ProjectUpdatesLog)
 **If you have any questions, feel free to leave a pull request or contact me (micmarty) directly**
 TODO
 
@@ -69,12 +70,12 @@ export PYTHONPATH=<project_path>/src
 
 ## Requirements
 
-We reccommend using **conda** to separate you system python packages from our project or to use prepared Dockerfile (webapp use only)
+We reccommend using **conda** to separate your global/system python packages from our project or use prepared Dockerfile in order to launch the web app
 
-**Manual installation - preprocessing, training, validation, testing, webapp on trained network - TODO**
+**Dependencies manual installation** (or use Docker)
 ```bash
 
-# 1. Install conda first 
+# 1. Install conda on your own first 
 # 2. Create new environment and activate it
 conda create --name instronizer python=3.6 
 source activate instronizer
@@ -129,5 +130,5 @@ python src/classifier/train.py <path_to_dataset> --print-freq 1 --num_classes 6
 ```
 ## Copyright
 
-If you use our project in your research work/article/paper, please provide the link to this repo with authors' annotation.
+If you use our project in your research work/article/paper, **_please provide the link to this repo with authors' annotation_**.
 Unfortunately, the documentation with method description is not available in English yet - contact micmarty.
