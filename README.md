@@ -101,7 +101,7 @@ pip install better_exceptions tensorflow scipy soundfile Flask
 # Only docker is required to install, deployment is trivial
 # Must be in project root
 docker build . --tag instronizer
-docker run -p 80:80 --name instronizer_container instronizer
+docker run --interactive --tty -p 80:80 --name instronizer_container instronizer
 # 
 # Go to your browser, type: 
 # localhost
