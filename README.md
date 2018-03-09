@@ -21,10 +21,12 @@ For this reason **we've built our own dataset from YouTube**.
 
 This project was designed, written and is maintained by **Michał Martyniak**, **Maciej Rutkowski**, **Filip Schodowski**
 
-**Demonstration video and more informations:**
-[DEMO - michalmartyniak.me](http://michalmartyniak.me/recent_projects.html)
+### Demonstration video and more informations
+[DEMO link](http://martyniak.me/recent_projects.html)
 
+### Thesis (PL language)
 **If you have any questions, feel free to leave a pull request or contact me (micmarty) directly**
+TODO
 
 ![Instronizer webapp screenshot](docs/instronizer-webapp.png)
 
@@ -36,7 +38,7 @@ This project was designed, written and is maintained by **Michał Martyniak**, *
 
 - Data preprocessor (Python) - WAV -> normalization -> downmixing -> downsampling -> mel-scaled spectrograms -> many .npy files
 
-- IRMAS dataset:
+- IRMAS dataset (polyphonic audio, labeling method: dominant instrument):
     - 10 instruments + voice
     - very unbalanced
     - different labeling structure for train and test sets
@@ -44,14 +46,14 @@ This project was designed, written and is maintained by **Michał Martyniak**, *
     - 20 - 39 min per instrument
     - Many excerpts from one song
 
-- YouTube dataset: 
+- YouTube dataset (polyphonic audio, labeling method: dominant instrument): 
     - 6 instruments
     - Handmade by us
     - train (2h per instrument)
     - val (30 min per instrument)
     - test (30 min per instrument, about 1 min limit for every YouTube audio clip - diversified)
 
-- Auxiliary scripts: YouTube downloader and parser
+- Auxiliary scripts: YouTube downloader and link parser
 
 
 ## Play with the code
@@ -88,25 +90,6 @@ conda install pytorch torchvision -c pytorch
 # 5. Install other dependencies
 conda install -c conda-forge librosa
 pip install better_exceptions tensorflow scipy soundfile Flask
-
-# Example preprocessing
-#
-# dataset_dir can store e.g. train, val, test directories, each having directories for each class, containing WAV excerpts
-# some_dir does not have to be an existing path
-python src/preprocessor/wav_to_spectrograms.py --irmas --input <dataset_dir> --output-dir <some_dir>
-
-# Example training
-#
-# dataset must contain:
-# - train and val in this variation
-# - val when --evaluate
-# - test when --test
-# You need to adjust batch size and validation batch size when the default values are too small or too big
-# add --gpu when using CUDA
-# Let's have a look at this script first or call it with --help ;)
-python src/classifier/train.py <path_to_dataset> --print-freq 1 --num_classes 6
-
-TODO
 ```
 **Ready to test on trained model within the web application**
 (fully working, ready to use)
@@ -122,6 +105,27 @@ docker run -p 80:80 --name instronizer_container instronizer
 # Go to your browser, type: 
 # localhost
 # and enjoy testing :)
+```
+
+**Preprocessing**
+```bash
+# <dataset_dir> directory should store e.g. train, val, test directories, each having directories for each class, containing WAV excerpts
+# <output_dir> does not have to be an existing path
+python src/preprocessor/wav_to_spectrograms.py --irmas --input <dataset_dir> --output-dir <output_dir>
+```
+
+**Training**
+```bash
+# dataset must contain the following directories:
+# - train and val
+# - val when --evaluate
+# - test when --test
+
+# You need to adjust batch size and validation batch size when the default values are too small or too big
+# add --gpu when using CUDA
+
+# Let's have a look at this script first or call it with --help ;)
+python src/classifier/train.py <path_to_dataset> --print-freq 1 --num_classes 6
 ```
 ## Copyright
 
