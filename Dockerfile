@@ -6,7 +6,7 @@ RUN pip install http://download.pytorch.org/whl/cu80/torch-0.3.0.post4-cp36-cp36
 RUN pip install ffmpeg-python \
     arrow \
     uwsgi \
-    librosa \
+    librosa==0.5.1 \
     soundfile \
     scipy \
     better_exceptions
