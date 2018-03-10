@@ -11,6 +11,46 @@ RUN pip install ffmpeg-python \
     scipy \
     better_exceptions
 
+# pip install in case of compatibility issues in the future
+# arrow==0.12.0
+# uwsgi==2.0.15
+# librosa==0.5.1
+# soundfile==0.9.0p
+# scipy==1.0.0
+
+# $ pip freeze
+# arrow==0.12.1
+# audioread==2.1.5
+# better-exceptions==0.2.1
+# cffi==1.11.5
+# click==6.7
+# decorator==4.2.1
+# ffmpeg-python==0.1.10
+# Flask==0.12.2
+# future==0.16.0
+# itsdangerous==0.24
+# Jinja2==2.10
+# joblib==0.11
+# librosa==0.5.1
+# llvmlite==0.22.0
+# MarkupSafe==1.0
+# numba==0.37.0
+# numpy==1.14.1
+# Pillow==5.0.0
+# pycparser==2.18
+# python-dateutil==2.6.1
+# PyYAML==3.12
+# resampy==0.2.0
+# scikit-learn==0.19.1
+# scipy==1.0.0
+# six==1.11.0
+# SoundFile==0.10.1
+# torch==0.3.0.post4
+# torchvision==0.2.0
+# uWSGI==2.0.15
+# Werkzeug==0.14.1
+# youtube-dl==2018.3.3
+
 ENV NGINX_MAX_UPLOAD 50m
 ENV LISTEN_PORT 80
 ENV UWSGI_INI /app/src/webapp/uwsgi.ini
