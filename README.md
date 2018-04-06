@@ -25,7 +25,7 @@ This project was designed, written and is maintained by **Michał Martyniak**, *
 [Demo link](http://martyniak.me/recent_projects.html)
 
 ### Thesis in polish language
-[Download .pdf](https://www.researchgate.net/profile/Michal_Martyniak/project/Musical-instruments-recognition-in-polyphonic-audio-deep-neural-network/attachment/5aa2d5dfb53d2f0bba570d1d/AS:602342382649345@1520621023460/download/Instronizer_Thesis_PL.pdf?context=ProjectUpdatesLog)
+[Download .pdf](https://www.researchgate.net/profile/Michal_Martyniak/project/Musical-instruments-recognition-in-polyphonic-audio-deep-neural-network/attachment/5aa99538b53d2f0bba581394/AS:604197108060161@1521063224551/download/Instronizer_Thesis_PL.pdf?context=ProjectUpdatesLog)
 **If you have any questions, feel free to leave a pull request or contact me (micmarty) directly**
 
 ![Instronizer webapp screenshot](docs/instronizer-webapp.png)
