@@ -22,7 +22,7 @@ For this reason **we've built our own dataset from YouTube**.
 This project was designed, written and is maintained by **Michał Martyniak**, **Maciej Rutkowski**, **Filip Schodowski**
 
 ### Demonstration video and more informations
-[Demo link](http://martyniak.me/recent_projects.html)
+[Demo link](http://martyniak.tech/recent_projects.html)
 
 ### Thesis in polish language
 [Download .pdf](https://www.researchgate.net/profile/Michal_Martyniak/project/Musical-instruments-recognition-in-polyphonic-audio-deep-neural-network/attachment/5aa99538b53d2f0bba581394/AS:604197108060161@1521063224551/download/Instronizer_Thesis_PL.pdf?context=ProjectUpdatesLog)
